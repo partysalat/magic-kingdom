@@ -1,6 +1,7 @@
 import fetch from "node-fetch"
 import path from 'path'
 import fs from 'fs'
+import inquirer from 'inquirer'
 import {URL, URLSearchParams} from 'url'
 // See https://app.swaggerhub.com/apis/portainer/portainer-ce/2.9.3#/stacks/StackCreate
 const __dirname = path.resolve(path.dirname(''));
@@ -8,7 +9,6 @@ console.log(import.meta.url)
 const config = {
   SERVER_URL: 'http://farnsworth:9000',
   USER: "admin",
-  PASSWORD: process.env.PASSWORD,
   MAGIC_MIRROR_STACK_ID: "magic-mirror",
   BRACCOUNTING_STACK_NAME: "braccounting",
   BRACCOUNTING_IMAGE_NAME: "localhost:5000/magic-kingdom-accounting:latest",
@@ -17,7 +17,15 @@ const config = {
 
 
 let authToken
+async function ask(question) {
+  const res = await inquirer.prompt([{
+    type:"password",
+    name:"password",
+    message:question
+  }])
+  return res.password
 
+}
 async function streamToString(readStream) {
   return new Promise((resolve) => {
     const chunks = [];
@@ -36,13 +44,14 @@ async function streamToString(readStream) {
 
 async function getAuthToken() {
   if (!authToken) {
+    const password = await ask("Portainer Password")
     const response = await fetch(`${config.SERVER_URL}/api/auth`, {
       method: 'POST',
       headers: {
         "content-type": "application/json",
         "accept": "application/json"
       },
-      body: JSON.stringify({Username: config.USER, Password: config.PASSWORD})
+      body: JSON.stringify({Username: config.USER, Password: password})
     });
     authToken = (await response.json()).jwt;
   }
