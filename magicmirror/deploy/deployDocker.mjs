@@ -1,0 +1,133 @@
+import fetch from "node-fetch"
+import path from 'path'
+import fs from 'fs'
+import {URL, URLSearchParams} from 'url'
+// See https://app.swaggerhub.com/apis/portainer/portainer-ce/2.9.3#/stacks/StackCreate
+const __dirname = path.resolve(path.dirname(''));
+console.log(import.meta.url)
+const config = {
+  SERVER_URL: 'http://farnsworth:9000',
+  USER: "admin",
+  PASSWORD: process.env.PASSWORD,
+  MAGIC_MIRROR_STACK_ID: "magic-mirror",
+  BRACCOUNTING_STACK_NAME: "braccounting",
+  BRACCOUNTING_IMAGE_NAME: "localhost:5000/magic-kingdom-accounting:latest",
+  BRACCOUNTING_COMPOSE_FILE_PATH: new URL('../braccounting/docker-compose.yml', import.meta.url)
+}
+
+
+let authToken
+
+async function streamToString(readStream) {
+  return new Promise((resolve) => {
+    const chunks = [];
+
+    readStream.on("data", function (chunk) {
+      chunks.push(chunk);
+    });
+
+    // Send the buffer or you can put it into a var
+    readStream.on("end", function () {
+      resolve(Buffer.concat(chunks).toString());
+    });
+  })
+
+}
+
+async function getAuthToken() {
+  if (!authToken) {
+    const response = await fetch(`${config.SERVER_URL}/api/auth`, {
+      method: 'POST',
+      headers: {
+        "content-type": "application/json",
+        "accept": "application/json"
+      },
+      body: JSON.stringify({Username: config.USER, Password: config.PASSWORD})
+    });
+    authToken = (await response.json()).jwt;
+  }
+  return authToken;
+}
+
+async function authGet(path) {
+  const response = await fetch(`${config.SERVER_URL}${path}`, {
+    headers: {
+      "Authorization": `Bearer ${await getAuthToken()}`,
+      "accept": "application/json"
+    },
+  })
+  return response.json()
+}
+
+async function authRequest(path, method, qs, data) {
+
+  const response = await fetch(`${config.SERVER_URL}${path}?${new URLSearchParams(qs).toString()}`, {
+    method: method,
+    headers: {
+      "Authorization": `Bearer ${await getAuthToken()}`,
+      "accept": "application/json"
+    },
+    body: JSON.stringify(data)
+  })
+  if (!response.ok) {
+    console.error("NOT OK", response.status, response.statusText, await streamToString(response.body))
+    throw new Error(`NOT OK ${response.status} ${response.statusText} ${await streamToString(response.body)}`)
+  }
+  return response
+}
+
+async function createStack(name, dockerComposeFilename, env = []) {
+  return await authRequest("/api/stacks", "POST", {
+    type: "2", // compose type
+    method: "string",
+    endpointId: "1",// local endpoints,query /api/endpoints for more information
+  }, {
+    Env: env,
+    Name: name,
+    StackFileContent: fs.readFileSync(dockerComposeFilename, {encoding: "UTF-8"})
+  })
+}
+
+async function updateStack(id, dockerComposeFilename, env =[]) {
+  return await authRequest(`/api/stacks/${id}`, "PUT", {
+    endpointId: "1", // local endpoints,query /api/endpoints for more information
+  }, {
+    Env: env,
+    StackFileContent: fs.readFileSync(dockerComposeFilename, {encoding: "UTF-8"})
+  })
+
+}
+async function pullImage(imageName){
+  await authRequest("/api/endpoints/1/docker/images/create", "POST",{
+
+    fromImage:imageName
+  },{
+    fromImage:imageName
+  })
+}
+async function getStacks() {
+  return await authGet(`/api/stacks`);
+}
+
+async function doIt() {
+  const stacks = await getStacks()
+  let braccountingStack = stacks.find(stack => stack.Name === config.BRACCOUNTING_STACK_NAME);
+  if (braccountingStack) {
+    await pullImage(config.BRACCOUNTING_IMAGE_NAME)
+    console.log(`Update stack ${braccountingStack.Name}`)
+    await updateStack(braccountingStack.Id, config.BRACCOUNTING_COMPOSE_FILE_PATH)
+  } else {
+    console.log(`Create stack ${config.BRACCOUNTING_STACK_NAME}`)
+    await createStack(config.BRACCOUNTING_STACK_NAME, config.BRACCOUNTING_COMPOSE_FILE_PATH)
+  }
+
+  // console.log(stacks);
+}
+
+(async function () {
+  try {
+    await doIt()
+  } catch (e) {
+    console.error(e.message, e)
+  }
+})()

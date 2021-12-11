@@ -1,0 +1,25 @@
+.drink-dialog{
+  background-color: grey;
+}
+.dialog-buttons{
+  height:100px;
+  width: 100%;
+  font-size: 14pt;
+  background-color: lightgray!important;
+  color: black!important;
+
+  border-radius: 5px!important;
+}
+.dialog-button-wrapper{
+  height: 120px;
+}
+.active{
+  background: white!important;
+}
+.dialog-content{
+  overflow-x:hidden;
+}
+.dialog-slider button{
+  width:36px;
+  height:36px;
+}
