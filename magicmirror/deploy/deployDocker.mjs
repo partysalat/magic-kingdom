@@ -1,25 +1,31 @@
 import fetch from "node-fetch"
-import path from 'path'
 import fs from 'fs'
 import inquirer from 'inquirer'
 import {URL, URLSearchParams} from 'url'
 // See https://app.swaggerhub.com/apis/portainer/portainer-ce/2.9.3#/stacks/StackCreate
-const __dirname = path.resolve(path.dirname(''));
 console.log(import.meta.url)
 const config = {
   SERVER_URL: 'http://farnsworth:9000',
   USER: "admin",
-  MAGIC_MIRROR_STACK_ID: "magic-mirror",
-  BRACCOUNTING_STACK_NAME: "braccounting",
-  BRACCOUNTING_IMAGE_NAME: "localhost:5000/magic-kingdom-accounting:latest",
-  BRACCOUNTING_COMPOSE_FILE_PATH: new URL('../braccounting/docker-compose.yml', import.meta.url)
+
+  MAGIC_MIRROR:{
+    STACK_NAME: "magicmirror",
+    IMAGE_NAME: "bastilimbach/docker-magicmirror",
+    COMPOSE_FILE_PATH: new URL('../magic-mirror-core/docker-compose.yml', import.meta.url)
+  },
+  BRACCOUNTING:{
+    STACK_NAME: "braccounting",
+    IMAGE_NAME: "localhost:5000/magic-kingdom-accounting:latest",
+    COMPOSE_FILE_PATH: new URL('../braccounting/docker-compose.yml', import.meta.url)
+  }
+
 }
 
 
 let authToken
-async function ask(question) {
+async function ask(question, type = "password") {
   const res = await inquirer.prompt([{
-    type:"password",
+    type:type,
     name:"password",
     message:question
   }])
@@ -118,19 +124,31 @@ async function getStacks() {
   return await authGet(`/api/stacks`);
 }
 
+async function createOrUpdate(stacks, stackConfig) {
+  let existingStack = stacks.find(stack => stack.Name === stackConfig.STACK_NAME);
+  if (existingStack) {
+    await pullImage(stackConfig.IMAGE_NAME)
+    console.log(`Update stack ${existingStack.Name}`)
+    await updateStack(existingStack.Id, stackConfig.COMPOSE_FILE_PATH)
+  } else {
+    console.log(`Create stack ${stackConfig.STACK_NAME}`)
+    await createStack(stackConfig.STACK_NAME, stackConfig.COMPOSE_FILE_PATH)
+  }
+}
+
 async function doIt() {
   const stacks = await getStacks()
-  let braccountingStack = stacks.find(stack => stack.Name === config.BRACCOUNTING_STACK_NAME);
-  if (braccountingStack) {
-    await pullImage(config.BRACCOUNTING_IMAGE_NAME)
-    console.log(`Update stack ${braccountingStack.Name}`)
-    await updateStack(braccountingStack.Id, config.BRACCOUNTING_COMPOSE_FILE_PATH)
-  } else {
-    console.log(`Create stack ${config.BRACCOUNTING_STACK_NAME}`)
-    await createStack(config.BRACCOUNTING_STACK_NAME, config.BRACCOUNTING_COMPOSE_FILE_PATH)
-  }
+  const res = await inquirer.prompt([{
+    type:"checkbox",
+    choices:[
+      {name: config.BRACCOUNTING.STACK_NAME, value: config.BRACCOUNTING},
+      {name: config.MAGIC_MIRROR.STACK_NAME, value: config.MAGIC_MIRROR}
+    ],
+    name:"stacksToUpdate",
+    message:"Which stacks should be updated?"
+  }])
 
-  // console.log(stacks);
+  await Promise.all(res.stacksToUpdate.map((stackConfig)=>createOrUpdate(stacks, stackConfig)))
 }
 
 (async function () {
