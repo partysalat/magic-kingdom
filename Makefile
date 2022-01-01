@@ -23,3 +23,11 @@ push:
 	node ./magicmirror/deploy/deployDocker.mjs
 
 deploy:build_frontend build_docker_arm push
+
+
+# Magic Mirror
+copy_mm_local:
+	node magicmirror/braccounting/build.js
+	cp -R ./frontend/build/static ../magic-mirror/MagicMirror/modules/braccountingfeed
+	cp -R ./magicmirror/braccounting/build/* ../magic-mirror/MagicMirror/modules
+	cp -R ./magicmirror/magic-mirror-core/config.js ../magic-mirror/MagicMirror/config

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MM_CONFIG_DIR=/data/compose/7/~/magic_mirror/config
+MM_CONFIG_DIR=/home/pi/magic_mirror/config
 
 cd frontend
 npm run build

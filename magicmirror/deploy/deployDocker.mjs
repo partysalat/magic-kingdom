@@ -127,8 +127,8 @@ async function getStacks() {
 async function createOrUpdate(stacks, stackConfig) {
   let existingStack = stacks.find(stack => stack.Name === stackConfig.STACK_NAME);
   if (existingStack) {
+    console.log(`Stack exists, Update stack ${existingStack.Name}`)
     await pullImage(stackConfig.IMAGE_NAME)
-    console.log(`Update stack ${existingStack.Name}`)
     await updateStack(existingStack.Id, stackConfig.COMPOSE_FILE_PATH)
   } else {
     console.log(`Create stack ${stackConfig.STACK_NAME}`)
