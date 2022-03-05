@@ -5,6 +5,7 @@ import { Accounting } from './components/accounting';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider } from '@mui/material';
 import { themeOptions } from './Theme';
+import { Bestlist } from './components/bestlist';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -20,6 +21,7 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <Router>
             <Accounting path="/abrechnung" />
+            <Bestlist path="/bestlist" />
           </Router>
         </QueryClientProvider>
       </ThemeProvider>

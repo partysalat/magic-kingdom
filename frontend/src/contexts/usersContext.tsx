@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { ServerStateKeysEnum } from './common';
 import { toast } from 'react-toastify';
 
-type UserDrinkCounts = {
+export type UserDrinkCounts = {
   [key in DrinkType]: string;
 };
 type Achievement = {
