@@ -16,7 +16,7 @@ import { useIntervalScrolling } from './useIntervalScrolling';
 
 export const Bestlist: React.FC<RouteComponentProps> = () => {
   const { data: bestlist, isLoading } = useGetUsers();
-  useIntervalScrolling({ delta: 100, ms: 1000 });
+  // useIntervalScrolling({ delta: 1, ms: 1000 });
   if (isLoading) {
     return <div>Loading ...</div>;
   }
