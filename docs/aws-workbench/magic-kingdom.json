@@ -1,0 +1,233 @@
+{
+  "ModelName": "magic-kingdom",
+  "ModelMetadata": {
+    "Author": "",
+    "DateCreated": "Oct 27, 2021, 08:07 PM",
+    "DateLastModified": "Nov 19, 2021, 01:15 PM",
+    "Description": "",
+    "AWSService": "Amazon DynamoDB",
+    "Version": "3.0"
+  },
+  "DataModel": [
+    {
+      "TableName": "braccounting",
+      "KeyAttributes": {
+        "PartitionKey": {
+          "AttributeName": "PK",
+          "AttributeType": "S"
+        },
+        "SortKey": {
+          "AttributeName": "SK",
+          "AttributeType": "S"
+        }
+      },
+      "NonKeyAttributes": [
+        {
+          "AttributeName": "type",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "name",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "description",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "drinkType",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "GSI1_PK",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "GSI1_SK",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "payload",
+          "AttributeType": "M"
+        },
+        {
+          "AttributeName": "drinkCounts",
+          "AttributeType": "M"
+        }
+      ],
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "GSI1",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "GSI1_PK",
+              "AttributeType": "S"
+            },
+            "SortKey": {
+              "AttributeName": "GSI1_SK",
+              "AttributeType": "S"
+            }
+          },
+          "Projection": {
+            "ProjectionType": "ALL"
+          }
+        }
+      ],
+      "TableData": [
+        {
+          "PK": {
+            "S": "PARTY#magic-kingdom"
+          },
+          "SK": {
+            "S": "METADATA"
+          },
+          "type": {
+            "S": "metadata"
+          }
+        },
+        {
+          "PK": {
+            "S": "PARTY#magic-kingdom"
+          },
+          "SK": {
+            "S": "USER#ben"
+          },
+          "type": {
+            "S": "user"
+          },
+          "name": {
+            "S": "Ben"
+          },
+          "GSI1_PK": {
+            "S": "PARTY#magic-kingdom#user#ben"
+          },
+          "GSI1_SK": {
+            "S": "user#ben"
+          },
+          "drinkCounts": {
+            "M": {
+              "BEER": {
+                "N": 3
+              }
+            }
+          }
+        },
+        {
+          "PK": {
+            "S": "PARTY#magic-kingdom"
+          },
+          "SK": {
+            "S": "USER#karlos"
+          },
+          "type": {
+            "S": "user"
+          },
+          "name": {
+            "S": "Karlos"
+          },
+          "GSI1_PK": {
+            "S": "PARTY#magic-kingdom#user#karlos"
+          },
+          "GSI1_SK": {
+            "S": "user#karlos"
+          }
+        },
+        {
+          "PK": {
+            "S": "PARTY#magic-kingdom"
+          },
+          "SK": {
+            "S": "DRINK#BEER#NAME#karlsberg"
+          },
+          "type": {
+            "S": "drink"
+          },
+          "name": {
+            "S": "Karlsberg"
+          },
+          "drinkType": {
+            "S": "BEER"
+          }
+        },
+        {
+          "PK": {
+            "S": "PARTY#magic-kingdom"
+          },
+          "SK": {
+            "S": "DRINK#SHOT#NAME#vodka"
+          },
+          "type": {
+            "S": "drink"
+          },
+          "name": {
+            "S": "Vodka"
+          },
+          "drinkType": {
+            "S": "SHOT"
+          }
+        },
+        {
+          "PK": {
+            "S": "PARTY#magic-kingdom"
+          },
+          "SK": {
+            "S": "NEWS#001"
+          },
+          "type": {
+            "S": "news#drink"
+          },
+          "GSI1_PK": {
+            "S": "PARTY#magic-kingdom#user#ben"
+          },
+          "GSI1_SK": {
+            "S": "NEWS#001#TYPE#DRINK"
+          },
+          "payload": {
+            "M": {
+              "name": {
+                "S": "Ben"
+              },
+              "amount": {
+                "N": 3
+              },
+              "drinkType": {
+                "S": "BEER"
+              }
+            }
+          }
+        },
+        {
+          "PK": {
+            "S": "PARTY#magic-kingdom"
+          },
+          "SK": {
+            "S": "NEWS#002"
+          },
+          "type": {
+            "S": "news#achievement"
+          },
+          "GSI1_PK": {
+            "S": "PARTY#magic-kingdom#user#karlos"
+          },
+          "GSI1_SK": {
+            "S": "NEWS#002#TYPE#ACHIEVEMENT"
+          },
+          "payload": {
+            "M": {
+              "name": {
+                "S": "Ben"
+              },
+              "achievementName": {
+                "S": "Fang mich doch"
+              }
+            }
+          }
+        }
+      ],
+      "DataAccess": {
+        "MySql": {}
+      },
+      "BillingMode": "PAY_PER_REQUEST"
+    }
+  ]
+}
