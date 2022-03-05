@@ -129,7 +129,7 @@ func CreateDrink(ctx *fasthttp.RequestCtx) {
 
 		//TODO optimize, maybe like this https://stackoverflow.com/questions/68359637/fire-and-forget-goroutine-golang
 		//https://spiralscout.com/blog/understanding-concurrency-and-parallelism-in-golang
-		go checkAchievementsForUserAndBroadcast(userDto)
+		checkAchievementsForUserAndBroadcast(userDto)
 
 	}
 

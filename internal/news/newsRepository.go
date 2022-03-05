@@ -175,7 +175,7 @@ func AddNewsToDb(party string, newsType string, payload map[string]interface{}, 
 		log.Printf("failed to add user, %v", err)
 		return nil, err
 	}
-	log.Printf("success")
+	log.Println(fmt.Sprintf("Adding news: %s", newsItem))
 
 	return newsItem, nil
 }
