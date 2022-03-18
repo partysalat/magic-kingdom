@@ -1,3 +1,4 @@
+# BRACcounting Backend
 start_infra:
 	docker-compose -f docker/docker-compose-infra.yaml up -d
 stop_infra:
@@ -26,8 +27,9 @@ deploy:build_frontend build_docker_arm push
 
 
 # Magic Mirror
-copy_mm_local:
-	node magicmirror/braccounting/build.js
+
+push_mm_config:
+	./magicmirror/deploy/upload.sh
 	cp -R ./frontend/build/static ../magic-mirror/MagicMirror/modules/braccountingfeed
 	cp -R ./magicmirror/braccounting/build/* ../magic-mirror/MagicMirror/modules
 	cp -R ./magicmirror/magic-mirror-core/config.js ../magic-mirror/MagicMirror/config

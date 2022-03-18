@@ -2,8 +2,6 @@
 
 MM_CONFIG_DIR=/home/pi/magic_mirror/config
 
-cd frontend
-npm run build
 zip -r frontend.zip build
 scp frontend.zip pi@farnsworth:${MM_CONFIG_DIR}/braccounting/frontend.zip
 

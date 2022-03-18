@@ -27,6 +27,16 @@ var config = {
 
   modules: [
     {
+      module: "braccounting",
+      position: "top_left",
+      config: {
+        src:"http://bender:8080/snippets/bestlist",
+        width: "600px",
+        height: "500px",
+        backgroundColor: "#000",
+      }
+    },
+    {
       module: "alert",
     },
     {

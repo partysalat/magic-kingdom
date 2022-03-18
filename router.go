@@ -32,6 +32,7 @@ func GetRoutes() *router.Router {
 		PathNotFound: func(ctx *fasthttp.RequestCtx) {
 			ctx.SendFile("./frontend/build/index.html")
 		},
+
 		GenerateIndexPages: true,
 		AcceptByteRange:    true,
 	}

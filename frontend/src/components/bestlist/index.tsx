@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
   Tooltip,
+  Typography,
 } from '@mui/material';
 import styles from './bestlist.module.css';
 import { useIntervalScrolling } from './useIntervalScrolling';
@@ -22,52 +23,77 @@ export const Bestlist: React.FC<RouteComponentProps> = () => {
   }
   const sortedBestlist = bestlist?.sort((user1, user2) => {
     return drinkCount(user1.drinkCounts) > drinkCount(user2.drinkCounts)
-      ? 1
-      : -1;
+      ? -1
+      : 1;
   });
   return (
-    <Paper>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>No.</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Biere</TableCell>
-            <TableCell align="right">Cocktails</TableCell>
-            <TableCell align="right">Shots</TableCell>
-            <TableCell align="right">Softdrinks</TableCell>
-            <TableCell align="right">Achievements</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedBestlist?.map((row, index) => (
-            <TableRow key={row.name}>
-              <TableCell>{index + 1}.</TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell align="right">{row.drinkCounts.BEER}</TableCell>
-              <TableCell align="right">{row.drinkCounts.COCKTAIL}</TableCell>
-              <TableCell align="right">{row.drinkCounts.SHOT}</TableCell>
-              <TableCell align="right">{row.drinkCounts.SOFTDRINK}</TableCell>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>
+            <Typography variant="h6">No.</Typography>
+          </TableCell>
+          <TableCell>
+            <Typography variant="h6">Name</Typography>
+          </TableCell>
+          <TableCell align="right">
+            <Typography variant="h6">Biere</Typography>
+          </TableCell>
+          <TableCell align="right">
+            <Typography variant="h6">Cocktails</Typography>
+          </TableCell>
+          <TableCell align="right">
+            <Typography variant="h6">Shots</Typography>
+          </TableCell>
+          <TableCell align="right">
+            <Typography variant="h6">Softdrinks</Typography>
+          </TableCell>
+          <TableCell align="right">
+            <Typography variant="h6">Achievements</Typography>
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {sortedBestlist?.map((row, index) => (
+          <TableRow key={row.name}>
+            <TableCell size="small">
+              <Typography>{index + 1}.</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography>{row.name}</Typography>
+            </TableCell>
+            <TableCell align="right">
+              <Typography>{row.drinkCounts.BEER}</Typography>
+            </TableCell>
+            <TableCell align="right">
+              <Typography>{row.drinkCounts.COCKTAIL}</Typography>
+            </TableCell>
+            <TableCell align="right">
+              <Typography>{row.drinkCounts.SHOT}</Typography>
+            </TableCell>
+            <TableCell align="right">
+              <Typography>{row.drinkCounts.SOFTDRINK}</Typography>
+            </TableCell>
 
-              <TableCell align="right">
-                {row.achievements.map((payload) => (
-                  <Tooltip
-                    key={payload.id}
-                    title={`${payload.name}: ${payload.description}`}
-                  >
-                    <Avatar
-                      alt={payload.name}
-                      src={payload.image}
-                      className={`${styles['avatar-small']} animated jackInTheBox`}
-                    />
-                  </Tooltip>
-                ))}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Paper>
+            <TableCell align="right">
+              {row.achievements.map((payload) => (
+                <Tooltip
+                  key={payload.id}
+                  title={`${payload.name}: ${payload.description}`}
+                >
+                  <Avatar
+                    alt={payload.name}
+                    src={payload.image}
+                    className={`${styles['avatar-small']} animated jackInTheBox`}
+                  />
+                </Tooltip>
+              ))}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+
     // <div>
     //   {sortedBestlist?.map((user) => {
     //     return (
@@ -81,5 +107,9 @@ export const Bestlist: React.FC<RouteComponentProps> = () => {
   );
 };
 function drinkCount(drinkCount: UserDrinkCounts) {
-  return drinkCount.BEER + drinkCount.COCKTAIL + drinkCount.SOFTDRINK;
+  return (
+    Number.parseFloat(drinkCount.BEER || '0') +
+    Number.parseFloat(drinkCount.COCKTAIL || '0') +
+    Number.parseFloat(drinkCount.SOFTDRINK || '0')
+  );
 }

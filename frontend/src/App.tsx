@@ -4,7 +4,7 @@ import { Router } from '@reach/router';
 import { Accounting } from './components/accounting';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider } from '@mui/material';
-import { themeOptions } from './Theme';
+import { accountingTheme, mirrorTheme } from './Theme';
 import { Bestlist } from './components/bestlist';
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,14 +17,18 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <div className="App">
-      <ThemeProvider theme={themeOptions}>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={accountingTheme}>
           <Router>
             <Accounting path="/abrechnung" />
-            <Bestlist path="/bestlist" />
           </Router>
-        </QueryClientProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+        <ThemeProvider theme={mirrorTheme}>
+          <Router>
+            <Bestlist path="/snippets/bestlist" />
+          </Router>
+        </ThemeProvider>
+      </QueryClientProvider>
     </div>
   );
 }
