@@ -14,10 +14,13 @@ import {
 } from '@mui/material';
 import styles from './bestlist.module.css';
 import { useIntervalScrolling } from './useIntervalScrolling';
-
-export const Bestlist: React.FC<RouteComponentProps> = () => {
+import { FadeOutLayer } from '../fadeOutLayer';
+type Props = {
+  withAutoScroll?: boolean;
+};
+export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
   const { data: bestlist, isLoading } = useGetUsers();
-  // useIntervalScrolling({ delta: 1, ms: 1000 });
+  useIntervalScrolling({ delta: 1, ms: 1000, enabled: !!props.withAutoScroll });
   if (isLoading) {
     return <div>Loading ...</div>;
   }
@@ -27,73 +30,97 @@ export const Bestlist: React.FC<RouteComponentProps> = () => {
       : 1;
   });
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>
-            <Typography variant="h6">No.</Typography>
-          </TableCell>
-          <TableCell>
-            <Typography variant="h6">Name</Typography>
-          </TableCell>
-          <TableCell align="right">
-            <Typography variant="h6">Biere</Typography>
-          </TableCell>
-          <TableCell align="right">
-            <Typography variant="h6">Cocktails</Typography>
-          </TableCell>
-          <TableCell align="right">
-            <Typography variant="h6">Shots</Typography>
-          </TableCell>
-          <TableCell align="right">
-            <Typography variant="h6">Softdrinks</Typography>
-          </TableCell>
-          <TableCell align="right">
-            <Typography variant="h6">Achievements</Typography>
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {sortedBestlist?.map((row, index) => (
-          <TableRow key={row.name}>
-            <TableCell size="small">
-              <Typography>{index + 1}.</Typography>
+    <>
+      <FadeOutLayer />
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell
+              size="small"
+              padding="none"
+              sx={{ borderColor: 'text.secondary' }}
+            />
+            <TableCell size="small" sx={{ borderColor: 'text.secondary' }}>
+              <Typography variant="subtitle2">Name</Typography>
             </TableCell>
-            <TableCell>
-              <Typography>{row.name}</Typography>
+            <TableCell
+              size="small"
+              align="right"
+              sx={{ borderColor: 'text.secondary' }}
+            >
+              <Typography variant="subtitle2">Biere</Typography>
             </TableCell>
-            <TableCell align="right">
-              <Typography>{row.drinkCounts.BEER}</Typography>
+            <TableCell
+              size="small"
+              align="right"
+              sx={{ borderColor: 'text.secondary' }}
+            >
+              <Typography variant="subtitle2">Cocktails</Typography>
             </TableCell>
-            <TableCell align="right">
-              <Typography>{row.drinkCounts.COCKTAIL}</Typography>
+            <TableCell
+              size="small"
+              align="right"
+              sx={{ borderColor: 'text.secondary' }}
+            >
+              <Typography variant="subtitle2">Shots</Typography>
             </TableCell>
-            <TableCell align="right">
-              <Typography>{row.drinkCounts.SHOT}</Typography>
+            <TableCell
+              size="small"
+              align="right"
+              sx={{ borderColor: 'text.secondary' }}
+            >
+              <Typography variant="subtitle2">Softdrinks</Typography>
             </TableCell>
-            <TableCell align="right">
-              <Typography>{row.drinkCounts.SOFTDRINK}</Typography>
-            </TableCell>
-
-            <TableCell align="right">
-              {row.achievements.map((payload) => (
-                <Tooltip
-                  key={payload.id}
-                  title={`${payload.name}: ${payload.description}`}
-                >
-                  <Avatar
-                    alt={payload.name}
-                    src={payload.image}
-                    className={`${styles['avatar-small']} animated jackInTheBox`}
-                  />
-                </Tooltip>
-              ))}
+            <TableCell
+              size="small"
+              align="right"
+              sx={{ borderColor: 'text.secondary' }}
+            >
+              <Typography variant="subtitle2">Achievements</Typography>
             </TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {sortedBestlist?.map((row, index) => (
+            <TableRow key={row.name}>
+              <TableCell size="small" padding="none" sx={{ border: 0 }}>
+                <Typography variant="subtitle2">{index + 1}.</Typography>
+              </TableCell>
+              <TableCell size="small" sx={{ border: 0 }}>
+                <Typography>{row.name}</Typography>
+              </TableCell>
+              <TableCell size="small" align="right" sx={{ border: 0 }}>
+                <Typography>{row.drinkCounts.BEER}</Typography>
+              </TableCell>
+              <TableCell size="small" align="right" sx={{ border: 0 }}>
+                <Typography>{row.drinkCounts.COCKTAIL}</Typography>
+              </TableCell>
+              <TableCell size="small" align="right" sx={{ border: 0 }}>
+                <Typography>{row.drinkCounts.SHOT}</Typography>
+              </TableCell>
+              <TableCell size="small" align="right" sx={{ border: 0 }}>
+                <Typography>{row.drinkCounts.SOFTDRINK}</Typography>
+              </TableCell>
 
+              <TableCell size="small" align="right" sx={{ border: 0 }}>
+                {row.achievements.map((payload) => (
+                  <Tooltip
+                    key={payload.id}
+                    title={`${payload.name}: ${payload.description}`}
+                  >
+                    <Avatar
+                      alt={payload.name}
+                      src={payload.image}
+                      className={`${styles['avatar-small']} animated jackInTheBox`}
+                    />
+                  </Tooltip>
+                ))}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </>
     // <div>
     //   {sortedBestlist?.map((user) => {
     //     return (

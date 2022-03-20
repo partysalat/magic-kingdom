@@ -1,7 +1,14 @@
 import React, { useEffect } from 'react';
 
-export function useIntervalScrolling(props: { delta: number; ms: number }) {
+export function useIntervalScrolling(props: {
+  delta: number;
+  ms: number;
+  enabled: boolean;
+}) {
   useEffect(() => {
+    if (!props.enabled) {
+      return;
+    }
     let sign = 1;
     scrollBy(sign * props.delta, props.ms);
     const interval = setInterval(() => {

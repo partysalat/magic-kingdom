@@ -18,13 +18,17 @@ export const mirrorTheme: ThemeOptions = createTheme({
     secondary: {
       main: '#f50057',
     },
+    text: {
+      primary: '#fff',
+      secondary: 'rgb(170, 170, 170)',
+    },
   },
 
   typography: {
     allVariants: {
       color: '#ffffff',
     },
-    h6: {
+    subtitle2: {
       color: 'rgb(170, 170, 170)',
     },
     fontFamily: ['Roboto Condensed', 'sans-serif'].join(','),

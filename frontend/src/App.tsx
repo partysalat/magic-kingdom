@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider } from '@mui/material';
 import { accountingTheme, mirrorTheme } from './Theme';
 import { Bestlist } from './components/bestlist';
+import { FadeOutLayer } from './components/fadeOutLayer';
+import { MirrorLayout } from './layouts/MirrorLayout';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -25,7 +27,7 @@ function App() {
         </ThemeProvider>
         <ThemeProvider theme={mirrorTheme}>
           <Router>
-            <Bestlist path="/snippets/bestlist" />
+            <MirrorLayout path="/snippets/bestlist" />
           </Router>
         </ThemeProvider>
       </QueryClientProvider>
