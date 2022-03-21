@@ -8,6 +8,7 @@ import { accountingTheme, mirrorTheme } from './Theme';
 import { Bestlist } from './components/bestlist';
 import { FadeOutLayer } from './components/fadeOutLayer';
 import { MirrorLayout } from './layouts/MirrorLayout';
+import { Newsfeed } from './components/newsfeed';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -27,7 +28,11 @@ function App() {
         </ThemeProvider>
         <ThemeProvider theme={mirrorTheme}>
           <Router>
-            <MirrorLayout path="/snippets/bestlist" />
+            <MirrorLayout
+              path="/snippets/bestlist"
+              component={<Bestlist withAutoScroll={true} />}
+            />
+            <MirrorLayout path="/snippets/newsfeed" component={<Newsfeed />} />
           </Router>
         </ThemeProvider>
       </QueryClientProvider>
