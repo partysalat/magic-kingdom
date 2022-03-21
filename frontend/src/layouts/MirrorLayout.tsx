@@ -7,8 +7,8 @@ type Props = {};
 export const MirrorLayout: React.FC<Props & RouteComponentProps> = (props) => {
   return (
     <div className={styles['mirror-layout']}>
-      <FadeOutLayer />
       <Bestlist withAutoScroll={true} />
+      <FadeOutLayer />
     </div>
   );
 };

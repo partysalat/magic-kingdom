@@ -28,6 +28,7 @@ func (broadcaster *Broadcaster) Add(c *websocket.Conn) {
 	broadcaster.lock.Unlock()
 }
 func (broadcaster *Broadcaster) Broadcast(msg []byte) {
+
 	broadcaster.lock.Lock()
 	for i := 0; i < len(broadcaster.connections); i++ {
 		connection := broadcaster.connections[i]

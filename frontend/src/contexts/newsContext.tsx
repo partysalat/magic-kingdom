@@ -1,12 +1,16 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
 import { ServerStateKeysEnum } from './common';
 import { Drink } from './drinksContext';
 import { User } from './usersContext';
+import useWebSocket from 'react-use-websocket';
+import { InfiniteData } from 'react-query/types/core/types';
 
-export type DrinkNews = News<DrinkNewsPayload>;
-export type AchievementNews = News<AchievementNewsPayload>;
+export interface DrinkNews extends News<DrinkNewsPayload> {}
+export interface AchievementNews extends News<AchievementNewsPayload> {}
+
 export enum NewsListFilter {
   DRINK = 'NEWS$DRINK',
   ACHIEVEMENT = 'NEWS$ACHIEVEMENT',
@@ -16,6 +20,7 @@ export interface AddDrinkToUsersRequest {
   drinkId: string;
   users: { userId: string; amount: number }[];
 }
+
 async function addDrinkForUsers(data: AddDrinkToUsersRequest) {
   await fetch('/api/users', {
     method: 'PUT',
@@ -48,15 +53,17 @@ export function useAddDrinksForUsers() {
   );
 }
 
-interface DrinkNewsPayload {
+export interface DrinkNewsPayload {
   amount: number;
   user: User;
   drink: Drink;
 }
-interface AchievementNewsPayload {
+
+export interface AchievementNewsPayload {
   user: User;
   achievement: Record<string, unknown>;
 }
+
 export interface News<T> {
   party: string;
   newsId: string;
@@ -64,6 +71,7 @@ export interface News<T> {
   payload: T;
   createdAt: '2021-11-25T20:09:27.844789+01:00';
 }
+
 async function fetchNews(params: {
   lastNewsId: string;
   limit: number;
@@ -76,13 +84,11 @@ async function fetchNews(params: {
   return res.json();
 }
 
-export function useGetInfiniteNews(
-  filter?: NewsListFilter,
-  limit: number = 20,
-  enabled = true
-) {
-  return useInfiniteQuery<DrinkNews[], Error>(
-    [ServerStateKeysEnum.News, filter],
+export function useGetInfiniteNews<
+  T = DrinkNewsPayload | AchievementNewsPayload
+>(filter?: NewsListFilter, limit: number = 20, enabled = true) {
+  return useInfiniteQuery<News<T>[], Error>(
+    [ServerStateKeysEnum.News, filter].filter(Boolean),
     (params) => {
       return fetchNews({ lastNewsId: params.pageParam, limit, filter });
     },
@@ -97,6 +103,7 @@ export function useGetInfiniteNews(
     }
   );
 }
+
 async function removeNews(newsId: string) {
   await fetch(`/api/news/${encodeURIComponent(newsId)}`, {
     method: 'DELETE',
@@ -113,4 +120,34 @@ export function useRemoveNews() {
       ]);
     },
   });
+}
+
+export function useWebsocketUpdate() {
+  const queryClient = useQueryClient();
+  const { lastMessage } = useWebSocket(
+    `ws://${window.location.hostname}:8080/api/ws`,
+    {
+      onOpen: () => console.log('opened'),
+      //Will attempt to reconnect on all close events, such as server shutting down
+      shouldReconnect: (closeEvent) => true,
+    }
+  );
+  useEffect(() => {
+    queryClient.invalidateQueries(ServerStateKeysEnum.Users);
+    // queryClient.setQueryData('projects', data => ({
+    //   pages: newPagesArray,
+    //   pageParams: data.pageParams,
+    // }))
+    queryClient.setQueryData([ServerStateKeysEnum.News], (data) => {
+      // @ts-ignore
+      data?.pages?.[0]?.unshift(lastMessage?.data);
+
+      return {
+        // @ts-ignore
+        pages: data?.pages,
+        // @ts-ignore
+        pageParams: data?.pageParams,
+      };
+    });
+  }, [lastMessage, queryClient]);
 }

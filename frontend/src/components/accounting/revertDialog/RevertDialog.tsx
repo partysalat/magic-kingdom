@@ -24,6 +24,7 @@ import {
   useGetInfiniteNews,
   DrinkNews,
   useRemoveNews,
+  DrinkNewsPayload,
 } from '../../../contexts/newsContext';
 
 interface Props extends DialogComponentProps {}
@@ -37,7 +38,7 @@ export const RevertDialog: React.FC<Props> = ({ open, onClose }) => {
     data: items,
     fetchNextPage,
     hasNextPage,
-  } = useGetInfiniteNews(NewsListFilter.DRINK, 50, open);
+  } = useGetInfiniteNews<DrinkNewsPayload>(NewsListFilter.DRINK, 50, open);
   function getDrinkIcon(drinkType: DrinkType) {
     return (
       DRINK_TYPE_DEFINITIONS.find((def) => def.drinkType === drinkType)?.icon ||

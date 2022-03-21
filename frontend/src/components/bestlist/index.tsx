@@ -15,12 +15,14 @@ import {
 import styles from './bestlist.module.css';
 import { useIntervalScrolling } from './useIntervalScrolling';
 import { FadeOutLayer } from '../fadeOutLayer';
+import { useWebsocketUpdate } from '../../contexts/newsContext';
 type Props = {
   withAutoScroll?: boolean;
 };
 export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
   const { data: bestlist, isLoading } = useGetUsers();
   useIntervalScrolling({ delta: 1, ms: 1000, enabled: !!props.withAutoScroll });
+  useWebsocketUpdate();
   if (isLoading) {
     return <div>Loading ...</div>;
   }
