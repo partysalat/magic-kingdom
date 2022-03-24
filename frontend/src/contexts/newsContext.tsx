@@ -21,19 +21,26 @@ export interface AddDrinkToUsersRequest {
   users: { userId: string; amount: number }[];
 }
 
-async function addDrinkForUsers(data: AddDrinkToUsersRequest) {
-  await fetch('/api/users', {
+async function addDrinkForUsers(
+  data: AddDrinkToUsersRequest
+): Promise<unknown> {
+  const res = await fetch('/api/users', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
   });
+  if (!res.ok) {
+    throw new Error(`Error ${res.status}`);
+  }
+
+  return res.ok;
 }
 
 export function useAddDrinksForUsers() {
   const queryClient = useQueryClient();
-  return useMutation<void, Error, AddDrinkToUsersRequest>(
+  return useMutation<unknown, Error, AddDrinkToUsersRequest>(
     (data) => addDrinkForUsers(data),
     {
       onMutate: () => {
@@ -81,6 +88,9 @@ async function fetchNews(params: {
     .filter(([_, value]) => value !== undefined && value !== null)
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`);
   const res = await fetch(`/api/news?${queryParams.join('&')}`);
+  if (!res.ok) {
+    throw new Error(`Error ${res.status}`);
+  }
   return res.json();
 }
 
@@ -105,9 +115,12 @@ export function useGetInfiniteNews<
 }
 
 async function removeNews(newsId: string) {
-  await fetch(`/api/news/${encodeURIComponent(newsId)}`, {
+  const res = await fetch(`/api/news/${encodeURIComponent(newsId)}`, {
     method: 'DELETE',
   });
+  if (!res.ok) {
+    throw new Error(`Error ${res.status}`);
+  }
 }
 
 export function useRemoveNews() {

@@ -23,6 +23,9 @@ export interface AddNewDrinkRequest {
 
 export async function fetchDrinks(drinkType: DrinkType) {
   const res = await fetch(`/api/drinks/${drinkType}`);
+  if (!res.ok) {
+    throw new Error(`Error ${res.status}`);
+  }
   return res.json();
 }
 
@@ -40,19 +43,26 @@ export function useGetDrinks(drinkType: DrinkType) {
   );
 }
 
-async function addNewDrink(drinkType: DrinkType, drinkName: string) {
-  await fetch(`/api/drinks/${drinkType}`, {
+async function addNewDrink(
+  drinkType: DrinkType,
+  drinkName: string
+): Promise<unknown> {
+  const res = await fetch(`/api/drinks/${drinkType}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ name: drinkName }),
   });
+  if (!res.ok) {
+    throw new Error(`Error ${res.status}`);
+  }
+  return res;
 }
 
 export function useAddNewDrink() {
   const queryClient = useQueryClient();
-  return useMutation<void, Error, AddNewDrinkRequest>(
+  return useMutation<unknown, Error, AddNewDrinkRequest>(
     (data) => addNewDrink(data.drinkType, data.drinkName),
     {
       onMutate: () => {

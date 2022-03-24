@@ -24,6 +24,9 @@ export interface User {
 
 async function fetchUsers() {
   const res = await fetch('/api/users');
+  if (!res.ok) {
+    throw new Error(`Error ${res.status}`);
+  }
   return res.json();
 }
 
@@ -38,13 +41,16 @@ interface AddNewUserRequest {
   userName: string;
 }
 async function addNewUser(userName: string) {
-  await fetch(`/api/users`, {
+  const res = await fetch(`/api/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ name: userName }),
   });
+  if (!res.ok) {
+    throw new Error(`Error ${res.status}`);
+  }
 }
 
 export function useAddNewUser() {
