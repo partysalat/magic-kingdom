@@ -146,6 +146,9 @@ export function useWebsocketUpdate() {
     }
   );
   useEffect(() => {
+    if (lastMessage === null) {
+      return;
+    }
     queryClient.invalidateQueries(ServerStateKeysEnum.Users);
     // queryClient.setQueryData('projects', data => ({
     //   pages: newPagesArray,
@@ -153,7 +156,7 @@ export function useWebsocketUpdate() {
     // }))
     queryClient.setQueryData([ServerStateKeysEnum.News], (data) => {
       // @ts-ignore
-      data?.pages?.[0]?.unshift(lastMessage?.data);
+      data?.pages?.[0]?.unshift(JSON.parse(lastMessage!.data));
 
       return {
         // @ts-ignore

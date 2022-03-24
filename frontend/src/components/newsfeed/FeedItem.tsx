@@ -1,9 +1,19 @@
 import React from 'react';
-import { News } from '../../contexts/newsContext';
+import { AchievementNews, DrinkNews, News } from '../../contexts/newsContext';
 
 type Props = {
-  newsItem: News<unknown>[];
+  newsItem: News<unknown>;
 };
-export const FeedItem = (props: Props) => {
-  return <div></div>;
+const DrinkNewsItem = (props: { newsItem: DrinkNews }) => {
+  return <div>Drink</div>;
+};
+const AchievementNewsItem = (props: { newsItem: AchievementNews }) => {
+  return <div>Achievement</div>;
+};
+export const FeedItem = ({ newsItem }: Props) => {
+  if (newsItem.type === 'NEWS$DRINK') {
+    return <DrinkNewsItem newsItem={newsItem as DrinkNews} />;
+  } else {
+    return <AchievementNewsItem newsItem={newsItem as AchievementNews} />;
+  }
 };

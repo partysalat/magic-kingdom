@@ -3,6 +3,7 @@ import {
   DrinkNewsPayload,
   NewsListFilter,
   useGetInfiniteNews,
+  useWebsocketUpdate,
 } from '../../contexts/newsContext';
 import {
   Button,
@@ -13,6 +14,7 @@ import {
 } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { FeedItem } from './FeedItem';
 
 export const Newsfeed = () => {
   const {
@@ -20,7 +22,7 @@ export const Newsfeed = () => {
     fetchNextPage,
     hasNextPage,
   } = useGetInfiniteNews<DrinkNewsPayload>(undefined, 20);
-
+  useWebsocketUpdate();
   return (
     <div id={'newsfeed'} style={{ height: 300, overflow: 'auto' }}>
       <InfiniteScroll
@@ -36,7 +38,7 @@ export const Newsfeed = () => {
         }
       >
         {items?.pages.flat().map((newsItem) => (
-          <div key={newsItem.newsId}>{JSON.stringify(newsItem)}</div>
+          <FeedItem key={newsItem.newsId} newsItem={newsItem} />
         ))}
       </InfiniteScroll>
     </div>
