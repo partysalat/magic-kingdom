@@ -9,6 +9,7 @@ import {
   faGlassWhiskey,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import 'animate.css';
 const typeToIconMap = {
   COCKTAIL: faCocktail,
   BEER: faBeer,
@@ -20,10 +21,11 @@ type Props = {
   newsItem: News<unknown>;
 };
 const COLUMNS = 3;
+const ANIMATION = 'animate__animated animate__backInDown';
 const DrinkNewsItem = ({ newsItem }: { newsItem: DrinkNews }) => {
   return (
     <Grid item xs={12 / COLUMNS} style={{ height: '100%' }}>
-      <Card>
+      <Card className={ANIMATION}>
         <CardHeader
           avatar={
             <Avatar aria-label="Recipe">
@@ -43,7 +45,7 @@ const DrinkNewsItem = ({ newsItem }: { newsItem: DrinkNews }) => {
 const AchievementNewsItem = ({ newsItem }: { newsItem: AchievementNews }) => {
   return (
     <Grid item xs={12 / COLUMNS} style={{ height: '100%' }}>
-      <Card>
+      <Card className={ANIMATION}>
         <CardHeader
           avatar={
             <Avatar
