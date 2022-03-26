@@ -20,10 +20,10 @@ type NewsCount struct {
 }
 
 type Achievement struct {
-	Id          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Image       string `json:"image"`
+	Id          int    `json:"id" dynamodbav:"id"`
+	Name        string `json:"name" dynamodbav:"name"`
+	Description string `json:"description" dynamodbav:"description"`
+	Image       string `json:"image" dynamodbav:"image"`
 }
 type AchievementDefinition struct {
 	Achievement Achievement

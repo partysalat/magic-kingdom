@@ -7,6 +7,7 @@ import {
 } from '../../contexts/newsContext';
 import {
   Button,
+  Grid,
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction,
@@ -37,9 +38,11 @@ export const Newsfeed = () => {
           </p>
         }
       >
-        {items?.pages.flat().map((newsItem) => (
-          <FeedItem key={newsItem.newsId} newsItem={newsItem} />
-        ))}
+        <Grid container spacing={1}>
+          {items?.pages.flat().map((newsItem) => (
+            <FeedItem key={newsItem.newsId} newsItem={newsItem} />
+          ))}
+        </Grid>
       </InfiniteScroll>
     </div>
   );

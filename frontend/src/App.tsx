@@ -9,6 +9,7 @@ import { Bestlist } from './components/bestlist';
 import { FadeOutLayer } from './components/fadeOutLayer';
 import { MirrorLayout } from './layouts/MirrorLayout';
 import { Newsfeed } from './components/newsfeed';
+import { NewsfeedNoInfiniteScroll } from './components/newsfeed/FeedNoInfiniteScroll';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -32,7 +33,10 @@ function App() {
               path="/snippets/bestlist"
               component={<Bestlist withAutoScroll={true} />}
             />
-            <MirrorLayout path="/snippets/newsfeed" component={<Newsfeed />} />
+            <MirrorLayout
+              path="/snippets/newsfeed"
+              component={<NewsfeedNoInfiniteScroll />}
+            />
           </Router>
         </ThemeProvider>
       </QueryClientProvider>

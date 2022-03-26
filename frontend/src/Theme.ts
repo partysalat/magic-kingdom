@@ -12,6 +12,7 @@ export const accountingTheme: ThemeOptions = createTheme({
 });
 export const mirrorTheme: ThemeOptions = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
       main: '#3f51b5',
     },

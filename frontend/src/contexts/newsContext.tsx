@@ -68,9 +68,14 @@ export interface DrinkNewsPayload {
 
 export interface AchievementNewsPayload {
   user: User;
-  achievement: Record<string, unknown>;
+  achievement: Achievement;
 }
-
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  imagePath: string;
+}
 export interface News<T> {
   party: string;
   newsId: string;
