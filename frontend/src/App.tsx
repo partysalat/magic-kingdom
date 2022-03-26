@@ -35,6 +35,7 @@ function App() {
             />
             <MirrorLayout
               path="/snippets/newsfeed"
+              top={false}
               component={<NewsfeedNoInfiniteScroll />}
             />
           </Router>

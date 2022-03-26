@@ -19,9 +19,10 @@ const typeToIconMap = {
 type Props = {
   newsItem: News<unknown>;
 };
+const COLUMNS = 3;
 const DrinkNewsItem = ({ newsItem }: { newsItem: DrinkNews }) => {
   return (
-    <Grid item xs={3}>
+    <Grid item xs={12 / COLUMNS} style={{ height: '100%' }}>
       <Card>
         <CardHeader
           avatar={
@@ -41,7 +42,7 @@ const DrinkNewsItem = ({ newsItem }: { newsItem: DrinkNews }) => {
 };
 const AchievementNewsItem = ({ newsItem }: { newsItem: AchievementNews }) => {
   return (
-    <Grid item xs={3}>
+    <Grid item xs={12 / COLUMNS} style={{ height: '100%' }}>
       <Card>
         <CardHeader
           avatar={

@@ -1,4 +1,6 @@
-.mirror-layout{
+.mirror-layout-top{
     margin-top: 100px;
+}
+.mirror-layout-bottom{
     margin-bottom: 100px;
 }

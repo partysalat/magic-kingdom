@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import styles from './bestlist.module.css';
 import { useIntervalScrolling } from './useIntervalScrolling';
-import { FadeOutLayer } from '../fadeOutLayer';
 import { useWebsocketUpdate } from '../../contexts/newsContext';
 type Props = {
   withAutoScroll?: boolean;
@@ -33,7 +32,6 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
   });
   return (
     <>
-      <FadeOutLayer />
       <Table>
         <TableHead>
           <TableRow>

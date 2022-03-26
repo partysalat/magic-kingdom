@@ -7,7 +7,6 @@ Module.register("braccounting",{
     getDom: function() {
       let self = this
       var wrapper = document.createElement("iframe")
-      wrapper.id = "HTMLSNIPPET"
       wrapper.className = "htmlsnippet module"
       wrapper.style.width = self.config.width
       wrapper.style.height = self.config.height

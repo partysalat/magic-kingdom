@@ -28,9 +28,19 @@ var config = {
   modules: [
     {
       module: "braccounting",
-      position: "top_left",
+      position: "bottom_left",
       config: {
-        src:"http://bender:8080/snippets/bestlist",
+        src:"http://bender:3000/snippets/bestlist",
+        width: "600px",
+        height: "500px",
+        backgroundColor: "#000",
+      }
+    },
+    {
+      module: "braccounting",
+      position: "bottom_right",
+      config: {
+        src:"http://bender:3000/snippets/newsfeed",
         width: "600px",
         height: "500px",
         backgroundColor: "#000",
