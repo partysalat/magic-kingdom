@@ -25,7 +25,10 @@ const ANIMATION = 'animate__animated animate__backInDown';
 const DrinkNewsItem = ({ newsItem }: { newsItem: DrinkNews }) => {
   return (
     <Grid item xs={12 / COLUMNS} style={{ height: '100%' }}>
-      <Card className={ANIMATION}>
+      <Card
+        className={ANIMATION}
+        style={{ backgroundColor: 'rgba(36,36,36,0.5)' }}
+      >
         <CardHeader
           avatar={
             <Avatar aria-label="Recipe">
@@ -45,7 +48,10 @@ const DrinkNewsItem = ({ newsItem }: { newsItem: DrinkNews }) => {
 const AchievementNewsItem = ({ newsItem }: { newsItem: AchievementNews }) => {
   return (
     <Grid item xs={12 / COLUMNS} style={{ height: '100%' }}>
-      <Card className={ANIMATION}>
+      <Card
+        className={ANIMATION}
+        style={{ backgroundColor: 'rgba(36,36,36,0.5)' }}
+      >
         <CardHeader
           avatar={
             <Avatar
@@ -57,7 +63,6 @@ const AchievementNewsItem = ({ newsItem }: { newsItem: AchievementNews }) => {
           subheader={format(new Date(newsItem.createdAt), 'dd.MM.yyyy HH:mm')}
         />
       </Card>
-      <div>Achievement</div>
     </Grid>
   );
 };

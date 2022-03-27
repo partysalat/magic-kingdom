@@ -31,6 +31,7 @@ function App() {
           <Router>
             <MirrorLayout
               path="/snippets/bestlist"
+              top={false}
               component={<Bestlist withAutoScroll={true} />}
             />
             <MirrorLayout
