@@ -87,6 +87,12 @@ func DeleteNews(ctx *fasthttp.RequestCtx) {
 		log.Printf("Error while deleting news %s", err.Error())
 		ctx.Error(fmt.Sprintf("%s", err.Error()), 500)
 	}
+	removeNews := common.RemoveNews{
+		PK:        PartyName,
+		SK:        newsId,
+		PushType:  "REMOVE",
+		CreatedAt: time.Now()}
+	broadcastRemoveNews(&removeNews)
 }
 
 func CreateDrink(ctx *fasthttp.RequestCtx) {
@@ -160,6 +166,10 @@ func checkAchievementsForUserAndBroadcast(userDto *common.User) {
 }
 
 func broadcast(news *common.News) {
+	newsMarshalled, _ := json.Marshal(news)
+	b.Broadcast(newsMarshalled)
+}
+func broadcastRemoveNews(news *common.RemoveNews) {
 	newsMarshalled, _ := json.Marshal(news)
 	b.Broadcast(newsMarshalled)
 }

@@ -74,12 +74,13 @@ export interface Achievement {
   id: string;
   name: string;
   description: string;
-  imagePath: string;
+  image: string;
 }
 export interface News<T> {
   party: string;
   newsId: string;
   type: 'NEWS$DRINK' | 'NEWS$ACHIEVEMENT';
+  pushType?: 'REMOVE';
   payload: T;
   createdAt: '2021-11-25T20:09:27.844789+01:00';
 }
@@ -155,20 +156,21 @@ export function useWebsocketUpdate() {
       return;
     }
     queryClient.invalidateQueries(ServerStateKeysEnum.Users);
-    // queryClient.setQueryData('projects', data => ({
-    //   pages: newPagesArray,
-    //   pageParams: data.pageParams,
-    // }))
-    queryClient.setQueryData([ServerStateKeysEnum.News], (data) => {
-      // @ts-ignore
-      data?.pages?.[0]?.unshift(JSON.parse(lastMessage!.data));
+    const newItem = JSON.parse(lastMessage!.data) as News<unknown>;
+    if (newItem.pushType === 'REMOVE') {
+      queryClient.invalidateQueries(ServerStateKeysEnum.News);
+    } else {
+      queryClient.setQueryData([ServerStateKeysEnum.News], (data) => {
+        // @ts-ignore
+        data?.pages?.[0]?.unshift(newItem);
 
-      return {
-        // @ts-ignore
-        pages: data?.pages,
-        // @ts-ignore
-        pageParams: data?.pageParams,
-      };
-    });
+        return {
+          // @ts-ignore
+          pages: data?.pages,
+          // @ts-ignore
+          pageParams: data?.pageParams,
+        };
+      });
+    }
   }, [lastMessage, queryClient]);
 }

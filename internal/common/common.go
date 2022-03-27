@@ -13,6 +13,12 @@ type News struct {
 	Payload   map[string]interface{} `json:"payload" dynamodbav:"payload"`
 	CreatedAt time.Time              `json:"createdAt" dynamodbav:"createdAt"`
 }
+type RemoveNews struct {
+	PK        string    `json:"party"`
+	SK        string    `json:"newsId"`
+	PushType  string    `json:"pushType"`
+	CreatedAt time.Time `json:"createdAt"`
+}
 type NewsCount struct {
 	PK    string `json:"party"`
 	SK    string `json:"newsId"`

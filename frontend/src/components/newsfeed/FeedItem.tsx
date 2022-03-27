@@ -50,7 +50,7 @@ const AchievementNewsItem = ({ newsItem }: { newsItem: AchievementNews }) => {
           avatar={
             <Avatar
               alt={newsItem.payload.achievement.name}
-              src={newsItem.payload.achievement.imagePath}
+              src={newsItem.payload.achievement.image}
             />
           }
           title={`${newsItem.payload.user.name} hat "${newsItem.payload.achievement.name}" erreicht. (${newsItem.payload.achievement.description})`}

@@ -45,17 +45,17 @@ func countTypes(newsList []*common.News, drinkType string) int {
 
 var AchievementDefinitions = []*common.AchievementDefinition{
 	{
-		Achievement: common.Achievement{Name: "1Bier", Id: 1, Description: "Ein Bier", Image: ""},
+		Achievement: common.Achievement{Name: "1Bier", Id: 1, Description: "Ein Bier", Image: "/images/frodo.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return countTypes(newsList, "BEER") >= 1
 		},
 	}, {
-		Achievement: common.Achievement{Name: "2Bier", Id: 2, Description: "Zwei Bier", Image: ""},
+		Achievement: common.Achievement{Name: "2Bier", Id: 2, Description: "Zwei Bier", Image: "/images/frodo.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return countTypes(newsList, "BEER") >= 2
 		},
 	}, {
-		Achievement: common.Achievement{Name: "3Bier", Id: 3, Description: "3 Bier", Image: ""},
+		Achievement: common.Achievement{Name: "3Bier", Id: 3, Description: "3 Bier", Image: "/images/frodo.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return countTypes(newsList, "BEER") >= 3
 		},
