@@ -1,26 +1,20 @@
-import { Avatar, Card, CardHeader, Grid } from '@mui/material';
+import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 import React from 'react';
 import { AchievementNews, DrinkNews, News } from '../../contexts/newsContext';
 import { format } from 'date-fns';
-import {
-  faBeer,
-  faCocktail,
-  faCoffee,
-  faGlassWhiskey,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'animate.css';
-const typeToIconMap = {
-  COCKTAIL: faCocktail,
-  BEER: faBeer,
-  SHOT: faGlassWhiskey,
-  SOFTDRINK: faCoffee,
+
+const typeToImageMap = {
+  COCKTAIL: '/images/cocktail3.jpeg',
+  BEER: '/images/beer.jpeg',
+  SHOT: '/images/shot.jpeg',
+  SOFTDRINK: '/images/softdrink.png',
 };
 
 type Props = {
   newsItem: News<unknown>;
 };
-const COLUMNS = 3;
+const COLUMNS = 4;
 const ANIMATION = 'animate__animated animate__backInDown';
 const DrinkNewsItem = ({ newsItem }: { newsItem: DrinkNews }) => {
   return (
@@ -29,18 +23,21 @@ const DrinkNewsItem = ({ newsItem }: { newsItem: DrinkNews }) => {
         className={ANIMATION}
         style={{ backgroundColor: 'rgba(36,36,36,0.5)' }}
       >
-        <CardHeader
-          avatar={
-            <Avatar aria-label="Recipe">
-              <FontAwesomeIcon
-                icon={typeToIconMap[newsItem.payload.drink.drinkType]}
-                size="1x"
-              />
-            </Avatar>
-          }
-          title={`${newsItem.payload.user.name} hat ${newsItem.payload.amount}x ${newsItem.payload.drink.name} bestellt`}
-          subheader={format(new Date(newsItem.createdAt), 'dd.MM.yyyy HH:mm')}
+        <CardMedia
+          component="img"
+          height="100"
+          image={typeToImageMap[newsItem.payload.drink.drinkType]}
+          alt="green iguana"
         />
+        <CardContent>
+          <Typography variant="body2">
+            {newsItem.payload.user.name} hat {newsItem.payload.amount}x
+            {newsItem.payload.drink.name} bestellt
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {format(new Date(newsItem.createdAt), 'dd.MM.yyyy HH:mm')}
+          </Typography>
+        </CardContent>
       </Card>
     </Grid>
   );
@@ -52,16 +49,23 @@ const AchievementNewsItem = ({ newsItem }: { newsItem: AchievementNews }) => {
         className={ANIMATION}
         style={{ backgroundColor: 'rgba(36,36,36,0.5)' }}
       >
-        <CardHeader
-          avatar={
-            <Avatar
-              alt={newsItem.payload.achievement.name}
-              src={newsItem.payload.achievement.image}
-            />
-          }
-          title={`${newsItem.payload.user.name} hat "${newsItem.payload.achievement.name}" erreicht. (${newsItem.payload.achievement.description})`}
-          subheader={format(new Date(newsItem.createdAt), 'dd.MM.yyyy HH:mm')}
+        <CardMedia
+          component="img"
+          height="100"
+          image={newsItem.payload.achievement.image}
+          alt="green iguana"
         />
+
+        <CardContent>
+          <Typography variant="body2">
+            {newsItem.payload.user.name} hat "
+            {newsItem.payload.achievement.name}" erreicht. (
+            {newsItem.payload.achievement.description})
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {format(new Date(newsItem.createdAt), 'dd.MM.yyyy HH:mm')}
+          </Typography>
+        </CardContent>
       </Card>
     </Grid>
   );
