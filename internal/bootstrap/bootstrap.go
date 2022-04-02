@@ -144,7 +144,7 @@ func SeedUsersAndDrinks() {
 	SOFTDRINK := "SOFTDRINK"
 	drinks := []*CreateDrinkRequest{
 		{"Holde Frau Mutter", COCKTAIL},
-		{"Sauerer Johannes", COCKTAIL},
+		{"Saurer Johannes", COCKTAIL},
 		{"Gurkenheinrich", COCKTAIL},
 		{"Eisgebräu der langen Insel", COCKTAIL},
 		{"MaiTaike", COCKTAIL},

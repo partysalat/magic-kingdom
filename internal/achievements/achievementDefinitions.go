@@ -82,7 +82,7 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Nicht zu schnell trinken, Verzauberungsgefahr!", Id: 7, Description: "MaiTaike bestellt", Image: "/images/maitaike.jpeg"},
+		Achievement: common.Achievement{Name: "Nicht zu schnell trinken, Verzauberungs-Gefahr!", Id: 7, Description: "MaiTaike bestellt", Image: "/images/maitaike.png"},
 		Predicate: func(newsList []*common.News) bool {
 			return getDrinkName(last(newsList)) == "MaiTaike"
 		},
@@ -94,7 +94,7 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Hilft auch gegen Ungeziefer im Schrank", Id: 9, Description: "Minztrunk bestellt", Image: "/images/minztrunk.jpeg"},
+		Achievement: common.Achievement{Name: "Hilft auch gegen Ungeziefer im Schrank", Id: 9, Description: "Minztrunk bestellt", Image: "/images/minztrunk.jpg"},
 		Predicate: func(newsList []*common.News) bool {
 			return getDrinkName(last(newsList)) == "Minztrunk"
 		},
@@ -118,7 +118,7 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Holt die Fackeln und Heugabeln!", Id: 13, Description: "Widergänger bestellt", Image: "/images/wiedergaenger.jpeg"},
+		Achievement: common.Achievement{Name: "Holt die Fackeln und Mistgabeln!", Id: 13, Description: "Widergänger bestellt", Image: "/images/widergaenger.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return getDrinkName(last(newsList)) == "Widergänger"
 		},
@@ -136,7 +136,7 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Zu empfehlen bei gutem und schlechtem Wetter", Id: 16, Description: "Dunkler Sturmtrank", Image: "/images/dunkler_sturmtrank.jpeg"},
+		Achievement: common.Achievement{Name: "Zu empfehlen bei gutem und schlechtem Wetter", Id: 16, Description: "Dunkler Sturmtrank", Image: "/images/dunkler_sturmtrank.jpg"},
 		Predicate: func(newsList []*common.News) bool {
 			return getDrinkName(last(newsList)) == "Dunkler Sturmtrank"
 		},
@@ -157,9 +157,15 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Hexerei und Gaukelei liegen dicht beieinander", Id: 19, Description: "Hexer:innenbrause bestellt", Image: "/images/tschunk.jpeg"},
+		Achievement: common.Achievement{Name: "Hexerei und Gaukelei liegen dicht beieinander", Id: 19, Description: "Hexer:innenbrause bestellt", Image: "/images/tschunk.png"},
 		Predicate: func(newsList []*common.News) bool {
-			return getDrinkName(last(newsList)) == "Ruby Negroni"
+			return getDrinkName(last(newsList)) == "Hexer:innenbrause"
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Schmecket als Obst und als Gemüse, Zaubergurke!", Id: 20, Description: "Gurkenheinrich", Image: "/images/gurkenheinrich.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return getDrinkName(last(newsList)) == "Gurkenheinrich"
 		},
 	},
 	//
