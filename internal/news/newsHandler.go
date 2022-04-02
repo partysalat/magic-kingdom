@@ -142,7 +142,7 @@ func CreateDrink(ctx *fasthttp.RequestCtx) {
 }
 
 func checkAchievementsForUserAndBroadcast(userDto *common.User) {
-	newsList, err := GetNewsForUserFromDb(PartyName, userDto.SK)
+	newsList, err := GetDrinkNewsForUserFromDb(PartyName, userDto.SK)
 	if err != nil {
 		log.Printf("Cannot get news: %s", err.Error())
 		return

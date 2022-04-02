@@ -86,7 +86,7 @@ func GetNewsFromDb(party string, limit int32, lastNewsId string, filter string) 
 	}
 	return result, nil
 }
-func GetNewsForUserFromDb(party string, userId string) ([]*common.News, error) {
+func GetDrinkNewsForUserFromDb(party string, userId string) ([]*common.News, error) {
 	filter := common.DbFormat(NewsPrefix, NewsTypeDrink)
 	p := dynamodb.NewQueryPaginator(clients.GetDynamoDbClient(), &dynamodb.QueryInput{
 		TableName:              aws.String(clients.DataTableName),

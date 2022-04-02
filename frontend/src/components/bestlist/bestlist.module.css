@@ -6,3 +6,12 @@
 .font-white{
     color:white;
 }
+.tbody{
+    height:100%;
+    overflow-y:auto;
+}
+.th{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: black}
