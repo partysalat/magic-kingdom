@@ -9,7 +9,9 @@ import { Bestlist } from './components/bestlist';
 import { FadeOutLayer } from './components/fadeOutLayer';
 import { MirrorLayout } from './layouts/MirrorLayout';
 import { Newsfeed } from './components/newsfeed';
+// import { Game } from './game';
 import { NewsfeedNoInfiniteScroll } from './components/newsfeed/FeedNoInfiniteScroll';
+import { MainLayout } from './layouts/MainLayout';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -24,6 +26,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={accountingTheme}>
           <Router>
+            <MainLayout path="/" />
             <Accounting path="/abrechnung" />
           </Router>
         </ThemeProvider>

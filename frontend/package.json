@@ -39,7 +39,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{tsx,ts}'",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "copy:game": "cp -R ../../magic-kingdom-projects/PixelDefense/src/data public && cp -R ../../magic-kingdom-projects/PixelDefense/src/build/out.js public/game.js"
   },
   "eslintConfig": {
     "extends": [
