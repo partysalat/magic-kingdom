@@ -106,7 +106,7 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Sorgt für nachlassenden Haarwuchs", Id: 11, Description: "Moskauer Maultiersaft bestellt", Image: "/images/maultiersaft.jpeg"},
+		Achievement: common.Achievement{Name: "Obacht! Sorgt für nachlassenden Haarwuchs", Id: 11, Description: "Moskauer Maultiersaft bestellt", Image: "/images/maultiersaft.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return getDrinkName(last(newsList)) == "Moskauer Maultiersaft"
 		},
