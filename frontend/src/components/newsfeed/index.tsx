@@ -16,8 +16,10 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { FeedItem } from './FeedItem';
-
-export const Newsfeed = () => {
+type Props = {
+  animation?: string;
+};
+export const Newsfeed = (props: Props) => {
   const {
     data: items,
     fetchNextPage,
@@ -40,7 +42,11 @@ export const Newsfeed = () => {
       >
         <Grid container spacing={1}>
           {items?.pages.flat().map((newsItem) => (
-            <FeedItem key={newsItem.newsId} newsItem={newsItem} />
+            <FeedItem
+              key={newsItem.newsId}
+              newsItem={newsItem}
+              animation={props.animation}
+            />
           ))}
         </Grid>
       </InfiniteScroll>

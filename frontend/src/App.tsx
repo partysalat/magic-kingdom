@@ -35,7 +35,9 @@ function App() {
             <MirrorLayout
               path="/snippets/bestlist"
               top={false}
-              component={<Bestlist withAutoScroll={true} />}
+              component={
+                <Bestlist withAutoScroll={true} withStickyHeader={true} />
+              }
             />
             <MirrorLayout
               path="/snippets/newsfeed"

@@ -17,6 +17,7 @@ import { useIntervalScrolling } from './useIntervalScrolling';
 import { useWebsocketUpdate } from '../../contexts/newsContext';
 type Props = {
   withAutoScroll?: boolean;
+  withStickyHeader?: boolean;
 };
 export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
   const { data: bestlist, isLoading } = useGetUsers();
@@ -41,20 +42,20 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
       <TableHead>
         <TableRow>
           <TableCell
-            className={styles['th']}
+            className={`${props.withStickyHeader && styles['th']}`}
             size="small"
             padding="none"
             sx={{ borderColor: 'text.secondary' }}
           />
           <TableCell
-            className={styles['th']}
+            className={`${props.withStickyHeader && styles['th']}`}
             size="small"
             sx={{ borderColor: 'text.secondary' }}
           >
             <Typography variant="subtitle2">Name</Typography>
           </TableCell>
           <TableCell
-            className={styles['th']}
+            className={`${props.withStickyHeader && styles['th']}`}
             size="small"
             align="right"
             sx={{ borderColor: 'text.secondary' }}
@@ -62,7 +63,7 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
             <Typography variant="subtitle2">Biere</Typography>
           </TableCell>
           <TableCell
-            className={styles['th']}
+            className={`${props.withStickyHeader && styles['th']}`}
             size="small"
             align="right"
             sx={{ borderColor: 'text.secondary' }}
@@ -70,7 +71,7 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
             <Typography variant="subtitle2">Cocktails</Typography>
           </TableCell>
           <TableCell
-            className={styles['th']}
+            className={`${props.withStickyHeader && styles['th']}`}
             size="small"
             align="right"
             sx={{ borderColor: 'text.secondary' }}
@@ -78,7 +79,7 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
             <Typography variant="subtitle2">Shots</Typography>
           </TableCell>
           <TableCell
-            className={styles['th']}
+            className={`${props.withStickyHeader && styles['th']}`}
             size="small"
             align="right"
             sx={{ borderColor: 'text.secondary' }}
@@ -86,7 +87,7 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
             <Typography variant="subtitle2">Softdrinks</Typography>
           </TableCell>
           <TableCell
-            className={styles['th']}
+            className={`${props.withStickyHeader && styles['th']}`}
             size="small"
             align="right"
             sx={{ borderColor: 'text.secondary' }}

@@ -6,7 +6,7 @@ export const Game = () => {
     window.onReady?.(function onReady() {
       game.onload();
     });
-    window.game?.onload();
+    // window.game?.onload();
   }, []);
   return <div id="screen" />;
 };
