@@ -33,5 +33,16 @@ export const MedievalMeme = () => {
       clearInterval(interval);
     };
   }, []);
-  return <img style={{ width: '100%' }} src={`images/memes/${meme}`} />;
+  // return <div style={{ width: '100%', height: "100%" }} src={`images/memes/${meme}`} />;
+  return (
+    <div
+      style={{
+        height: '50vh',
+        backgroundImage: `url(images/memes/${meme}`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPositionX: 'center',
+      }}
+    />
+  );
 };

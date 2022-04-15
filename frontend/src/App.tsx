@@ -4,7 +4,7 @@ import { Router } from '@reach/router';
 import { Accounting } from './components/accounting';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider } from '@mui/material';
-import { accountingTheme, mirrorTheme } from './Theme';
+import { accountingTheme, mainTheme, mirrorTheme } from './Theme';
 import { Bestlist } from './components/bestlist';
 import { FadeOutLayer } from './components/fadeOutLayer';
 import { MirrorLayout } from './layouts/MirrorLayout';
@@ -26,8 +26,12 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={accountingTheme}>
           <Router>
-            <MainLayout path="/" />
             <Accounting path="/abrechnung" />
+          </Router>
+        </ThemeProvider>
+        <ThemeProvider theme={mainTheme}>
+          <Router>
+            <MainLayout path="/" />
           </Router>
         </ThemeProvider>
         <ThemeProvider theme={mirrorTheme}>

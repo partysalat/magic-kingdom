@@ -27,7 +27,8 @@ export const Newsfeed = (props: Props) => {
   } = useGetInfiniteNews<DrinkNewsPayload>(undefined, 20);
   useWebsocketUpdate();
   return (
-    <div id={'newsfeed'} style={{ height: 300, overflow: 'auto' }}>
+    <div id={'newsfeed'} style={{ height: '100%', overflow: 'auto' }}>
+      {/*<div id={'newsfeed'}>*/}
       <InfiniteScroll
         dataLength={items?.pages.flat().length || 0} //This is important field to render the next data
         next={() => fetchNextPage()}

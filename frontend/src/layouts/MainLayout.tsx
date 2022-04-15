@@ -13,6 +13,7 @@ export const MainLayout: React.FC<Props & RouteComponentProps> = ({
   return (
     <Grid
       container
+      spacing={1}
       style={{
         width: '100%',
         minHeight: '100vh',
@@ -21,17 +22,23 @@ export const MainLayout: React.FC<Props & RouteComponentProps> = ({
       }}
     >
       <Grid item xs={6}>
-        <Bestlist withAutoScroll={false} />
+        <Grid container spacing={1}>
+          <Grid item xs={12} style={{ height: '50vh', overflow: 'auto' }}>
+            <Bestlist withAutoScroll={false} />
+          </Grid>
+          <Grid item xs={12} style={{ height: '50vh' }}>
+            <Newsfeed animation="animate__animated animate__fadeInUp" />
+          </Grid>
+        </Grid>
       </Grid>
       <Grid item xs={6}>
-        <Grid item xs={12}>
-          <Game />
-        </Grid>
-        <Grid item xs={12}>
-          <Newsfeed animation="animate__animated animate__fadeInUp" />
-        </Grid>
-        <Grid item xs={6}>
-          <MedievalMeme />
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Game />
+          </Grid>
+          <Grid item xs={12}>
+            <MedievalMeme />
+          </Grid>
         </Grid>
       </Grid>
     </Grid>
