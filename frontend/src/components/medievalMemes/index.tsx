@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { SwitchTransition, CSSTransition } from 'react-transition-group';
+import './style.css';
+const duration = 500;
 
 const MEMES = [
   'badass-over-here-bayeux.jpeg',
@@ -28,21 +31,26 @@ export const MedievalMeme = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setMeme(MEMES[Math.floor(Math.random() * MEMES.length)]);
-    }, 5000);
+    }, 15000);
     return () => {
       clearInterval(interval);
     };
   }, []);
   // return <div style={{ width: '100%', height: "100%" }} src={`images/memes/${meme}`} />;
+
   return (
-    <div
-      style={{
-        height: '50vh',
-        backgroundImage: `url(images/memes/${meme}`,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPositionX: 'center',
-      }}
-    />
+    <SwitchTransition>
+      <CSSTransition key={meme} timeout={duration} classNames="fade">
+        <div
+          style={{
+            height: '50vh',
+            backgroundImage: `url(images/memes/${meme}`,
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPositionX: 'center',
+          }}
+        />
+      </CSSTransition>
+    </SwitchTransition>
   );
 };
