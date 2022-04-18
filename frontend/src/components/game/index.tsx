@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from '@reach/router';
 
 export const Game = () => {
   useEffect(() => {
@@ -6,7 +7,20 @@ export const Game = () => {
     window.onReady?.(function onReady() {
       game.onload();
     });
-    // window.game?.onload();
+    return () => {
+      // window.game.remove();
+    };
+    //
   }, []);
-  return <div id="screen" />;
+  return (
+    <div>
+      <Link
+        to="/"
+        style={{ color: 'white', position: 'absolute', top: 0, left: 0 }}
+      >
+        Zurück
+      </Link>
+      <div id="screen" />
+    </div>
+  );
 };

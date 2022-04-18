@@ -1,6 +1,5 @@
 import React from 'react';
-import { RouteComponentProps } from '@reach/router';
-import { Game } from '../components/game';
+import { Link, RouteComponentProps } from '@reach/router';
 import { MedievalMeme } from '../components/medievalMemes';
 import { Grid } from '@mui/material';
 import { Bestlist } from '../components/bestlist';
@@ -22,22 +21,24 @@ export const MainLayout: React.FC<Props & RouteComponentProps> = ({
       }}
     >
       <Grid item xs={6}>
-        <Grid container spacing={1}>
-          <Grid item xs={12} style={{ height: '50vh', overflow: 'auto' }}>
-            <Bestlist withAutoScroll={false} />
-          </Grid>
-          <Grid item xs={12} style={{ height: '50vh' }}>
-            <Newsfeed animation="animate__animated animate__fadeInUp" />
-          </Grid>
-        </Grid>
+        <Bestlist withAutoScroll={false} />
       </Grid>
       <Grid item xs={6}>
         <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Game />
+          <Grid item xs={6}>
+            <a href="/game">
+              <img
+                className="animate__animated animate__pulse"
+                src="images/turm_verteidigung_logo.png"
+                style={{ width: '100%', animationIterationCount: 'infinite' }}
+              />
+            </a>
+          </Grid>
+          <Grid item xs={6}>
+            <MedievalMeme />
           </Grid>
           <Grid item xs={12}>
-            <MedievalMeme />
+            <Newsfeed animation="animate__animated animate__fadeInUp" />
           </Grid>
         </Grid>
       </Grid>

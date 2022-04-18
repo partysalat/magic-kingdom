@@ -12,6 +12,7 @@ import { Newsfeed } from './components/newsfeed';
 // import { Game } from './game';
 import { NewsfeedNoInfiniteScroll } from './components/newsfeed/FeedNoInfiniteScroll';
 import { MainLayout } from './layouts/MainLayout';
+import { GameLayout } from './layouts/GameLayout';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -32,6 +33,7 @@ function App() {
         <ThemeProvider theme={mainTheme}>
           <Router>
             <MainLayout path="/" />
+            <GameLayout path="/game" />
           </Router>
         </ThemeProvider>
         <ThemeProvider theme={mirrorTheme}>

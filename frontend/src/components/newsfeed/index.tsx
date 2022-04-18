@@ -34,7 +34,7 @@ export const Newsfeed = (props: Props) => {
         next={() => fetchNextPage()}
         hasMore={!!hasNextPage}
         loader={<h4>Loading...</h4>}
-        scrollableTarget={'newsfeed'}
+        // scrollableTarget={'newsfeed'}
         endMessage={
           <p style={{ textAlign: 'center' }}>
             <b>Yay! You have seen it all</b>
