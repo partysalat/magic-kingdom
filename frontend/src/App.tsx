@@ -13,6 +13,7 @@ import { Newsfeed } from './components/newsfeed';
 import { NewsfeedNoInfiniteScroll } from './components/newsfeed/FeedNoInfiniteScroll';
 import { MainLayout } from './layouts/MainLayout';
 import { GameLayout } from './layouts/GameLayout';
+import { WebSocketProvider } from './contexts/newsContext';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -42,13 +43,19 @@ function App() {
               path="/snippets/bestlist"
               top={false}
               component={
-                <Bestlist withAutoScroll={true} withStickyHeader={true} />
+                <WebSocketProvider>
+                  <Bestlist withAutoScroll={true} withStickyHeader={true} />
+                </WebSocketProvider>
               }
             />
             <MirrorLayout
               path="/snippets/newsfeed"
               top={false}
-              component={<NewsfeedNoInfiniteScroll />}
+              component={
+                <WebSocketProvider>
+                  <NewsfeedNoInfiniteScroll />
+                </WebSocketProvider>
+              }
             />
           </Router>
         </ThemeProvider>

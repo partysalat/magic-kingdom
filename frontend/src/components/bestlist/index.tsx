@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import styles from './bestlist.module.css';
 import { useIntervalScrolling } from './useIntervalScrolling';
-import { useWebsocketUpdate } from '../../contexts/newsContext';
 type Props = {
   withAutoScroll?: boolean;
   withStickyHeader?: boolean;
@@ -27,7 +26,6 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
     ms: 1000,
     enabled: !!props.withAutoScroll,
   });
-  useWebsocketUpdate();
   if (isLoading) {
     return <div>Loading ...</div>;
   }

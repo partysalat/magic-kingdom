@@ -1,6 +1,8 @@
 package news
 
 import (
+	"errors"
+	"fmt"
 	"github.com/fasthttp/websocket"
 	"github.com/valyala/fasthttp"
 	"log"
@@ -32,7 +34,7 @@ func (broadcaster *Broadcaster) Broadcast(msg []byte) {
 	broadcaster.lock.Lock()
 	for i := 0; i < len(broadcaster.connections); i++ {
 		connection := broadcaster.connections[i]
-		err := connection.WriteMessage(websocket.TextMessage, msg)
+		err := broadcaster.writeMessageToConnection(msg, connection)
 
 		if err != nil {
 			broadcaster.connections = append(broadcaster.connections[:i], broadcaster.connections[i+1:]...)
@@ -42,6 +44,25 @@ func (broadcaster *Broadcaster) Broadcast(msg []byte) {
 	broadcaster.lock.Unlock()
 }
 
+func (broadcaster *Broadcaster) writeMessageToConnection(msg []byte, connection *websocket.Conn) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("panic occurred:", r)
+			err = convertRecoverToError(r)
+		}
+	}()
+	return connection.WriteMessage(websocket.TextMessage, msg)
+}
+func convertRecoverToError(r interface{}) error {
+	switch x := r.(type) {
+	case string:
+		return errors.New(x)
+	case error:
+		return x
+	default:
+		return errors.New(fmt.Sprint(x))
+	}
+}
 func WsHandler(c *fasthttp.RequestCtx) {
 	err := upgrader.Upgrade(c, func(conn *websocket.Conn) {
 		b.Add(conn)

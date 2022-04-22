@@ -141,8 +141,8 @@ export function useRemoveNews() {
   });
 }
 
-export function useWebsocketUpdate() {
-  const queryClient = useQueryClient();
+const WebsocketContext = React.createContext<MessageEvent | null>(null);
+export function WebSocketProvider(props: Record<string, unknown>) {
   const { lastMessage } = useWebSocket(
     `ws://${window.location.hostname}:8080/api/ws`,
     {
@@ -151,6 +151,7 @@ export function useWebsocketUpdate() {
       shouldReconnect: (closeEvent) => true,
     }
   );
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (lastMessage === null) {
       return;
@@ -173,4 +174,5 @@ export function useWebsocketUpdate() {
       });
     }
   }, [lastMessage, queryClient]);
+  return <WebsocketContext.Provider value={lastMessage} {...props} />;
 }

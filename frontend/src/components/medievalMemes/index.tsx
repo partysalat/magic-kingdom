@@ -47,7 +47,7 @@ export const MedievalMeme = () => {
             backgroundImage: `url(images/memes/${meme}`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
-            backgroundPositionX: 'center',
+            backgroundPosition: 'center',
           }}
         />
       </CSSTransition>

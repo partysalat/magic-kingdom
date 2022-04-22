@@ -1,21 +1,12 @@
 import React from 'react';
 import {
   DrinkNewsPayload,
-  NewsListFilter,
   useGetInfiniteNews,
-  useWebsocketUpdate,
 } from '../../contexts/newsContext';
-import {
-  Button,
-  Grid,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  ListItemText,
-} from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Grid } from '@mui/material';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { FeedItem } from './FeedItem';
+
 type Props = {
   animation?: string;
 };
@@ -25,7 +16,6 @@ export const Newsfeed = (props: Props) => {
     fetchNextPage,
     hasNextPage,
   } = useGetInfiniteNews<DrinkNewsPayload>(undefined, 20);
-  useWebsocketUpdate();
   return (
     <div id={'newsfeed'} style={{ height: '100%', overflow: 'auto' }}>
       {/*<div id={'newsfeed'}>*/}
