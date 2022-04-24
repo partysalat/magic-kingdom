@@ -176,19 +176,19 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 	},
 	// are set manually
 	{
-		Achievement: common.Achievement{Name: "Sie kamen von hinten!", Id: 21, Description: "Turmverteidigung (leicht) gewonnen", Image: "/images/turmverteidigung_1.jpeg"},
+		Achievement: common.Achievement{Name: "Bewahrer der Toten Fichte", Id: 21, Description: "Turmverteidigung (leicht) gewonnen", Image: "/images/turmverteidigung_1.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return false
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Bewahrer der Toten Fichte 2", Id: 22, Description: "Turmverteidigung (normal) gewonnen", Image: "/images/turmverteidigung_2.jpeg"},
+		Achievement: common.Achievement{Name: "Ich seh den Wald vor lauter Toter Fichten nicht mehr", Id: 22, Description: "Turmverteidigung (normal) gewonnen", Image: "/images/turmverteidigung_2.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return false
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Bewahrer der Toten Fichte 3", Id: 23, Description: "Turmverteidigung (schwer) gewonnen", Image: "/images/turmverteidigung_3.jpeg"},
+		Achievement: common.Achievement{Name: "Endlich abgesägt und weiterverarbeitet", Id: 23, Description: "Turmverteidigung (schwer) gewonnen", Image: "/images/turmverteidigung_3.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return false
 		},
