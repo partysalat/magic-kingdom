@@ -154,6 +154,7 @@ func SeedUsersAndDrinks() {
 		{"Moskauer Maultiersaft", COCKTAIL},
 		{"Weißer Rus", COCKTAIL},
 		{"Widergänger", COCKTAIL},
+		{"Macbeth", COCKTAIL},
 		{"Roter Sandtrank", COCKTAIL},
 		{"Spitzbube", COCKTAIL},
 		{"Dunkler Sturmtrank", COCKTAIL},

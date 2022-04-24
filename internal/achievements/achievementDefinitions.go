@@ -168,9 +168,15 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 			return getDrinkName(last(newsList)) == "Gurkenheinrich"
 		},
 	},
+	{
+		Achievement: common.Achievement{Name: "Seid ihr der König? Also ich hab euch nicht gewählt.", Id: 24, Description: "Macbeth bestellt", Image: "/images/macbeth.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return getDrinkName(last(newsList)) == "Macbeth"
+		},
+	},
 	// are set manually
 	{
-		Achievement: common.Achievement{Name: "Bewahrer der Toten Fichte", Id: 21, Description: "Turmverteidigung (leicht) gewonnen", Image: "/images/turmverteidigung_1.jpeg"},
+		Achievement: common.Achievement{Name: "Sie kamen von hinten!", Id: 21, Description: "Turmverteidigung (leicht) gewonnen", Image: "/images/turmverteidigung_1.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return false
 		},
