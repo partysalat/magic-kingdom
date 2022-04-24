@@ -124,9 +124,9 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Kann bei übermäßigem Verzehr abführend wirken", Id: 14, Description: "Blut und Boden bestellt", Image: "/images/blut_und_boden.jpeg"},
+		Achievement: common.Achievement{Name: "Kann bei übermäßigem Verzehr abführend wirken", Id: 14, Description: "Roter Sandtrank bestellt", Image: "/images/roter_sandtrank.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
-			return getDrinkName(last(newsList)) == "Blut und Boden"
+			return getDrinkName(last(newsList)) == "Roter Sandtrank"
 		},
 	},
 	{
