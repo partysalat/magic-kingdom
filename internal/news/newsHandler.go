@@ -32,6 +32,10 @@ type CreateUsersDrinkRequest struct {
 	DrinkId string     `json:"drinkId"`
 	Users   []UserNews `json:"users"`
 }
+type CreateGameAchievementRequest struct {
+	Difficulty string `json:"difficulty"`
+	UserId     string `json:"userId"`
+}
 
 var PartyName = "magic-kingdom"
 
@@ -140,6 +144,36 @@ func CreateDrink(ctx *fasthttp.RequestCtx) {
 	}
 
 }
+func CreateGameAchievement(ctx *fasthttp.RequestCtx) {
+	var createGameAchievementRequest CreateGameAchievementRequest
+	json.Unmarshal(ctx.PostBody(), &createGameAchievementRequest)
+	userDto, err := user.GetUserFromDb(PartyName, createGameAchievementRequest.UserId)
+	var wannabeAchievement = getAchievementWithId(21)
+	if createGameAchievementRequest.Difficulty == "normal" {
+		wannabeAchievement = getAchievementWithId(22)
+	} else if createGameAchievementRequest.Difficulty == "hard" {
+		wannabeAchievement = getAchievementWithId(23)
+	}
+	if err != nil {
+		ctx.Error(fmt.Sprintf("Error while getting drink: %s", err.Error()), 400)
+		return
+	}
+	if contains(userDto.Achievements, wannabeAchievement.Id) {
+		return
+	}
+
+	achievementPayload := map[string]interface{}{
+		"achievement": wannabeAchievement,
+		"user":        userDto,
+	}
+
+	achievementNews, err := AddNewsToDb(PartyName, NewsTypeAchievement, achievementPayload, userDto.SK, GetAddAchievementTransactItem(PartyName, userDto.SK, wannabeAchievement))
+	if err != nil {
+		log.Printf("Cannot add achievements news: %s", err.Error())
+		return
+	}
+	broadcast(achievementNews)
+}
 
 func checkAchievementsForUserAndBroadcast(userDto *common.User) {
 	newsList, err := GetDrinkNewsForUserFromDb(PartyName, userDto.SK)
@@ -172,4 +206,21 @@ func broadcast(news *common.News) {
 func broadcastRemoveNews(news *common.RemoveNews) {
 	newsMarshalled, _ := json.Marshal(news)
 	b.Broadcast(newsMarshalled)
+}
+
+func contains(s []*common.Achievement, e int) bool {
+	for _, a := range s {
+		if a.Id == e {
+			return true
+		}
+	}
+	return false
+}
+func getAchievementWithId(e int) *common.Achievement {
+	for _, a := range achievements.AchievementDefinitions {
+		if a.Achievement.Id == e {
+			return &a.Achievement
+		}
+	}
+	return nil
 }

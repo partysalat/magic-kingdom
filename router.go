@@ -21,6 +21,7 @@ func GetRoutes() *router.Router {
 	r.GET("/api/news", news.GetNews)
 	r.GET("/api/news/csv", news.GetNewsAsCsv)
 	r.PUT("/api/users", news.CreateDrink)
+	r.POST("/api/achievement/game", news.CreateGameAchievement)
 	r.DELETE("/api/news/{newsId}", news.DeleteNews)
 
 	r.GET("/api/ws", news.WsHandler)

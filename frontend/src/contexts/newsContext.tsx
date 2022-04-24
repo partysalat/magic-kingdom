@@ -21,6 +21,46 @@ export interface AddDrinkToUsersRequest {
   users: { userId: string; amount: number }[];
 }
 
+export type Difficulty = 'easy' | 'normal' | 'hard';
+
+export interface CreateGameAchievementRequest {
+  difficulty: Difficulty;
+  userId: string;
+}
+async function createGameAchievement(
+  data: CreateGameAchievementRequest
+): Promise<unknown> {
+  const res = await fetch('/api/achievement/game', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    throw new Error(`Error ${res.status}`);
+  }
+
+  return res.ok;
+}
+export function useCreateGameAchievement() {
+  const queryClient = useQueryClient();
+  return useMutation<unknown, Error, CreateGameAchievementRequest>(
+    (data) => createGameAchievement(data),
+    {
+      onMutate: () => {
+        toast.info('Speichere Achievement ...');
+      },
+      onSuccess: async () => {
+        toast.info('Erfolg!');
+      },
+      onError: (e: Error) => {
+        toast.error(`Fehler!: ${e.message}`);
+      },
+    }
+  );
+}
+
 async function addDrinkForUsers(
   data: AddDrinkToUsersRequest
 ): Promise<unknown> {

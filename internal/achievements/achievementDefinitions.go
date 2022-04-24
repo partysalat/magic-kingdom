@@ -163,9 +163,28 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Schmecket als Obst und als Gemüse, Zaubergurke!", Id: 20, Description: "Gurkenheinrich", Image: "/images/gurkenheinrich.jpeg"},
+		Achievement: common.Achievement{Name: "Schmecket als Obst und als Gemüse, Zaubergurke!", Id: 20, Description: "Gurkenheinrich bestellt", Image: "/images/gurkenheinrich.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			return getDrinkName(last(newsList)) == "Gurkenheinrich"
+		},
+	},
+	// are set manually
+	{
+		Achievement: common.Achievement{Name: "Bewahrer der Toten Fichte", Id: 21, Description: "Turmverteidigung (leicht) gewonnen", Image: "/images/turmverteidigung_1.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return false
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Bewahrer der Toten Fichte 2", Id: 22, Description: "Turmverteidigung (normal) gewonnen", Image: "/images/turmverteidigung_2.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return false
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Bewahrer der Toten Fichte 3", Id: 23, Description: "Turmverteidigung (schwer) gewonnen", Image: "/images/turmverteidigung_3.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return false
 		},
 	},
 	//

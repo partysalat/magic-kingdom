@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from '@reach/router';
 import { WinningUser } from './WinningUser';
+import {
+  Difficulty,
+  useCreateGameAchievement,
+} from '../../contexts/newsContext';
 
 export const Game = () => {
   const [showWinningModal, setShowWinningModal] = useState(false);
-  const [difficulty, setDifficulty] = useState('');
+  const [difficulty, setDifficulty] = useState<Difficulty>('easy');
+  const { mutate: createGameAchievement } = useCreateGameAchievement();
   useEffect(() => {
     // @ts-ignore
     window.onGameWon = (difficulty) => {
@@ -31,8 +36,15 @@ export const Game = () => {
       <WinningUser
         open={showWinningModal}
         onNext={async (user) => {
-          setShowWinningModal(false);
           console.log(difficulty, user);
+          createGameAchievement(
+            { userId: user.SK, difficulty: difficulty },
+            {
+              onSuccess: () => {
+                setShowWinningModal(false);
+              },
+            }
+          );
           // await navigate('/');
         }}
       ></WinningUser>
