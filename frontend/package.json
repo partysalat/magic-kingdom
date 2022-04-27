@@ -36,7 +36,8 @@
   },
   "scripts": {
     "start": "DANGEROUSLY_DISABLE_HOST_CHECK=true react-scripts start",
-    "build": "PUBLIC_URL=http://bender:8080 react-scripts build",
+    "build": "react-scripts build",
+    "build:public": "PUBLIC_URL=http://bra:8080 react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{tsx,ts}'",

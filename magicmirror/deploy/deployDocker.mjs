@@ -5,8 +5,9 @@ import {URL, URLSearchParams} from 'url'
 // See https://app.swaggerhub.com/apis/portainer/portainer-ce/2.9.3#/stacks/StackCreate
 console.log(import.meta.url)
 const config = {
-  SERVER_URL: 'http://farnsworth:9000',
+  SERVER_URL: 'http://bra:9000',
   USER: "admin",
+  ENDPOINT_ID: "2",
 
   MAGIC_MIRROR:{
     STACK_NAME: "magicmirror",
@@ -85,7 +86,7 @@ async function authRequest(path, method, qs, data) {
     body: JSON.stringify(data)
   })
   if (!response.ok) {
-    console.error("NOT OK", response.status, response.statusText, await streamToString(response.body))
+    console.error("NOT OK",`${config.SERVER_URL}${path}?${new URLSearchParams(qs).toString()}`, response.status, response.statusText, await streamToString(response.body))
     throw new Error(`NOT OK ${response.status} ${response.statusText} ${await streamToString(response.body)}`)
   }
   return response
@@ -95,7 +96,7 @@ async function createStack(name, dockerComposeFilename, env = []) {
   return await authRequest("/api/stacks", "POST", {
     type: "2", // compose type
     method: "string",
-    endpointId: "1",// local endpoints,query /api/endpoints for more information
+    endpointId: config.ENDPOINT_ID,// local endpoints,query /api/endpoints for more information
   }, {
     Env: env,
     Name: name,
@@ -105,7 +106,7 @@ async function createStack(name, dockerComposeFilename, env = []) {
 
 async function updateStack(id, dockerComposeFilename, env =[]) {
   return await authRequest(`/api/stacks/${id}`, "PUT", {
-    endpointId: "1", // local endpoints,query /api/endpoints for more information
+    endpointId: config.ENDPOINT_ID, // local endpoints,query /api/endpoints for more information
   }, {
     Env: env,
     StackFileContent: fs.readFileSync(dockerComposeFilename, {encoding: "UTF-8"})
