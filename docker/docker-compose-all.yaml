@@ -3,6 +3,7 @@ version: "3.9"
 services:
   magic-kingdom-accounting:
     image: magic-kingdom-accounting:latest
+    restart: always
     environment:
       AWS_ENDPOINT: http://dynamodb:8000
     depends_on:
@@ -11,5 +12,6 @@ services:
       - "8080:8080"
   dynamodb:
     image: amazon/dynamodb-local
+    restart: always
     ports:
       - "8001:8000"

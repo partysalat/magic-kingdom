@@ -33,3 +33,10 @@ push_mm_config:
 	cp -R ./frontend/build/static ../magic-mirror/MagicMirror/modules/braccountingfeed
 	cp -R ./magicmirror/braccounting/build/* ../magic-mirror/MagicMirror/modules
 	cp -R ./magicmirror/magic-mirror-core/config.js ../magic-mirror/MagicMirror/config
+
+# button
+build_docker_arm_button:
+	docker buildx build --platform linux/arm64 --progress=plain  -t bra:5000/magic-kingdom-button:latest -m 4g ./button
+push_button:
+	docker push bra:5000/magic-kingdom-button
+	node ./magicmirror/deploy/deployDocker.mjs

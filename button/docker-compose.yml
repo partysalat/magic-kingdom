@@ -1,0 +1,7 @@
+version: "3.9"
+
+services:
+  magic-kingdom-brabutton:
+    image: localhost:5000/magic-kingdom-button:latest
+    restart: always
+    privileged: true

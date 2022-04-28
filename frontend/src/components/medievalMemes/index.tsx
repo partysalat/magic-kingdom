@@ -43,8 +43,8 @@ export const MedievalMeme = () => {
       <CSSTransition key={meme} timeout={duration} classNames="fade">
         <div
           style={{
-            height: '50vh',
-            backgroundImage: `url(images/memes/${meme}`,
+            height: '100%',
+            backgroundImage: `url(images/memes/${meme})`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',

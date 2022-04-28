@@ -18,6 +18,11 @@ const config = {
     STACK_NAME: "braccounting",
     IMAGE_NAME: "localhost:5000/magic-kingdom-accounting:latest",
     COMPOSE_FILE_PATH: new URL('../braccounting/docker-compose.yml', import.meta.url)
+  },
+  BRA_BUTTON:{
+    STACK_NAME: "brabutton",
+    IMAGE_NAME: "localhost:5000/magic-kingdom-button:latest",
+    COMPOSE_FILE_PATH: new URL('../../button/docker-compose.yml', import.meta.url)
   }
 
 }
@@ -114,7 +119,7 @@ async function updateStack(id, dockerComposeFilename, env =[]) {
 
 }
 async function pullImage(imageName){
-  await authRequest("/api/endpoints/1/docker/images/create", "POST",{
+  await authRequest(`/api/endpoints/${config.ENDPOINT_ID}/docker/images/create`, "POST",{
 
     fromImage:imageName
   },{
@@ -143,7 +148,8 @@ async function doIt() {
     type:"checkbox",
     choices:[
       {name: config.BRACCOUNTING.STACK_NAME, value: config.BRACCOUNTING},
-      {name: config.MAGIC_MIRROR.STACK_NAME, value: config.MAGIC_MIRROR}
+      {name: config.MAGIC_MIRROR.STACK_NAME, value: config.MAGIC_MIRROR},
+      {name: config.BRA_BUTTON.STACK_NAME, value: config.BRA_BUTTON}
     ],
     name:"stacksToUpdate",
     message:"Which stacks should be updated?"
