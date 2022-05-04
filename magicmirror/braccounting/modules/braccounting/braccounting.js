@@ -7,13 +7,14 @@ Module.register("braccounting",{
     getDom: function() {
       let self = this
       var wrapper = document.createElement("iframe")
+      wrapper.id = "HTMLSNIPPET"
       wrapper.className = "htmlsnippet module"
       wrapper.style.width = self.config.width
       wrapper.style.height = self.config.height
       wrapper.style.border = "none"
       wrapper.style.display = "block"
       wrapper.style.overflow = "hidden"
-      wrapper.style.backgroundColor = self.config.backgroundColor
+//      wrapper.style.backgroundColor = self.config.backgroundColor
       wrapper.scrolling = "no"
       wrapper.src = self.config.src
 

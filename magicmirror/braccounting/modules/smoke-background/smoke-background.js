@@ -12,14 +12,16 @@ Module.register("smoke-background",{
       canvas.height = self.config.height
       var party = window.SmokeMachine(ctx, [0, 128, 0])
       party.setPreDrawCallback(function(dt){
-        party.addSmoke(innerWidth/2, innerHeight, .5)
-        canvas.width = innerWidth
-        canvas.height = innerHeight
+	//		party.addSmoke(innerWidth*3/4, innerHeight-100, .5)
+                party.addSmoke(innerWidth/4, innerHeight-100, .5)
+		canvas.width = innerWidth
+		canvas.height = innerHeight
       })
-      setTimeout(()=>{
+            setTimeout(()=>{
         party.start()
 
       })
+
       return canvas
     },
 
