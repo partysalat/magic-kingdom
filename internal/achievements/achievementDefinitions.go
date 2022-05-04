@@ -101,6 +101,36 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 			return countTypes(newsList, "COCKTAIL") >= 20
 		},
 	},
+	{
+		Achievement: common.Achievement{Name: "Küken", Id: 20, Description: "1 Softdrink bestellt", Image: "/images/softdrink1.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return countTypes(newsList, "SOFTDRINK") >= 1
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Lämmchen", Id: 21, Description: "5 Softdrinks bestellt", Image: "/images/softdrink5.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return countTypes(newsList, "SOFTDRINK") >= 5
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Ferkel", Id: 22, Description: "10 Softdrinks bestellt", Image: "/images/softdrink10.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return countTypes(newsList, "SOFTDRINK") >= 10
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Kälbchen", Id: 23, Description: "15 Softdrinks bestellt", Image: "/images/softdrink15.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return countTypes(newsList, "SOFTDRINK") >= 15
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Fohlen", Id: 24, Description: "20 Softdrink bestellt", Image: "/images/softdrink20.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			return countTypes(newsList, "SOFTDRINK") >= 20
+		},
+	},
 
 	// 1 Softdrink
 	// 3 Softdrink
