@@ -15,7 +15,7 @@ type Props = {
   newsItem: News<unknown>;
   animation?: string;
 };
-const COLUMNS = 4;
+const COLUMNS = 3;
 const ANIMATION = 'animate__animated animate__backInDown';
 const DrinkNewsItem = ({
   newsItem,

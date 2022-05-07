@@ -12,8 +12,16 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import {
+  faBeer,
+  faCocktail,
+  faCoffee,
+  faGlassWhiskey,
+} from '@fortawesome/free-solid-svg-icons';
+
 import styles from './bestlist.module.css';
 import { useIntervalScrolling } from './useIntervalScrolling';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 type Props = {
   withAutoScroll?: boolean;
   withStickyHeader?: boolean;
@@ -55,34 +63,46 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
           <TableCell
             className={`${props.withStickyHeader && styles['th']}`}
             size="small"
-            align="right"
+            align="center"
+            padding="normal"
             sx={{ borderColor: 'text.secondary' }}
           >
-            <Typography variant="subtitle2">Biere</Typography>
+            <Typography variant="subtitle2">
+              <FontAwesomeIcon icon={faBeer} size="1x" />{' '}
+            </Typography>
           </TableCell>
           <TableCell
             className={`${props.withStickyHeader && styles['th']}`}
             size="small"
-            align="right"
+            align="center"
+            padding="normal"
             sx={{ borderColor: 'text.secondary' }}
           >
-            <Typography variant="subtitle2">Cocktails</Typography>
+            <Typography variant="subtitle2">
+              <FontAwesomeIcon icon={faCocktail} size="1x" />
+            </Typography>
           </TableCell>
           <TableCell
             className={`${props.withStickyHeader && styles['th']}`}
             size="small"
-            align="right"
+            align="center"
+            padding="normal"
             sx={{ borderColor: 'text.secondary' }}
           >
-            <Typography variant="subtitle2">Shots</Typography>
+            <Typography variant="subtitle2">
+              <FontAwesomeIcon icon={faGlassWhiskey} size="1x" />
+            </Typography>
           </TableCell>
           <TableCell
             className={`${props.withStickyHeader && styles['th']}`}
             size="small"
-            align="right"
+            align="center"
+            padding="normal"
             sx={{ borderColor: 'text.secondary' }}
           >
-            <Typography variant="subtitle2">Softdrinks</Typography>
+            <Typography variant="subtitle2">
+              <FontAwesomeIcon icon={faCoffee} size="1x" />
+            </Typography>
           </TableCell>
           <TableCell
             className={`${props.withStickyHeader && styles['th']}`}
@@ -103,16 +123,36 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
             <TableCell size="small" sx={{ border: 0 }}>
               <Typography>{row.name}</Typography>
             </TableCell>
-            <TableCell size="small" align="right" sx={{ border: 0 }}>
+            <TableCell
+              size="small"
+              align="center"
+              padding="none"
+              sx={{ border: 0 }}
+            >
               <Typography>{row.drinkCounts.BEER}</Typography>
             </TableCell>
-            <TableCell size="small" align="right" sx={{ border: 0 }}>
+            <TableCell
+              size="small"
+              align="center"
+              padding="none"
+              sx={{ border: 0 }}
+            >
               <Typography>{row.drinkCounts.COCKTAIL}</Typography>
             </TableCell>
-            <TableCell size="small" align="right" sx={{ border: 0 }}>
+            <TableCell
+              size="small"
+              align="center"
+              padding="none"
+              sx={{ border: 0 }}
+            >
               <Typography>{row.drinkCounts.SHOT}</Typography>
             </TableCell>
-            <TableCell size="small" align="right" sx={{ border: 0 }}>
+            <TableCell
+              size="small"
+              align="center"
+              padding="none"
+              sx={{ border: 0 }}
+            >
               <Typography>{row.drinkCounts.SOFTDRINK}</Typography>
             </TableCell>
 
