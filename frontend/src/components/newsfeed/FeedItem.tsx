@@ -14,18 +14,20 @@ const typeToImageMap = {
 type Props = {
   newsItem: News<unknown>;
   animation?: string;
+  columns: number;
 };
-const COLUMNS = 3;
 const ANIMATION = 'animate__animated animate__backInDown';
 const DrinkNewsItem = ({
   newsItem,
   animation,
+  columns,
 }: {
   newsItem: DrinkNews;
   animation: string;
+  columns: number;
 }) => {
   return (
-    <Grid item xs={12 / COLUMNS} style={{ height: '100%' }}>
+    <Grid item xs={12 / columns} style={{ height: '100%' }}>
       <Card className={animation}>
         <CardMedia
           component="img"
@@ -49,12 +51,14 @@ const DrinkNewsItem = ({
 const AchievementNewsItem = ({
   newsItem,
   animation,
+  columns,
 }: {
   newsItem: AchievementNews;
   animation: string;
+  columns: number;
 }) => {
   return (
-    <Grid item xs={12 / COLUMNS} style={{ height: '100%' }}>
+    <Grid item xs={12 / columns} style={{ height: '100%' }}>
       <Card
         className={animation}
         style={{ backgroundColor: 'rgba(36,36,36,0.5)' }}
@@ -80,16 +84,25 @@ const AchievementNewsItem = ({
     </Grid>
   );
 };
-export const FeedItem = ({ newsItem, animation = ANIMATION }: Props) => {
+export const FeedItem = ({
+  newsItem,
+  animation = ANIMATION,
+  columns,
+}: Props) => {
   if (newsItem.type === 'NEWS$DRINK') {
     return (
-      <DrinkNewsItem newsItem={newsItem as DrinkNews} animation={animation} />
+      <DrinkNewsItem
+        newsItem={newsItem as DrinkNews}
+        animation={animation}
+        columns={columns}
+      />
     );
   } else {
     return (
       <AchievementNewsItem
         newsItem={newsItem as AchievementNews}
         animation={animation}
+        columns={columns}
       />
     );
   }

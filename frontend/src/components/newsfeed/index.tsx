@@ -37,6 +37,7 @@ export const Newsfeed = (props: Props) => {
               key={newsItem.newsId}
               newsItem={newsItem}
               animation={props.animation}
+              columns={4}
             />
           ))}
         </Grid>
