@@ -2,7 +2,10 @@ from gpiozero import LED, Button
 from signal import pause
 import random
 from playsound import playsound
-# import vlc
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import time
+
+
 sound_files = [
     "human1.mp3",
     "human2.mp3",
@@ -40,18 +43,59 @@ button = Button(23)
 
 enabled = False
 
-def toggleCantina():
+def toggleCantina(sound_file):
 
     global enabled
     if enabled is False:
         led.on()
 
-        playsound("/home/pi/brabutton/sounds/"+random.choice(sound_files))
+        playsound("/home/pi/brabutton/sounds/" + sound_file)
         led.off()
         enabled = False
 
+def randomSound():
+    toggleCantina(random.choice(sound_files))
 
-button.when_pressed = toggleCantina
-#button.when_released = toggleCantina
+button.when_pressed = randomSound
 
-pause()
+def withBrackets(n):
+    return "\"" + n + "\""
+
+class MyServer(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        self.wfile.write(bytes("[", "utf-8"))
+        self.wfile.write(bytes(",".join(map(withBrackets, sound_files)), "utf-8"))
+        self.wfile.write(bytes("]", "utf-8"))
+        # self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
+        # self.wfile.write(bytes("<body>", "utf-8"))
+        # self.wfile.write(bytes("<p>This is an example web server.</p>", "utf-8"))
+        # self.wfile.write(bytes("</body></html>", "utf-8"))
+    def do_POST(self):
+        self.send_response(200)
+        self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        toggleCantina(self.path.split("/")[-1])
+        # self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
+        # self.wfile.write(bytes("<body>", "utf-8"))
+        # self.wfile.write(bytes("<p>This is an example web server.</p>", "utf-8"))
+        # self.wfile.write(bytes("</body></html>", "utf-8"))
+
+if __name__ == "__main__":
+    hostname = "0.0.0.0"
+    port = 5002
+    webServer = HTTPServer((hostname, port), MyServer)
+    print("Server started http://%s:%s" % (hostname, port))
+
+    try:
+        webServer.serve_forever()
+    except KeyboardInterrupt:
+        pass
+
+    webServer.server_close()
+    print("Server stopped.")
