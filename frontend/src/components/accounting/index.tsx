@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid';
 import {
   faCartPlus,
   faSave,
+  faMusic,
   faUserPlus,
   faBackward,
 } from '@fortawesome/free-solid-svg-icons';
@@ -18,6 +19,7 @@ import { AddUserDialog } from './addUserDialog/AddUserDialog';
 import { AccountingButton } from './accountingButton/AccountingButton';
 import { DRINK_TYPE_DEFINITIONS } from './DrinkTypeDefinition';
 import { RevertDialog } from './revertDialog/RevertDialog';
+import { SoundBoardDialog } from './soundBoard/SoundBoardDialog';
 
 export const Accounting: React.FC<RouteComponentProps> = () => {
   return (
@@ -65,8 +67,17 @@ export const Accounting: React.FC<RouteComponentProps> = () => {
             Rückgangig
           </AccountingButtonWithDrinkDialog>
         </Grid>
-
-        <Grid item xs={3}>
+        <Grid item xs={1.5}>
+          <AccountingButtonWithDrinkDialog
+            icon={faMusic}
+            color="primary"
+            dialogProps={{}}
+            dialogComponent={SoundBoardDialog}
+          >
+            Soundboard
+          </AccountingButtonWithDrinkDialog>
+        </Grid>
+        <Grid item xs={1.5}>
           <a
             href="/api/news/csv"
             target="_blank"
