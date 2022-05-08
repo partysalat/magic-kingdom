@@ -131,18 +131,23 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 			return countTypes(newsList, "SOFTDRINK") >= 20
 		},
 	},
-
-	// 1 Softdrink
-	// 3 Softdrink
-	// 5 Softdrink
-	// 8 Softdrink
-	// 10 Softdrink
-
-	// 10 shots auf einmal
-	// Bier zwischen 8-12Uhr
-	// 5 Bier + 5 Cocktails
-	// 10 Bier + 10 Cocktails
-	// Ein Bier und ein Kurzer innerhalb von 30 min bestellt
+	{
+		Achievement: common.Achievement{Name: "Dorffestveranstalter", Id: 30, Description: "10 Shots auf einmal bestellt", Image: "/images/dorffest.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			currentNews := last(newsList)
+			return getDrinkType(currentNews) == "SHOT" && getAmount(currentNews) >= 10
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Der frühe Vogel hat einen Wurm", Id: 31, Description: "Bier zwischen 8-12 Uhr morgens", Image: "/images/fruehervogel.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			currentNews := last(newsList)
+			now := time.Now()
+			t1 := time.Date(now.Year(), now.Month(), now.Day(), 7, 0, 0, 0, now.Location())
+			t2 := time.Date(now.Year(), now.Month(), now.Day(), 11, 0, 0, 0, now.Location())
+			return getDrinkType(currentNews) == "BEER" && now.After(t1) && now.Before(t2)
+		},
+	},
 
 	// Trink spezifisch
 	// Berliner Luft
