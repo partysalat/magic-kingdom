@@ -25,7 +25,7 @@ export const Accounting: React.FC<RouteComponentProps> = () => {
   return (
     <div>
       <Grid container className={styles['grid-container']} spacing={4}>
-        {DRINK_TYPE_DEFINITIONS.map(({ drinkType, color, icon }) => (
+        {DRINK_TYPE_DEFINITIONS.map(({ drinkType, color, icon, title }) => (
           <Grid item xs={2.4} key={drinkType}>
             <AccountingButtonWithDrinkDialog
               icon={icon}
@@ -33,7 +33,7 @@ export const Accounting: React.FC<RouteComponentProps> = () => {
               dialogProps={{ drinkType }}
               dialogComponent={DrinkDialog}
             >
-              {drinkType}
+              {title}
             </AccountingButtonWithDrinkDialog>
           </Grid>
         ))}
