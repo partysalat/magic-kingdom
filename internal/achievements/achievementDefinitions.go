@@ -183,9 +183,9 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Hilft auch gegen Ungeziefer im Schrank", Id: 105, Description: "Minztrunk bestellt", Image: "/images/minztrunk.jpg"},
+		Achievement: common.Achievement{Name: "Hilft auch gegen Ungeziefer im Schrank", Id: 105, Description: "Minztrank bestellt", Image: "/images/minztrunk.jpg"},
 		Predicate: func(newsList []*common.News) bool {
-			return getDrinkName(last(newsList)) == "Minztrunk"
+			return getDrinkName(last(newsList)) == "Minztrank"
 		},
 	},
 	{

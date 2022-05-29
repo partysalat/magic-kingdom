@@ -114,7 +114,7 @@ func SeedUsersAndDrinks() {
 		"Jenny",
 		"Dana",
 		"Jens",
-		"Meike Rike Marion Maria Magdalena",
+		"Meike",
 		"Thomas",
 		"Julia",
 		"Ben",
@@ -139,28 +139,41 @@ func SeedUsersAndDrinks() {
 	}
 
 	COCKTAIL := "COCKTAIL"
+	COCKTAIL_DISENCHANTED := "COCKTAIL_DISENCHANTED"
 	BEER := "BEER"
 	SHOT := "SHOT"
 	SOFTDRINK := "SOFTDRINK"
 	drinks := []*CreateDrinkRequest{
 		{"Holde Frau Mutter", COCKTAIL},
+		{"Holde Frau Mutter (entz.)", COCKTAIL_DISENCHANTED},
 		{"Saurer Johannes", COCKTAIL},
+		{"Saurer Johannes (entz.)", COCKTAIL_DISENCHANTED},
 		{"Gurkenheinrich", COCKTAIL},
+		{"Gurkenheinrich (entz.)", COCKTAIL_DISENCHANTED},
 		{"Eisgebräu der langen Insel", COCKTAIL},
 		{"MaiTaike", COCKTAIL},
+		{"MaiTaike (entz.)", COCKTAIL_DISENCHANTED},
 		{"Pflanzer Punsch", COCKTAIL},
-		{"Minztrunk", COCKTAIL},
+		{"Pflanzer Punsch (entz.)", COCKTAIL_DISENCHANTED},
+		{"Minztrank", COCKTAIL},
+		{"Minztrank (entz.)", COCKTAIL_DISENCHANTED},
 		{"Dünenbesteigung", COCKTAIL},
+		{"Dünenbesteigung (entz.)", COCKTAIL_DISENCHANTED},
 		{"Moskauer Maultiersaft", COCKTAIL},
+		{"Moskauer Maultiersaft (entz.)", COCKTAIL_DISENCHANTED},
 		{"Weißer Rus", COCKTAIL},
+		{"Weißer Rus (entz.)", COCKTAIL_DISENCHANTED},
 		{"Widergänger", COCKTAIL},
 		{"Macbeth", COCKTAIL},
 		{"Roter Sandtrank", COCKTAIL},
+		{"Roter Sandtrank (entz.)", COCKTAIL_DISENCHANTED},
 		{"Spitzbube", COCKTAIL},
 		{"Dunkler Sturmtrank", COCKTAIL},
+		{"Dunkler Sturmtrank (entz.)", COCKTAIL_DISENCHANTED},
 		{"Tote Fichte", COCKTAIL},
 		{"Rubinnektar", COCKTAIL},
 		{"Hexer:innenbrause", COCKTAIL},
+		{"Hexer:innenbrause (entz.)", COCKTAIL_DISENCHANTED},
 		{"Flensburger", BEER},
 		{"Carlsberg", BEER},
 		{"Berliner Luft", SHOT},
