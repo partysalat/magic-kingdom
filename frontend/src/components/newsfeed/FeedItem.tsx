@@ -9,6 +9,7 @@ const typeToImageMap = {
   BEER: '/images/beer.jpeg',
   SHOT: '/images/shot.jpeg',
   SOFTDRINK: '/images/softdrink.png',
+  COCKTAIL_DISENCHANTED: '/images/cocktail_free.png',
 };
 
 type Props = {

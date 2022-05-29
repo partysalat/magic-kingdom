@@ -37,7 +37,7 @@ export const AddDrinkDialog: React.FC<Props> = ({ open, onClose }) => {
       <DialogContent className="dialog-content">
         <Grid container>
           {Object.values(DrinkType).map((drink) => (
-            <Grid xs={3} item key={drink}>
+            <Grid xs={5} item key={drink}>
               <ButtonBase
                 className={`dialog-buttons ${
                   selectedDrinkType === drink && 'active'

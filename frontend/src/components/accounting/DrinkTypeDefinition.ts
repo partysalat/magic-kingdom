@@ -5,6 +5,7 @@ import {
   faBeer,
   faCocktail,
   faCoffee,
+  faCube,
   faGlassWhiskey,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -16,6 +17,11 @@ export type DrinkTypeDefinition = {
 export const DRINK_TYPE_DEFINITIONS: DrinkTypeDefinition[] = [
   { drinkType: DrinkType.BEER, color: 'primary', icon: faBeer },
   { drinkType: DrinkType.COCKTAIL, color: 'secondary', icon: faCocktail },
-  { drinkType: DrinkType.SHOT, color: 'info', icon: faGlassWhiskey },
+  {
+    drinkType: DrinkType.COCKTAIL_DISENCHANTED,
+    color: 'info',
+    icon: faCube,
+  },
+  { drinkType: DrinkType.SHOT, color: 'success', icon: faGlassWhiskey },
   { drinkType: DrinkType.SOFTDRINK, color: 'primary', icon: faCoffee },
 ];

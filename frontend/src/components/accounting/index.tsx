@@ -26,7 +26,7 @@ export const Accounting: React.FC<RouteComponentProps> = () => {
     <div>
       <Grid container className={styles['grid-container']} spacing={4}>
         {DRINK_TYPE_DEFINITIONS.map(({ drinkType, color, icon }) => (
-          <Grid item xs={3} key={drinkType}>
+          <Grid item xs={2.4} key={drinkType}>
             <AccountingButtonWithDrinkDialog
               icon={icon}
               color={color}
@@ -37,7 +37,7 @@ export const Accounting: React.FC<RouteComponentProps> = () => {
             </AccountingButtonWithDrinkDialog>
           </Grid>
         ))}
-        <Grid item xs={3}>
+        <Grid item xs={2.4}>
           <AccountingButtonWithDrinkDialog
             icon={faCartPlus}
             color="warning"
@@ -47,7 +47,7 @@ export const Accounting: React.FC<RouteComponentProps> = () => {
             Neuer Drink
           </AccountingButtonWithDrinkDialog>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={2.4}>
           <AccountingButtonWithDrinkDialog
             icon={faUserPlus}
             color="success"
@@ -57,7 +57,7 @@ export const Accounting: React.FC<RouteComponentProps> = () => {
             Neuer Trinker
           </AccountingButtonWithDrinkDialog>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={2.4}>
           <AccountingButtonWithDrinkDialog
             icon={faBackward}
             color="error"
@@ -67,7 +67,7 @@ export const Accounting: React.FC<RouteComponentProps> = () => {
             Rückgangig
           </AccountingButtonWithDrinkDialog>
         </Grid>
-        <Grid item xs={1.5}>
+        <Grid item xs={2.4}>
           <AccountingButtonWithDrinkDialog
             icon={faMusic}
             color="primary"
@@ -77,7 +77,7 @@ export const Accounting: React.FC<RouteComponentProps> = () => {
             Soundboard
           </AccountingButtonWithDrinkDialog>
         </Grid>
-        <Grid item xs={1.5}>
+        <Grid item xs={2.4}>
           <a
             href="/api/news/csv"
             target="_blank"

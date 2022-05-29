@@ -23,7 +23,7 @@ async function fetchSounds() {
 export function useGetSounds() {
   return useQuery<Sound[], Error>(ServerStateKeysEnum.Sound, fetchSounds, {
     onError: (e) => {
-      toast.error(`Error fetching users: ${e.message}`);
+      toast.error(`Error fetching sound files: ${e.message}`);
     },
   });
 }

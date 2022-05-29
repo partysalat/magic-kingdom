@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 
 export enum DrinkType {
   COCKTAIL = 'COCKTAIL',
+  COCKTAIL_DISENCHANTED = 'COCKTAIL_DISENCHANTED',
   BEER = 'BEER',
   SHOT = 'SHOT',
   SOFTDRINK = 'SOFTDRINK',

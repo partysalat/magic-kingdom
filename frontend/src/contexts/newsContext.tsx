@@ -6,7 +6,6 @@ import { ServerStateKeysEnum } from './common';
 import { Drink } from './drinksContext';
 import { User } from './usersContext';
 import useWebSocket from 'react-use-websocket';
-import { InfiniteData } from 'react-query/types/core/types';
 
 export interface DrinkNews extends News<DrinkNewsPayload> {}
 export interface AchievementNews extends News<AchievementNewsPayload> {}
