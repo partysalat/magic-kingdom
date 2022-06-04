@@ -4,7 +4,7 @@ from playsound import playsound
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from os import listdir
 from os.path import isfile, join
-
+import urllib.parse
 sound_files_path = "/home/pi/brabutton/sounds/"
 sound_files = [f for f in listdir(sound_files_path) if isfile(join(sound_files_path, f))]
 # sound_files = [
@@ -81,7 +81,7 @@ class MyServer(BaseHTTPRequestHandler):
         # self.send_header("Content-type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
-        toggleCantina(self.path.split("/")[-1])
+        toggleCantina(urllib.parse.unquote(self.path.split("/")[-1]))
         # self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
         # self.wfile.write(bytes("<body>", "utf-8"))
         # self.wfile.write(bytes("<p>This is an example web server.</p>", "utf-8"))
