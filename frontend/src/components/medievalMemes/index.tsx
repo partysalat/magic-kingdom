@@ -24,6 +24,7 @@ const MEMES = [
   'Trustme.jpeg',
   'yolo.jpeg',
   'you-only-had-one-job.jpeg',
+  'lambda.jpeg',
 ];
 
 export const MedievalMeme = () => {
