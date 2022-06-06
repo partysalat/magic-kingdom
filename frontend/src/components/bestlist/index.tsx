@@ -1,9 +1,8 @@
-import React, { ReactElement, useRef } from 'react';
+import React from 'react';
 import { RouteComponentProps } from '@reach/router';
 import { useGetUsers, UserDrinkCounts } from '../../contexts/usersContext';
 import {
   Avatar,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -16,12 +15,14 @@ import {
   faBeer,
   faCocktail,
   faCoffee,
+  faGlassMartini,
   faGlassWhiskey,
 } from '@fortawesome/free-solid-svg-icons';
 
 import styles from './bestlist.module.css';
 import { useIntervalScrolling } from './useIntervalScrolling';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 type Props = {
   withAutoScroll?: boolean;
   withStickyHeader?: boolean;
@@ -90,6 +91,17 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
             sx={{ borderColor: 'text.secondary' }}
           >
             <Typography variant="subtitle2">
+              <FontAwesomeIcon icon={faGlassMartini} size="1x" />
+            </Typography>
+          </TableCell>
+          <TableCell
+            className={`${props.withStickyHeader && styles['th']}`}
+            size="small"
+            align="center"
+            padding="normal"
+            sx={{ borderColor: 'text.secondary' }}
+          >
+            <Typography variant="subtitle2">
               <FontAwesomeIcon icon={faGlassWhiskey} size="1x" />
             </Typography>
           </TableCell>
@@ -145,6 +157,14 @@ export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
               padding="none"
               sx={{ border: 0 }}
             >
+              <Typography>{row.drinkCounts.COCKTAIL_DISENCHANTED}</Typography>
+            </TableCell>
+            <TableCell
+              size="small"
+              align="center"
+              padding="none"
+              sx={{ border: 0 }}
+            >
               <Typography>{row.drinkCounts.SHOT}</Typography>
             </TableCell>
             <TableCell
@@ -190,6 +210,7 @@ function drinkCount(drinkCount: UserDrinkCounts) {
   return (
     Number.parseFloat(drinkCount.BEER || '0') +
     Number.parseFloat(drinkCount.COCKTAIL || '0') +
+    Number.parseFloat(drinkCount.COCKTAIL_DISENCHANTED || '0') +
     Number.parseFloat(drinkCount.SOFTDRINK || '0')
   );
 }
