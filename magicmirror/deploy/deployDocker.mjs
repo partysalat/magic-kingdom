@@ -144,6 +144,7 @@ async function createOrUpdate(stacks, stackConfig) {
 
 async function doIt() {
   const stacks = await getStacks()
+  console.log(stacks)
   const res = await inquirer.prompt([{
     type:"checkbox",
     choices:[
