@@ -6,14 +6,13 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider } from '@mui/material';
 import { accountingTheme, mainTheme, mirrorTheme } from './Theme';
 import { Bestlist } from './components/bestlist';
-import { FadeOutLayer } from './components/fadeOutLayer';
 import { MirrorLayout } from './layouts/MirrorLayout';
-import { Newsfeed } from './components/newsfeed';
 // import { Game } from './game';
 import { NewsfeedNoInfiniteScroll } from './components/newsfeed/FeedNoInfiniteScroll';
 import { MainLayout } from './layouts/MainLayout';
 import { GameLayout } from './layouts/GameLayout';
 import { WebSocketProvider } from './contexts/newsContext';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
