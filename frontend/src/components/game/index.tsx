@@ -1,25 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from '@reach/router';
 import { WinningUser } from './WinningUser';
+import load from 'load-script';
 import {
   Difficulty,
   useCreateGameAchievement,
 } from '../../contexts/newsContext';
-
+let isLoaded = false;
 export const Game = () => {
   const [showWinningModal, setShowWinningModal] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const { mutate: createGameAchievement } = useCreateGameAchievement();
   useEffect(() => {
+    if (!isLoaded) {
+      load('./game.js', () => {
+        // @ts-ignore
+        window.onReady?.(function onReady() {
+          console.log('Game on;pad');
+          game.onload();
+        });
+      });
+      isLoaded = true;
+    }
+
     // @ts-ignore
     window.onGameWon = (difficulty) => {
       setDifficulty(difficulty);
       setShowWinningModal(true);
     };
-    // @ts-ignore
-    window.onReady?.(function onReady() {
-      game.onload();
-    });
     return () => {
       // window.game.remove();
     };
