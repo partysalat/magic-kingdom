@@ -26,7 +26,7 @@ export const SoundBoardDialog = ({ open, onClose }: DialogComponentProps) => {
       <DialogTitle>Spiele Sound</DialogTitle>
       <DialogContent className={styles['dialog-content']}>
         <Grid container spacing={1}>
-          {(sounds || []).map((sound) => {
+          {(sounds || []).sort().map((sound) => {
             return (
               <Grid xs={3} item key={sound}>
                 <div className="dialog-button-wrapper">
