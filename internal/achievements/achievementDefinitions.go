@@ -133,7 +133,14 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 		},
 	},
 	{
-		Achievement: common.Achievement{Name: "Dorffestveranstalter", Id: 30, Description: "10 Shots auf einmal bestellt", Image: "/images/dorffest.jpeg"},
+		Achievement: common.Achievement{Name: "Hoch die Tassen", Id: 30, Description: "10 Shots auf einmal bestellt", Image: "/images/hoch_die_tassen.jpeg"},
+		Predicate: func(newsList []*common.News) bool {
+			currentNews := last(newsList)
+			return getDrinkType(currentNews) == "SHOT" && getAmount(currentNews) >= 15
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Dorffestveranstalter", Id: 32, Description: "15 Shots auf einmal bestellt", Image: "/images/dorffest.jpeg"},
 		Predicate: func(newsList []*common.News) bool {
 			currentNews := last(newsList)
 			return getDrinkType(currentNews) == "SHOT" && getAmount(currentNews) >= 10
