@@ -26,6 +26,12 @@ func last(newsList []*common.News) *common.News {
 	}
 	return newsList[len(newsList)-1]
 }
+func getAtReverse(newsList []*common.News, index int) *common.News {
+	if len(newsList) <= index {
+		return nil
+	}
+	return newsList[len(newsList)-1-index]
+}
 func getDrinkName(newsItem *common.News) string {
 	return newsItem.Payload["drink"].(map[string]interface{})["name"].(string)
 }
@@ -154,6 +160,18 @@ var AchievementDefinitions = []*common.AchievementDefinition{
 			t1 := time.Date(now.Year(), now.Month(), now.Day(), 7, 0, 0, 0, now.Location())
 			t2 := time.Date(now.Year(), now.Month(), now.Day(), 11, 0, 0, 0, now.Location())
 			return getDrinkType(currentNews) == "BEER" && now.After(t1) && now.Before(t2)
+		},
+	},
+	{
+		Achievement: common.Achievement{Name: "Wiederholung ist die Mutter der Zauberkiste", Id: 31, Description: "3x nacheinander denselben Drink bestellt", Image: "/images/zauberkiste.jpg"},
+		Predicate: func(newsList []*common.News) bool {
+			currentNews := last(newsList)
+			currentNews1 := getAtReverse(newsList, 1)
+			currentNews2 := getAtReverse(newsList, 2)
+			if currentNews2 == nil || currentNews1 == nil || currentNews == nil {
+				return false
+			}
+			return getDrinkName(currentNews) == getDrinkName(currentNews1) && getDrinkName(currentNews2) == getDrinkName(currentNews1)
 		},
 	},
 
