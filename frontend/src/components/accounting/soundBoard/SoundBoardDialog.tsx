@@ -26,20 +26,22 @@ export const SoundBoardDialog = ({ open, onClose }: DialogComponentProps) => {
       <DialogTitle>Spiele Sound</DialogTitle>
       <DialogContent className={styles['dialog-content']}>
         <Grid container spacing={1}>
-          {(sounds || []).sort().map((sound) => {
-            return (
-              <Grid xs={3} item key={sound}>
-                <div className="dialog-button-wrapper">
-                  <ButtonBase
-                    className={`dialog-buttons`}
-                    onClick={() => playSound(sound)}
-                  >
-                    {sound.replace('.mp3', '')}
-                  </ButtonBase>
-                </div>
-              </Grid>
-            );
-          })}
+          {(sounds || [])
+            .sort((a, b) => (a.toLowerCase() > b.toLowerCase() ? 1 : -1))
+            .map((sound) => {
+              return (
+                <Grid xs={3} item key={sound}>
+                  <div className="dialog-button-wrapper">
+                    <ButtonBase
+                      className={`dialog-buttons`}
+                      onClick={() => playSound(sound)}
+                    >
+                      {sound.replace('.mp3', '')}
+                    </ButtonBase>
+                  </div>
+                </Grid>
+              );
+            })}
         </Grid>
       </DialogContent>
       <DialogActions>
