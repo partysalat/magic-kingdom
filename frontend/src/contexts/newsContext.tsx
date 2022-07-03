@@ -201,8 +201,13 @@ export function WebSocketProvider(props: Record<string, unknown>) {
       queryClient.invalidateQueries(ServerStateKeysEnum.News);
     } else {
       queryClient.setQueryData([ServerStateKeysEnum.News], (data) => {
-        // @ts-ignore
-        data?.pages?.[0]?.unshift(newItem);
+        if (
+          // @ts-ignore
+          !data?.pages.flat().find((item) => item.newsId === newItem.newsId)
+        ) {
+          // @ts-ignore
+          data?.pages?.[0]?.unshift(newItem);
+        }
 
         return {
           // @ts-ignore
