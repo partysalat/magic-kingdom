@@ -25,6 +25,9 @@ const MEMES = [
   'yolo.jpeg',
   'you-only-had-one-job.jpeg',
   'lambda.jpeg',
+  'meme-what-she-said.jpg',
+  'MFMI36W.jpeg',
+  'one_ale.jpeg',
 ];
 
 export const MedievalMeme = () => {
