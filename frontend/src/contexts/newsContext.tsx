@@ -203,6 +203,8 @@ export function WebSocketProvider(props: Record<string, unknown>) {
       queryClient.setQueryData([ServerStateKeysEnum.News], (data) => {
         if (
           // @ts-ignore
+          data?.pages &&
+          // @ts-ignore
           !data?.pages.flat().find((item) => item.newsId === newItem.newsId)
         ) {
           // @ts-ignore
