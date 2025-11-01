@@ -10,13 +10,13 @@ import {
   Slider,
 } from '@mui/material';
 import './DrinkDialog.css';
-import { DialogComponentProps } from '../accountingButton/AccountingButtonWithDrinkDialog';
+import type {DialogComponentProps} from '../accountingButton/AccountingButtonWithDrinkDialog';
 import {
-  Drink,
+  type Drink,
   DrinkType,
   useGetDrinks,
 } from '../../../contexts/drinksContext';
-import { useGetUsers, User } from '../../../contexts/usersContext';
+import { useGetUsers, type User } from '../../../contexts/usersContext';
 import { useAddDrinksForUsers } from '../../../contexts/newsContext';
 
 enum PAGES {

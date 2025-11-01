@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Button,
   ButtonBase,
@@ -9,7 +8,7 @@ import {
   Grid,
 } from '@mui/material';
 import styles from './SoundBoardDialog.module.css';
-import { DialogComponentProps } from '../accountingButton/AccountingButtonWithDrinkDialog';
+import type {DialogComponentProps} from '../accountingButton/AccountingButtonWithDrinkDialog';
 import { useGetSounds, usePlaySound } from '../../../contexts/soundContext';
 
 export const SoundBoardDialog = ({ open, onClose }: DialogComponentProps) => {

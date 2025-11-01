@@ -1,4 +1,4 @@
-import { createTheme, ThemeOptions } from '@mui/material';
+import { createTheme, type ThemeOptions } from '@mui/material';
 
 export const accountingTheme: ThemeOptions = createTheme({
   palette: {

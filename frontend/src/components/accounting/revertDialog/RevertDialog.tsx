@@ -16,15 +16,15 @@ import { faBasketballBall } from '@fortawesome/free-solid-svg-icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './RevertDialog.module.css';
-import { DialogComponentProps } from '../accountingButton/AccountingButtonWithDrinkDialog';
+import type {DialogComponentProps} from '../accountingButton/AccountingButtonWithDrinkDialog';
 import { DrinkType } from '../../../contexts/drinksContext';
 import { DRINK_TYPE_DEFINITIONS } from '../DrinkTypeDefinition';
 import {
   NewsListFilter,
   useGetInfiniteNews,
-  DrinkNews,
+  type DrinkNews,
   useRemoveNews,
-  DrinkNewsPayload,
+  type DrinkNewsPayload,
 } from '../../../contexts/newsContext';
 
 interface Props extends DialogComponentProps {}

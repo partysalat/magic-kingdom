@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  DrinkNewsPayload,
+  type DrinkNewsPayload,
   useGetInfiniteNews,
 } from '../../contexts/newsContext';
 import { Grid } from '@mui/material';

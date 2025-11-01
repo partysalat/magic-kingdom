@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGetUsers, UserDrinkCounts } from '../../contexts/usersContext';
+import { useGetUsers, type UserDrinkCounts } from '../../contexts/usersContext';
 import {
   Avatar,
   Table,

@@ -8,7 +8,7 @@ import {
   DialogTitle,
   Grid,
 } from '@mui/material';
-import { useGetUsers, User } from '../../contexts/usersContext';
+import { useGetUsers, type User } from '../../contexts/usersContext';
 
 export function WinningUser({
   open,

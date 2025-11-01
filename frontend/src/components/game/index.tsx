@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { WinningUser } from './WinningUser';
 import load from 'load-script';
 import {
-  Difficulty,
+  type Difficulty,
   useCreateGameAchievement,
 } from '../../contexts/newsContext';
 let isLoaded = false;
@@ -14,7 +14,7 @@ export const Game = () => {
   useEffect(() => {
     if (!isLoaded) {
       load('./game.js', () => {
-        // @ts-ignore
+        // @ts-expect-error
         window.onReady?.(function onReady() {
           console.log('Game on;pad');
           game.onload();

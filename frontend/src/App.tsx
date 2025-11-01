@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Accounting } from './components/accounting';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {QueryCache, QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import { ThemeProvider } from '@mui/material';
 import { accountingTheme, mainTheme, mirrorTheme } from './Theme';
 import { Bestlist } from './components/bestlist';
@@ -12,8 +12,16 @@ import { NewsfeedNoInfiniteScroll } from './components/newsfeed/FeedNoInfiniteSc
 import { MainLayout } from './layouts/MainLayout';
 import { GameLayout } from './layouts/GameLayout';
 import { WebSocketProvider } from './contexts/newsContext';
+import {toast} from "react-toastify";
 
 const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      if (query.meta?.errorMessage) {
+        toast.error(`${query.meta.errorMessage} : ${error.message}`)
+      }
+    },
+  }),
   defaultOptions: {
     queries: {
       staleTime: Infinity,

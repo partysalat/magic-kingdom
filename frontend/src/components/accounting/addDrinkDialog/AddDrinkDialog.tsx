@@ -9,9 +9,9 @@ import {
   ButtonBase,
   Grid,
 } from '@mui/material';
-import { DialogComponentProps } from '../accountingButton/AccountingButtonWithDrinkDialog';
+import type {DialogComponentProps} from '../accountingButton/AccountingButtonWithDrinkDialog';
 import { DrinkType, useAddNewDrink } from '../../../contexts/drinksContext';
-interface Props extends DialogComponentProps {}
+type Props = DialogComponentProps
 export const AddDrinkDialog: React.FC<Props> = ({ open, onClose }) => {
   const [selectedDrinkType, setSelectedDrinkType] = useState<DrinkType>();
   const { mutate: addNewDrink } = useAddNewDrink();

@@ -1,6 +1,6 @@
 import { DrinkType } from '../../contexts/drinksContext';
-import { ButtonProps } from '@mui/material';
-import { IconDefinition } from '@fortawesome/fontawesome-common-types';
+import type { ButtonProps } from '@mui/material';
+import type { IconDefinition } from '@fortawesome/fontawesome-common-types';
 import {
   faBeer,
   faCocktail,

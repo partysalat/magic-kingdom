@@ -19,9 +19,11 @@ async function fetchSounds() {
 }
 
 export function useGetSounds() {
-  return useQuery<Sound[], Error>(ServerStateKeysEnum.Sound, fetchSounds, {
-    onError: (e) => {
-      toast.error(`Error fetching sound files: ${e.message}`);
+  return useQuery<Sound[], Error>({
+    queryKey: [ServerStateKeysEnum.Sound],
+    queryFn: fetchSounds,
+    meta: {
+        error:`Error fetching sound files`
     },
   });
 }
@@ -38,7 +40,8 @@ async function playSound(sound: string) {
 }
 
 export function usePlaySound() {
-  return useMutation<void, Error, Sound>((data) => playSound(data), {
+  return useMutation<void, Error, Sound>({
+    mutationFn: (data) => playSound(data),
     onMutate: () => {
       toast.info('Spiele Sound ...');
     },

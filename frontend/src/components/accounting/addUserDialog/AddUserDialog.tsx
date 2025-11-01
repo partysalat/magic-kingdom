@@ -8,7 +8,7 @@ import {
   TextField,
 } from '@mui/material';
 import styles from './AddUserDialog.module.css';
-import { DialogComponentProps } from '../accountingButton/AccountingButtonWithDrinkDialog';
+import type {DialogComponentProps} from '../accountingButton/AccountingButtonWithDrinkDialog';
 import { useAddNewUser } from '../../../contexts/usersContext';
 
 export const AddUserDialog = ({ open, onClose }: DialogComponentProps) => {

@@ -7,8 +7,8 @@ import type {Drink} from './drinksContext';
 import type {User} from './usersContext';
 import useWebSocket from 'react-use-websocket';
 
-export interface DrinkNews extends News<DrinkNewsPayload> {}
-export interface AchievementNews extends News<AchievementNewsPayload> {}
+export type DrinkNews = News<DrinkNewsPayload>
+export type AchievementNews = News<AchievementNewsPayload>
 
 export enum NewsListFilter {
   DRINK = 'NEWS$DRINK',
@@ -43,20 +43,18 @@ async function createGameAchievement(
   return res.ok;
 }
 export function useCreateGameAchievement() {
-  return useMutation<unknown, Error, CreateGameAchievementRequest>(
-    (data) => createGameAchievement(data),
-    {
-      onMutate: () => {
-        toast.info('Speichere Achievement ...');
-      },
-      onSuccess: async () => {
-        toast.info('Erfolg!');
-      },
-      onError: (e: Error) => {
-        toast.error(`Fehler!: ${e.message}`);
-      },
-    }
-  );
+  return useMutation<unknown, Error, CreateGameAchievementRequest>({
+    mutationFn: (data) => createGameAchievement(data),
+    onMutate: () => {
+      toast.info('Speichere Achievement ...');
+    },
+    onSuccess: async () => {
+      toast.info('Erfolg!');
+    },
+    onError: (e: Error) => {
+      toast.error(`Fehler!: ${e.message}`);
+    },
+  });
 }
 
 async function addDrinkForUsers(
@@ -78,24 +76,21 @@ async function addDrinkForUsers(
 
 export function useAddDrinksForUsers() {
   const queryClient = useQueryClient();
-  return useMutation<unknown, Error, AddDrinkToUsersRequest>(
-    (data) => addDrinkForUsers(data),
-    {
-      onMutate: () => {
-        toast.info('Speichere Buchung ...');
-      },
-      onSuccess: async () => {
-        toast.info('Erfolg!');
-        await queryClient.invalidateQueries([
-          ServerStateKeysEnum.News,
-          NewsListFilter.DRINK,
-        ]);
-      },
-      onError: (e: Error) => {
-        toast.error(`Fehler!: ${e.message}`);
-      },
-    }
-  );
+  return useMutation<unknown, Error, AddDrinkToUsersRequest>({
+    mutationFn: (data) => addDrinkForUsers(data),
+    onMutate: () => {
+      toast.info('Speichere Buchung ...');
+    },
+    onSuccess: async () => {
+      toast.info('Erfolg!');
+      await queryClient.invalidateQueries({
+        queryKey: [ServerStateKeysEnum.News, NewsListFilter.DRINK],
+      });
+    },
+    onError: (e: Error) => {
+      toast.error(`Fehler!: ${e.message}`);
+    },
+  });
 }
 
 export interface DrinkNewsPayload {
@@ -141,21 +136,22 @@ async function fetchNews(params: {
 export function useGetInfiniteNews<
   T = DrinkNewsPayload | AchievementNewsPayload
 >(filter?: NewsListFilter, limit: number = 20, enabled = true) {
-  return useInfiniteQuery<News<T>[], Error>(
-    [ServerStateKeysEnum.News, filter].filter(Boolean),
-    (params) => {
-      return fetchNews({ lastNewsId: params.pageParam, limit, filter });
+  return useInfiniteQuery<News<T>[], Error>({
+    queryKey: [ServerStateKeysEnum.News, filter].filter(Boolean) as [string, NewsListFilter?],
+    queryFn: (params) => {
+      return fetchNews({ lastNewsId: params.pageParam as string, limit, filter });
     },
-    {
-      enabled,
-      getNextPageParam: (lastPage) => {
-        return lastPage[lastPage.length - 1]?.newsId;
-      },
-      onError: (e) => {
+    enabled,
+    getNextPageParam: (lastPage) => {
+      return lastPage[lastPage.length - 1]?.newsId;
+    },
+    initialPageParam: '',
+    meta: {
+      onError: (e: Error) => {
         toast.error(`Error fetching news: ${e.message}`);
       },
-    }
-  );
+    },
+  });
 }
 
 async function removeNews(newsId: string) {
@@ -169,12 +165,12 @@ async function removeNews(newsId: string) {
 
 export function useRemoveNews() {
   const queryClient = useQueryClient();
-  return useMutation<void, Error, string>((newsId) => removeNews(newsId), {
+  return useMutation<void, Error, string>({
+    mutationFn: (newsId) => removeNews(newsId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries([
-        ServerStateKeysEnum.News,
-        NewsListFilter.DRINK,
-      ]);
+      await queryClient.invalidateQueries({
+        queryKey: [ServerStateKeysEnum.News, NewsListFilter.DRINK],
+      });
     },
   });
 }
@@ -194,10 +190,10 @@ export function WebSocketProvider(props: Record<string, unknown>) {
     if (lastMessage === null) {
       return;
     }
-    queryClient.invalidateQueries(ServerStateKeysEnum.Users);
+    queryClient.invalidateQueries({ queryKey: [ServerStateKeysEnum.Users] });
     const newItem = JSON.parse(lastMessage!.data) as News<unknown>;
     if (newItem.pushType === 'REMOVE') {
-      queryClient.invalidateQueries(ServerStateKeysEnum.News);
+      queryClient.invalidateQueries({ queryKey: [ServerStateKeysEnum.News] });
     } else {
       queryClient.setQueryData([ServerStateKeysEnum.News], (data) => {
         if (

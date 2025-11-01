@@ -1,8 +1,8 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './AccountingButton.module.css';
-import { Button, ButtonProps } from '@mui/material';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { Button, type ButtonProps } from '@mui/material';
+import type {IconProp} from '@fortawesome/fontawesome-svg-core';
 
 interface Props extends ButtonProps {
   icon: IconProp;

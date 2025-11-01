@@ -40,7 +40,7 @@ export function useGetDrinks(drinkType: DrinkType) {
       meta:{
         error:`Error fetching drinks for DrinkType ${drinkType}`
       }
-,
+
     }
   );
 }
@@ -64,22 +64,19 @@ async function addNewDrink(
 
 export function useAddNewDrink() {
   const queryClient = useQueryClient();
-  return useMutation<unknown, Error, AddNewDrinkRequest>(
-    (data) => addNewDrink(data.drinkType, data.drinkName),
-    {
-      onMutate: () => {
-        toast.info('Speichere Neuen Drink ...');
-      },
-      onSuccess: async (data, variables) => {
-        toast.info('Erfolg!');
-        await queryClient.invalidateQueries([
-          ServerStateKeysEnum.Drinks,
-          variables.drinkType,
-        ]);
-      },
-      onError: (e: Error) => {
-        toast.error(`Fehler!: ${e.message}`);
-      },
-    }
-  );
+  return useMutation<unknown, Error, AddNewDrinkRequest>({
+    mutationFn: (data) => addNewDrink(data.drinkType, data.drinkName),
+    onMutate: () => {
+      toast.info('Speichere Neuen Drink ...');
+    },
+    onSuccess: async (data, variables) => {
+      toast.info('Erfolg!');
+      await queryClient.invalidateQueries({
+        queryKey: [ServerStateKeysEnum.Drinks, variables.drinkType],
+      });
+    },
+    onError: (e: Error) => {
+      toast.error(`Fehler!: ${e.message}`);
+    },
+  });
 }

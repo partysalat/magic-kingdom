@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import {useEffect} from 'react';
 
 export function useIntervalScrolling(props: {
   delta: number;
@@ -25,6 +25,7 @@ export function useIntervalScrolling(props: {
     };
   }, []);
 }
+
 const scrollBy = (delta: number, duration = 600) => {
   const startTime = performance.now();
 
@@ -32,7 +33,7 @@ const scrollBy = (delta: number, duration = 600) => {
     const progress = (performance.now() - startTime) / duration;
     // const amount = easeOutCubic(progress);
     // window.scrollBy({ top: amount * delta });
-    window.scrollBy({ top: delta });
+    window.scrollBy({top: delta});
     if (progress < 0.99) {
       window.requestAnimationFrame(step);
     }

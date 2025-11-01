@@ -30,9 +30,11 @@ async function fetchUsers() {
 }
 
 export function useGetUsers() {
-  return useQuery<User[], Error>(ServerStateKeysEnum.Users, fetchUsers, {
-    onError: (e) => {
-      toast.error(`Error fetching users: ${e.message}`);
+  return useQuery<User[], Error>({
+    queryKey: [ServerStateKeysEnum.Users],
+    queryFn: fetchUsers,
+    meta: {
+      error:`Error fetching users`
     },
   });
 }
@@ -54,19 +56,19 @@ async function addNewUser(userName: string) {
 
 export function useAddNewUser() {
   const queryClient = useQueryClient();
-  return useMutation<void, Error, AddNewUserRequest>(
-    (data) => addNewUser(data.userName),
-    {
-      onMutate: () => {
-        toast.info('Speichere Neuen User ...');
-      },
-      onSuccess: async (data, variables) => {
-        toast.info('Erfolg!');
-        await queryClient.invalidateQueries(ServerStateKeysEnum.Users);
-      },
-      onError: (e: Error) => {
-        toast.error(`Fehler!: ${e.message}`);
-      },
-    }
-  );
+  return useMutation<void, Error, AddNewUserRequest>({
+    mutationFn: (data) => addNewUser(data.userName),
+    onMutate: () => {
+      toast.info('Speichere Neuen User ...');
+    },
+    onSuccess: async () => {
+      toast.info('Erfolg!');
+      await queryClient.invalidateQueries({
+        queryKey: [ServerStateKeysEnum.Users],
+      });
+    },
+    onError: (e: Error) => {
+      toast.error(`Fehler!: ${e.message}`);
+    },
+  });
 }
