@@ -1,8 +1,6 @@
-import * as React from 'react';
-import { DrinkType } from './drinksContext';
-import { useMutation, useQuery } from 'react-query';
-import { ServerStateKeysEnum } from './common';
-import { toast } from 'react-toastify';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {ServerStateKeysEnum} from './common';
+import {toast} from 'react-toastify';
 
 type Sound = string;
 

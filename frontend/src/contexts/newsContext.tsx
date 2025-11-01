@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { ServerStateKeysEnum } from './common';
-import { Drink } from './drinksContext';
-import { User } from './usersContext';
+import type {Drink} from './drinksContext';
+import type {User} from './usersContext';
 import useWebSocket from 'react-use-websocket';
 
 export interface DrinkNews extends News<DrinkNewsPayload> {}
@@ -43,7 +43,6 @@ async function createGameAchievement(
   return res.ok;
 }
 export function useCreateGameAchievement() {
-  const queryClient = useQueryClient();
   return useMutation<unknown, Error, CreateGameAchievementRequest>(
     (data) => createGameAchievement(data),
     {

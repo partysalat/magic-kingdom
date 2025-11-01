@@ -1,5 +1,4 @@
 import React from 'react';
-import { RouteComponentProps } from '@reach/router';
 import { useGetUsers, UserDrinkCounts } from '../../contexts/usersContext';
 import {
   Avatar,
@@ -27,7 +26,7 @@ type Props = {
   withAutoScroll?: boolean;
   withStickyHeader?: boolean;
 };
-export const Bestlist: React.FC<Props & RouteComponentProps> = (props) => {
+export const Bestlist: React.FC<Props> = (props) => {
   const { data: bestlist, isLoading } = useGetUsers();
 
   useIntervalScrolling({

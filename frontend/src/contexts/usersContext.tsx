@@ -1,8 +1,7 @@
-import * as React from 'react';
-import { AddNewDrinkRequest, DrinkType } from './drinksContext';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { ServerStateKeysEnum } from './common';
-import { toast } from 'react-toastify';
+import {DrinkType} from './drinksContext';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {ServerStateKeysEnum} from './common';
+import {toast} from 'react-toastify';
 
 export type UserDrinkCounts = {
   [key in DrinkType]: string;

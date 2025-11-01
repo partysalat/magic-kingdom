@@ -1,8 +1,8 @@
 import React from 'react';
 import './App.css';
-import { Router } from '@reach/router';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Accounting } from './components/accounting';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@mui/material';
 import { accountingTheme, mainTheme, mirrorTheme } from './Theme';
 import { Bestlist } from './components/bestlist';
@@ -25,39 +25,64 @@ function App() {
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={accountingTheme}>
-          <Router>
-            <Accounting path="/abrechnung" />
-          </Router>
-        </ThemeProvider>
-        <ThemeProvider theme={mainTheme}>
-          <Router>
-            <MainLayout path="/" />
-            <GameLayout path="/game" />
-          </Router>
-        </ThemeProvider>
-        <ThemeProvider theme={mirrorTheme}>
-          <Router>
-            <MirrorLayout
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/abrechnung"
+              element={
+                <ThemeProvider theme={accountingTheme}>
+                  <Accounting />
+                </ThemeProvider>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <ThemeProvider theme={mainTheme}>
+                  <MainLayout />
+                </ThemeProvider>
+              }
+            />
+            <Route
+              path="/game"
+              element={
+                <ThemeProvider theme={mainTheme}>
+                  <GameLayout />
+                </ThemeProvider>
+              }
+            />
+            <Route
               path="/snippets/bestlist"
-              top={false}
-              component={
-                <WebSocketProvider>
-                  <Bestlist withAutoScroll={true} withStickyHeader={true} />
-                </WebSocketProvider>
+              element={
+                <ThemeProvider theme={mirrorTheme}>
+                  <MirrorLayout
+                    top={false}
+                    component={
+                      <WebSocketProvider>
+                        <Bestlist withAutoScroll={true} withStickyHeader={true} />
+                      </WebSocketProvider>
+                    }
+                  />
+                </ThemeProvider>
               }
             />
-            <MirrorLayout
+            <Route
               path="/snippets/newsfeed"
-              top={false}
-              component={
-                <WebSocketProvider>
-                  <NewsfeedNoInfiniteScroll />
-                </WebSocketProvider>
+              element={
+                <ThemeProvider theme={mirrorTheme}>
+                  <MirrorLayout
+                    top={false}
+                    component={
+                      <WebSocketProvider>
+                        <NewsfeedNoInfiniteScroll />
+                      </WebSocketProvider>
+                    }
+                  />
+                </ThemeProvider>
               }
             />
-          </Router>
-        </ThemeProvider>
+          </Routes>
+        </BrowserRouter>
       </QueryClientProvider>
     </div>
   );

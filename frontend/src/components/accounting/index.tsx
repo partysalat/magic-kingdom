@@ -11,7 +11,6 @@ import {
 import 'react-toastify/dist/ReactToastify.css';
 import styles from './index.module.css';
 import { toast, ToastContainer } from 'react-toastify';
-import { RouteComponentProps } from '@reach/router';
 import { AccountingButtonWithDrinkDialog } from './accountingButton/AccountingButtonWithDrinkDialog';
 import { DrinkDialog } from './drinkDialog/DrinkDialog';
 import { AddDrinkDialog } from './addDrinkDialog/AddDrinkDialog';
@@ -21,7 +20,7 @@ import { DRINK_TYPE_DEFINITIONS } from './DrinkTypeDefinition';
 import { RevertDialog } from './revertDialog/RevertDialog';
 import { SoundBoardDialog } from './soundBoard/SoundBoardDialog';
 
-export const Accounting: React.FC<RouteComponentProps> = () => {
+export const Accounting: React.FC = () => {
   return (
     <div>
       <Grid container className={styles['grid-container']} spacing={4}>

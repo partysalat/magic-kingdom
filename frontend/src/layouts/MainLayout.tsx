@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link, RouteComponentProps } from '@reach/router';
 import { MedievalMeme } from '../components/medievalMemes';
 import { Grid } from '@mui/material';
 import { Bestlist } from '../components/bestlist';
@@ -7,7 +6,7 @@ import { Newsfeed } from '../components/newsfeed';
 import { WebSocketProvider } from '../contexts/newsContext';
 
 type Props = { component?: React.ReactElement };
-export const MainLayout: React.FC<Props & RouteComponentProps> = ({
+export const MainLayout: React.FC<Props> = ({
   component,
 }) => {
   return (

@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { ServerStateKeysEnum } from './common';
-import { toast } from 'react-toastify';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {ServerStateKeysEnum} from './common';
+import {toast} from 'react-toastify';
+
 
 export enum DrinkType {
   COCKTAIL = 'COCKTAIL',
@@ -10,6 +10,7 @@ export enum DrinkType {
   SHOT = 'SHOT',
   SOFTDRINK = 'SOFTDRINK',
 }
+
 export interface Drink {
   PK: string;
   SK: string;
@@ -17,6 +18,7 @@ export interface Drink {
   type: string;
   drinkType: DrinkType;
 }
+
 export interface AddNewDrinkRequest {
   drinkType: DrinkType;
   drinkName: string;
@@ -32,14 +34,13 @@ export async function fetchDrinks(drinkType: DrinkType) {
 
 export function useGetDrinks(drinkType: DrinkType) {
   return useQuery<Drink[], Error>(
-    [ServerStateKeysEnum.Drinks, drinkType],
-    () => fetchDrinks(drinkType),
     {
-      onError: (e) => {
-        toast.error(
-          `Error fetching drinks for DrinkType ${drinkType}: ${e.message}`
-        );
-      },
+      queryKey: [ServerStateKeysEnum.Drinks, drinkType],
+      queryFn: () => fetchDrinks(drinkType),
+      meta:{
+        error:`Error fetching drinks for DrinkType ${drinkType}`
+      }
+,
     }
   );
 }
@@ -53,7 +54,7 @@ async function addNewDrink(
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ name: drinkName }),
+    body: JSON.stringify({name: drinkName}),
   });
   if (!res.ok) {
     throw new Error(`Error ${res.status}`);

@@ -1,10 +1,9 @@
 import React from 'react';
-import { RouteComponentProps } from '@reach/router';
 import { FadeOutLayer } from '../components/fadeOutLayer';
 import styles from './MirrorLayout.module.css';
 
 type Props = { component: React.ReactElement; top?: boolean; bottom?: boolean };
-export const MirrorLayout: React.FC<Props & RouteComponentProps> = ({
+export const MirrorLayout: React.FC<Props> = ({
   component,
   top = true,
   bottom = true,
