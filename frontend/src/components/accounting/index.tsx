@@ -87,7 +87,7 @@ export const Accounting: React.FC = () => {
         </Grid>
       </Grid>
       <ToastContainer
-        position={toast.POSITION.BOTTOM_CENTER}
+        position={"bottom-center"}
         hideProgressBar
         newestOnTop
       />
