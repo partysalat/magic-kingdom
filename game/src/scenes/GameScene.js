@@ -1,3 +1,5 @@
+import { Player } from '../entities/Player.js';
+
 export class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
@@ -11,20 +13,26 @@ export class GameScene extends Phaser.Scene {
         console.log('GameScene created');
 
         // Scene setup
-        this.cameras.main.setBackgroundColor('#4a3428'); // Wooden saloon floor color
-
-        // Initialize scene properties
+        this.cameras.main.setBackgroundColor('#4a3428');
         this.isGameOver = false;
 
-        // Add temporary text to confirm scene loaded
-        this.add.text(960, 540, 'Gisela\'s Last Stand - Phase 1', {
-            fontSize: '48px',
+        // Create player in center
+        this.player = new Player(this, 960, 540);
+
+        // Add UI text
+        this.add.text(20, 20, 'WASD: Move | Mouse: Aim & Shoot', {
+            fontSize: '24px',
             color: '#ffffff',
             fontFamily: 'Arial'
-        }).setOrigin(0.5);
+        });
     }
 
     update(time, delta) {
-        // Game loop will go here
+        if (this.isGameOver) return;
+
+        // Update player
+        if (this.player) {
+            this.player.update();
+        }
     }
 }
