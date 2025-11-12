@@ -1,4 +1,5 @@
 import { gameConfig } from './config.js';
+import { GameScene } from './scenes/GameScene.js';
 
 class BootScene extends Phaser.Scene {
     constructor() {
@@ -6,21 +7,20 @@ class BootScene extends Phaser.Scene {
     }
 
     preload() {
-        // Placeholder for assets
         this.load.on('complete', () => {
             console.log('Boot complete');
         });
     }
 
     create() {
-        console.log('BootScene created');
-        // Will transition to GameScene in next task
+        console.log('BootScene created - transitioning to GameScene');
+        this.scene.start('GameScene');
     }
 }
 
 const config = {
     ...gameConfig,
-    scene: [BootScene]
+    scene: [BootScene, GameScene]
 };
 
 const game = new Phaser.Game(config);
