@@ -19,6 +19,14 @@ export class GameScene extends Phaser.Scene {
         // Create player in center
         this.player = new Player(this, 960, 540);
 
+        // Setup input
+        this.keys = this.input.keyboard.addKeys({
+            W: Phaser.Input.Keyboard.KeyCodes.W,
+            A: Phaser.Input.Keyboard.KeyCodes.A,
+            S: Phaser.Input.Keyboard.KeyCodes.S,
+            D: Phaser.Input.Keyboard.KeyCodes.D
+        });
+
         // Add UI text
         this.add.text(20, 20, 'WASD: Move | Mouse: Aim & Shoot', {
             fontSize: '24px',
@@ -30,9 +38,9 @@ export class GameScene extends Phaser.Scene {
     update(time, delta) {
         if (this.isGameOver) return;
 
-        // Update player
+        // Update player with input
         if (this.player) {
-            this.player.update();
+            this.player.update(this.keys);
         }
     }
 }

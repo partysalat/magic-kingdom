@@ -22,7 +22,32 @@ export class Player {
         console.log('Player created at', x, y);
     }
 
-    update() {
+    update(keys) {
+        // Calculate movement vector
+        let velocityX = 0;
+        let velocityY = 0;
+
+        if (keys.W.isDown) {
+            velocityY = -this.speed;
+        } else if (keys.S.isDown) {
+            velocityY = this.speed;
+        }
+
+        if (keys.A.isDown) {
+            velocityX = -this.speed;
+        } else if (keys.D.isDown) {
+            velocityX = this.speed;
+        }
+
+        // Normalize diagonal movement
+        if (velocityX !== 0 && velocityY !== 0) {
+            velocityX *= 0.707; // 1/sqrt(2)
+            velocityY *= 0.707;
+        }
+
+        // Apply velocity
+        this.sprite.body.setVelocity(velocityX, velocityY);
+
         // Position hat above player
         this.hat.setPosition(this.sprite.x, this.sprite.y - 25);
     }
