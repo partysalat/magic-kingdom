@@ -615,21 +615,58 @@ export class GameScene extends Phaser.Scene {
         console.log('Game Over!');
         this.isGameOver = true;
 
-        // Display game over text
-        this.add.text(960, 540, 'GAME OVER', {
+        // Black overlay
+        const overlay = this.add.rectangle(960, 540, 1920, 1080, 0x000000, 0.8);
+
+        // Game Over text
+        const gameOverText = this.add.text(960, 300, 'GAME OVER', {
             fontSize: '96px',
             color: '#ff0000',
-            fontFamily: 'Arial'
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 8
         }).setOrigin(0.5);
 
-        // Display final score
-        this.add.text(960, 640, `Final Score: ${this.scoreManager.getScore()}`, {
+        // Performance summary
+        const finalScore = this.scoreManager.getScore();
+        const waveReached = this.waveManager.getCurrentWave();
+
+        this.add.text(960, 450, `Survived to Wave ${waveReached}/10`, {
             fontSize: '36px',
             color: '#ffffff',
             fontFamily: 'Arial'
         }).setOrigin(0.5);
 
-        this.add.text(960, 700, 'Refresh to restart', {
+        this.add.text(960, 520, `Final Score: ${finalScore}`, {
+            fontSize: '32px',
+            color: '#ffff00',
+            fontFamily: 'Arial',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        // High score comparison
+        const highScore = localStorage.getItem('highScore') || 0;
+        if (finalScore > highScore) {
+            localStorage.setItem('highScore', finalScore);
+
+            this.add.text(960, 600, 'NEW HIGH SCORE!', {
+                fontSize: '36px',
+                color: '#ff00ff',
+                fontFamily: 'Arial',
+                fontStyle: 'bold',
+                stroke: '#000000',
+                strokeThickness: 4
+            }).setOrigin(0.5);
+        } else {
+            this.add.text(960, 600, `High Score: ${highScore}`, {
+                fontSize: '24px',
+                color: '#aaaaaa',
+                fontFamily: 'Arial'
+            }).setOrigin(0.5);
+        }
+
+        this.add.text(960, 700, 'Refresh to Try Again', {
             fontSize: '24px',
             color: '#ffffff',
             fontFamily: 'Arial'
