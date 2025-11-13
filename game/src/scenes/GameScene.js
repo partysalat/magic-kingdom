@@ -191,9 +191,18 @@ export class GameScene extends Phaser.Scene {
 
                 return true;
             } else if (!enemy.isAlive()) {
+                // Check if this was a bounty enemy
+                if (enemy.isBountyEnemy()) {
+                    const bountyValue = enemy.getBountyValue();
+                    const bountyName = enemy.getBountyName();
+                    this.scoreManager.addBountyKill(bountyValue);
+                    this.showBountyKillFeedback(bountyName, bountyValue);
+                } else {
+                    this.scoreManager.addEnemyKill();
+                }
+
                 enemy.destroy();
                 this.waveManager.enemyKilled();
-                this.scoreManager.addEnemyKill();
                 this.updateWaveUI();
                 this.updateScoreUI();
                 return false;
@@ -324,6 +333,31 @@ export class GameScene extends Phaser.Scene {
 
     updateScoreUI() {
         this.scoreText.setText(`Score: ${this.scoreManager.getScore()}`);
+    }
+
+    showBountyKillFeedback(name, value) {
+        // Screen flash
+        this.cameras.main.flash(300, 255, 215, 0);
+
+        // Large text announcement
+        const announcement = this.add.text(960, 540, `${name}\n+${value} POINTS!`, {
+            fontSize: '48px',
+            color: '#ffff00',
+            fontFamily: 'Arial',
+            align: 'center',
+            stroke: '#000000',
+            strokeThickness: 4
+        }).setOrigin(0.5);
+
+        // Fade out animation
+        this.tweens.add({
+            targets: announcement,
+            alpha: 0,
+            y: 440,
+            duration: 2000,
+            ease: 'Power2',
+            onComplete: () => announcement.destroy()
+        });
     }
 
     handleVictory() {
