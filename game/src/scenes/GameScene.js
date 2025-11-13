@@ -2,6 +2,7 @@ import { Player } from '../entities/Player.js';
 import { Bullet } from '../entities/Bullet.js';
 import { Enemy } from '../entities/Enemy.js';
 import { WaveManager } from '../systems/WaveManager.js';
+import { ScoreManager } from '../systems/ScoreManager.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -62,6 +63,9 @@ export class GameScene extends Phaser.Scene {
         // Initialize wave manager
         this.waveManager = new WaveManager(this);
 
+        // Initialize score manager
+        this.scoreManager = new ScoreManager(this);
+
         // Add UI text
         this.add.text(20, 20, 'WASD: Move | Mouse: Aim & Shoot', {
             fontSize: '24px',
@@ -89,6 +93,13 @@ export class GameScene extends Phaser.Scene {
             color: '#ffaa00',
             fontFamily: 'Arial'
         }).setOrigin(0.5, 0);
+
+        // Add score display
+        this.scoreText = this.add.text(1900, 20, 'Score: 0', {
+            fontSize: '32px',
+            color: '#ffff00',
+            fontFamily: 'Arial'
+        }).setOrigin(1, 0);
 
         // Start first wave after brief delay
         this.time.delayedCall(1000, () => {
@@ -177,7 +188,9 @@ export class GameScene extends Phaser.Scene {
             } else if (!enemy.isAlive()) {
                 enemy.destroy();
                 this.waveManager.enemyKilled();
+                this.scoreManager.addEnemyKill();
                 this.updateWaveUI();
+                this.updateScoreUI();
                 return false;
             }
             return true;
@@ -279,6 +292,10 @@ export class GameScene extends Phaser.Scene {
         this.enemyText.setText(`Enemies: ${enemiesAlive}`);
     }
 
+    updateScoreUI() {
+        this.scoreText.setText(`Score: ${this.scoreManager.getScore()}`);
+    }
+
     handleVictory() {
         console.log('Victory!');
         this.isGameOver = true;
@@ -290,7 +307,8 @@ export class GameScene extends Phaser.Scene {
             fontFamily: 'Arial'
         }).setOrigin(0.5);
 
-        this.add.text(960, 640, 'All waves completed!', {
+        // Display final score
+        this.add.text(960, 640, `Final Score: ${this.scoreManager.getScore()}`, {
             fontSize: '36px',
             color: '#ffffff',
             fontFamily: 'Arial'
@@ -314,8 +332,15 @@ export class GameScene extends Phaser.Scene {
             fontFamily: 'Arial'
         }).setOrigin(0.5);
 
-        this.add.text(960, 640, 'Refresh to restart', {
+        // Display final score
+        this.add.text(960, 640, `Final Score: ${this.scoreManager.getScore()}`, {
             fontSize: '36px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        this.add.text(960, 700, 'Refresh to restart', {
+            fontSize: '24px',
             color: '#ffffff',
             fontFamily: 'Arial'
         }).setOrigin(0.5);

@@ -177,9 +177,18 @@ export class WaveManager {
         console.log('Wave', this.currentWave, 'complete!');
         this.waveActive = false;
 
+        // Award survival bonus
+        if (this.scene.scoreManager) {
+            this.scene.scoreManager.addWaveSurvivalBonus();
+            this.scene.updateScoreUI();
+        }
+
         // Start next wave after delay
         this.scene.time.delayedCall(2000, () => {
             this.startNextWave();
+            if (this.scene.updateWaveUI) {
+                this.scene.updateWaveUI();
+            }
         });
     }
 
