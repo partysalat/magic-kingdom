@@ -1,3 +1,10 @@
+const BOUNTY_NAMES = [
+    { name: 'Big Claw McGraw', type: 'lobster' },
+    { name: 'Shelly the Shellfish', type: 'hermit' },
+    { name: 'Reef Reaper', type: 'jellyfish' },
+    { name: 'Pistol Shrimp Pete', type: 'shrimp' }
+];
+
 export class WaveManager {
     constructor(scene) {
         this.scene = scene;
@@ -103,29 +110,84 @@ export class WaveManager {
         this.isSpawning = false;
     }
 
+    shouldSpawnBounty(waveNumber) {
+        // 30% chance to spawn a bounty enemy per wave
+        return Math.random() < 0.3;
+    }
+
+    getBountyValue(waveNumber) {
+        // Scale bounty value with wave number
+        return 100 + (waveNumber * 50);
+    }
+
+    selectBountyEnemy(composition) {
+        // Select a random enemy type from the wave composition
+        const types = composition.map(group => group.type);
+        const randomType = types[Math.floor(Math.random() * types.length)];
+
+        // Find matching bounty name
+        const bountyOptions = BOUNTY_NAMES.filter(b => b.type === randomType);
+        if (bountyOptions.length > 0) {
+            return bountyOptions[Math.floor(Math.random() * bountyOptions.length)];
+        }
+
+        // Fallback to first bounty
+        return BOUNTY_NAMES[0];
+    }
+
     spawnEnemiesByComposition(composition) {
-        // Calculate total count for spawn point distribution
         const totalCount = composition.reduce((sum, group) => sum + group.count, 0);
         const spawnPoints = this.getSpawnPoints(totalCount);
 
         let spawnIndex = 0;
+        let bountySpawned = false;
+
+        // Determine if we should spawn a bounty
+        const spawnBounty = this.shouldSpawnBounty(this.currentWave);
+        const bountyInfo = spawnBounty ? this.selectBountyEnemy(composition) : null;
+        const bountyValue = spawnBounty ? this.getBountyValue(this.currentWave) : 0;
+
+        // Random index for bounty spawn
+        const bountyIndex = spawnBounty ? Math.floor(Math.random() * totalCount) : -1;
 
         // Spawn each enemy group
         composition.forEach(group => {
             for (let i = 0; i < group.count; i++) {
                 const point = spawnPoints[spawnIndex];
+
+                // Check if this should be the bounty enemy
+                const isBounty = spawnBounty && !bountySpawned &&
+                               spawnIndex === bountyIndex &&
+                               group.type === bountyInfo.type;
+
                 const enemy = new this.scene.Enemy(
                     this.scene,
                     point.x,
                     point.y,
-                    group.type
+                    group.type,
+                    isBounty,
+                    isBounty ? bountyValue : 0
                 );
+
+                if (isBounty) {
+                    enemy.setBountyName(bountyInfo.name);
+                    bountySpawned = true;
+
+                    // Announce bounty
+                    this.announceBounty(bountyInfo.name, bountyValue);
+                }
+
                 this.scene.enemies.push(enemy);
                 spawnIndex++;
             }
         });
 
-        console.log('Spawned', totalCount, 'enemies');
+        console.log('Spawned', totalCount, 'enemies', bountySpawned ? '(including bounty)' : '');
+    }
+
+    announceBounty(name, value) {
+        console.log(`WANTED: ${name} - ${value} Points!`);
+        // Visual announcement will be added in next task
     }
 
     getSpawnPoints(count) {
