@@ -56,6 +56,13 @@ export class GameScene extends Phaser.Scene {
             color: '#ffffff',
             fontFamily: 'Arial'
         });
+
+        // Add health display
+        this.healthText = this.add.text(20, 60, 'Health: 100', {
+            fontSize: '32px',
+            color: '#ff0000',
+            fontFamily: 'Arial'
+        });
     }
 
     update(time, delta) {
@@ -84,8 +91,9 @@ export class GameScene extends Phaser.Scene {
             return true;
         });
 
-        // Check bullet-enemy collisions
+        // Check collisions
         this.checkBulletCollisions();
+        this.checkPlayerCollisions();
     }
 
     checkBulletCollisions() {
@@ -114,6 +122,66 @@ export class GameScene extends Phaser.Scene {
                     break;
                 }
             }
+        }
+    }
+
+    checkPlayerCollisions() {
+        if (!this.player || this.player.isDead()) return;
+
+        for (let i = this.enemies.length - 1; i >= 0; i--) {
+            const enemy = this.enemies[i];
+            if (!enemy.isAlive()) continue;
+
+            // Check distance between player and enemy
+            const dx = this.player.getX() - enemy.getSprite().x;
+            const dy = this.player.getY() - enemy.getSprite().y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // Collision if distance less than combined radii
+            if (distance < 35) { // 20 (player) + 15 (enemy)
+                const health = this.player.takeDamage(enemy.getDamage());
+                this.updateHealthUI();
+
+                if (this.player.isDead()) {
+                    this.handleGameOver();
+                }
+
+                // Push enemy back to prevent stacking
+                const pushAngle = Math.atan2(dy, dx);
+                enemy.getSprite().setPosition(
+                    enemy.getSprite().x - Math.cos(pushAngle) * 40,
+                    enemy.getSprite().y - Math.sin(pushAngle) * 40
+                );
+            }
+        }
+    }
+
+    updateHealthUI() {
+        if (this.player) {
+            this.healthText.setText(`Health: ${this.player.health}`);
+        }
+    }
+
+    handleGameOver() {
+        console.log('Game Over!');
+        this.isGameOver = true;
+
+        // Display game over text
+        this.add.text(960, 540, 'GAME OVER', {
+            fontSize: '96px',
+            color: '#ff0000',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        this.add.text(960, 640, 'Refresh to restart', {
+            fontSize: '36px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        // Destroy player visually
+        if (this.player) {
+            this.player.destroy();
         }
     }
 }
