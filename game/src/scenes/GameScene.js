@@ -1,4 +1,5 @@
 import { Player } from '../entities/Player.js';
+import { Bullet } from '../entities/Bullet.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -19,6 +20,9 @@ export class GameScene extends Phaser.Scene {
         // Create player in center
         this.player = new Player(this, 960, 540);
 
+        // Make Bullet class available to player
+        this.Bullet = Bullet;
+
         // Setup input
         this.keys = this.input.keyboard.addKeys({
             W: Phaser.Input.Keyboard.KeyCodes.W,
@@ -26,6 +30,17 @@ export class GameScene extends Phaser.Scene {
             S: Phaser.Input.Keyboard.KeyCodes.S,
             D: Phaser.Input.Keyboard.KeyCodes.D
         });
+
+        // Setup mouse input
+        this.input.on('pointerdown', () => {
+            this.isShooting = true;
+        });
+
+        this.input.on('pointerup', () => {
+            this.isShooting = false;
+        });
+
+        this.isShooting = false;
 
         // Add UI text
         this.add.text(20, 20, 'WASD: Move | Mouse: Aim & Shoot', {
@@ -41,6 +56,12 @@ export class GameScene extends Phaser.Scene {
         // Update player with input
         if (this.player) {
             this.player.update(this.keys);
+
+            // Handle shooting
+            if (this.isShooting) {
+                const pointer = this.input.activePointer;
+                this.player.shoot(pointer.worldX, pointer.worldY, time);
+            }
         }
     }
 }

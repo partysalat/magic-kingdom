@@ -19,6 +19,11 @@ export class Player {
         // Add a small "hat" indicator (triangle pointing up)
         this.hat = scene.add.triangle(x, y - 25, 0, 10, -8, -5, 8, -5, 0x8b4513);
 
+        // Shooting properties
+        this.bullets = [];
+        this.fireRate = 200; // milliseconds between shots
+        this.nextFire = 0;
+
         console.log('Player created at', x, y);
     }
 
@@ -50,6 +55,39 @@ export class Player {
 
         // Position hat above player
         this.hat.setPosition(this.sprite.x, this.sprite.y - 25);
+
+        // Update bullets
+        this.bullets = this.bullets.filter(bullet => {
+            if (bullet.isAlive()) {
+                bullet.update();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    shoot(targetX, targetY, currentTime) {
+        if (currentTime < this.nextFire) return null;
+
+        // Calculate angle to mouse
+        const angle = Math.atan2(
+            targetY - this.sprite.y,
+            targetX - this.sprite.x
+        );
+
+        // Create bullet
+        const bullet = new this.scene.Bullet(
+            this.scene,
+            this.sprite.x,
+            this.sprite.y,
+            angle
+        );
+
+        this.bullets.push(bullet);
+        this.nextFire = currentTime + this.fireRate;
+
+        console.log('Player fired bullet');
+        return bullet;
     }
 
     getX() {
