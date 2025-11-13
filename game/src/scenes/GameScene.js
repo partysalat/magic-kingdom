@@ -112,6 +112,15 @@ export class GameScene extends Phaser.Scene {
             fontFamily: 'Arial'
         }).setOrigin(1, 0);
 
+        // Add buff display
+        this.buffText = this.add.text(960, 1000, '', {
+            fontSize: '28px',
+            color: '#ffffff',
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 3
+        }).setOrigin(0.5, 0);
+
         // Start first wave after brief delay
         this.time.delayedCall(1000, () => {
             this.waveManager.startNextWave();
@@ -244,6 +253,34 @@ export class GameScene extends Phaser.Scene {
 
             return true;
         });
+
+        // Check cocktail collisions
+        this.cocktails = this.cocktails.filter(cocktail => {
+            if (!cocktail.isAlive()) return false;
+
+            if (this.player && !this.player.isDead()) {
+                const dx = this.player.getX() - cocktail.getSprite().x;
+                const dy = this.player.getY() - cocktail.getSprite().y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Collision if distance less than combined radii
+                if (distance < 35) { // 20 (player) + 15 (cocktail)
+                    const config = cocktail.getConfig();
+                    this.player.applyBuff(config);
+                    cocktail.collect();
+                    this.showCocktailFeedback(config);
+                    this.updateBuffUI();
+
+                    console.log('Player collected:', config.name);
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        // Update buff UI
+        this.updateBuffUI();
     }
 
     checkBulletCollisions() {
@@ -364,6 +401,57 @@ export class GameScene extends Phaser.Scene {
             ease: 'Power2',
             onComplete: () => announcement.destroy()
         });
+    }
+
+    showCocktailFeedback(config) {
+        // Flash screen with cocktail color
+        const r = (config.color >> 16) & 0xff;
+        const g = (config.color >> 8) & 0xff;
+        const b = config.color & 0xff;
+        this.cameras.main.flash(200, r, g, b);
+
+        // Show buff name
+        const announcement = this.add.text(960, 400, config.name, {
+            fontSize: '36px',
+            color: '#' + config.color.toString(16).padStart(6, '0'),
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 3
+        }).setOrigin(0.5);
+
+        const description = this.add.text(960, 450, config.description, {
+            fontSize: '24px',
+            color: '#ffffff',
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5);
+
+        // Fade out
+        this.tweens.add({
+            targets: [announcement, description],
+            alpha: 0,
+            duration: 2000,
+            onComplete: () => {
+                announcement.destroy();
+                description.destroy();
+            }
+        });
+    }
+
+    updateBuffUI() {
+        if (!this.player) {
+            this.buffText.setText('');
+            return;
+        }
+
+        const buff = this.player.getActiveBuff();
+        if (buff) {
+            const timeLeft = Math.ceil((this.player.buffEndTime - Date.now()) / 1000);
+            this.buffText.setText(`BUFF: ${buff.toUpperCase().replace('_', ' ')} (${timeLeft}s)`);
+        } else {
+            this.buffText.setText('');
+        }
     }
 
     handleVictory() {
