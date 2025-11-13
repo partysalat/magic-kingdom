@@ -74,13 +74,14 @@ export class GameScene extends Phaser.Scene {
 
         // Update enemies
         this.enemies = this.enemies.filter(enemy => {
-            if (enemy.isAlive()) {
+            if (enemy.isAlive() && this.player) {
                 enemy.update(time, this.player.getX(), this.player.getY());
                 return true;
-            } else {
+            } else if (!enemy.isAlive()) {
                 enemy.destroy();
                 return false;
             }
+            return true;
         });
     }
 }
