@@ -368,6 +368,15 @@ export class WaveManager {
         this.scene.time.delayedCall(10000, () => {
             readyText.destroy();
             countdownText.destroy();
+
+            // Clean up any uncollected cocktails
+            this.scene.cocktails.forEach(cocktail => {
+                if (cocktail.isAlive()) {
+                    cocktail.destroy();
+                }
+            });
+            this.scene.cocktails = [];
+
             this.startNextWave();
             if (this.scene.updateWaveUI) {
                 this.scene.updateWaveUI();
