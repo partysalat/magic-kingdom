@@ -83,5 +83,37 @@ export class GameScene extends Phaser.Scene {
             }
             return true;
         });
+
+        // Check bullet-enemy collisions
+        this.checkBulletCollisions();
+    }
+
+    checkBulletCollisions() {
+        if (!this.player) return;
+
+        const bullets = this.player.bullets;
+
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            const bullet = bullets[i];
+            if (!bullet.isAlive()) continue;
+
+            for (let j = this.enemies.length - 1; j >= 0; j--) {
+                const enemy = this.enemies[j];
+                if (!enemy.isAlive()) continue;
+
+                // Check distance between bullet and enemy
+                const dx = bullet.getSprite().x - enemy.getSprite().x;
+                const dy = bullet.getSprite().y - enemy.getSprite().y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Collision if distance less than combined radii
+                if (distance < 19) { // 4 (bullet) + 15 (enemy)
+                    enemy.takeDamage(bullet.getDamage());
+                    bullet.destroy();
+                    console.log('Bullet hit enemy!');
+                    break;
+                }
+            }
+        }
     }
 }
