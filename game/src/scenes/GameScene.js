@@ -1,5 +1,6 @@
 import { Player } from '../entities/Player.js';
 import { Bullet } from '../entities/Bullet.js';
+import { Enemy } from '../entities/Enemy.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -42,6 +43,13 @@ export class GameScene extends Phaser.Scene {
 
         this.isShooting = false;
 
+        // Create enemy array
+        this.enemies = [];
+
+        // Spawn a test enemy
+        const testEnemy = new Enemy(this, 1400, 300, 'lobster');
+        this.enemies.push(testEnemy);
+
         // Add UI text
         this.add.text(20, 20, 'WASD: Move | Mouse: Aim & Shoot', {
             fontSize: '24px',
@@ -63,5 +71,16 @@ export class GameScene extends Phaser.Scene {
                 this.player.shoot(pointer.worldX, pointer.worldY, time);
             }
         }
+
+        // Update enemies
+        this.enemies = this.enemies.filter(enemy => {
+            if (enemy.isAlive()) {
+                enemy.update(time, this.player.getX(), this.player.getY());
+                return true;
+            } else {
+                enemy.destroy();
+                return false;
+            }
+        });
     }
 }
