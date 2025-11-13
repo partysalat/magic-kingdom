@@ -31,6 +31,9 @@ export class GameScene extends Phaser.Scene {
         // Create player in center
         this.player = new Player(this, 960, 540);
 
+        // Player name (for single player, just "Player 1")
+        this.playerName = 'Player 1';
+
         // Setup obstacle collisions with player
         this.obstacles.forEach(obstacle => {
             this.physics.add.collider(this.player.sprite, obstacle);
@@ -120,6 +123,9 @@ export class GameScene extends Phaser.Scene {
             stroke: '#000000',
             strokeThickness: 3
         }).setOrigin(0.5, 0);
+
+        // Create leaderboard panel
+        this.createLeaderboard();
 
         // Start first wave after brief delay
         this.time.delayedCall(1000, () => {
@@ -386,6 +392,40 @@ export class GameScene extends Phaser.Scene {
 
     updateScoreUI() {
         this.scoreText.setText(`Score: ${this.scoreManager.getScore()}`);
+        this.updateLeaderboard();
+    }
+
+    createLeaderboard() {
+        const x = 1700;
+        const y = 100;
+
+        // Background panel
+        const panel = this.add.rectangle(x, y, 200, 150, 0x000000, 0.7);
+        panel.setStrokeStyle(3, 0xffff00);
+
+        // Title
+        this.add.text(x, y - 60, 'LEADERBOARD', {
+            fontSize: '24px',
+            color: '#ffff00',
+            fontFamily: 'Arial',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        // Player entry
+        this.leaderboardEntry = this.add.text(x, y, '', {
+            fontSize: '20px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        this.updateLeaderboard();
+    }
+
+    updateLeaderboard() {
+        if (!this.scoreManager || !this.leaderboardEntry) return;
+
+        const score = this.scoreManager.getScore();
+        this.leaderboardEntry.setText(`${this.playerName}: ${score}`);
     }
 
     showBountyKillFeedback(name, value) {
