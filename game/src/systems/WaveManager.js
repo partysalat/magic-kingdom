@@ -2,13 +2,77 @@ export class WaveManager {
     constructor(scene) {
         this.scene = scene;
         this.currentWave = 0;
-        this.maxWaves = 3;
+        this.maxWaves = 10;
         this.isSpawning = false;
         this.waveActive = false;
         this.enemiesInWave = 0;
         this.enemiesRemaining = 0;
 
         console.log('WaveManager initialized');
+    }
+
+    getWaveComposition(waveNumber) {
+        // Returns array of enemy types to spawn
+        // Early waves: mostly lobsters
+        // Mid waves: introduce variety
+        // Late waves: all enemy types
+
+        const compositions = {
+            1: [
+                { type: 'lobster', count: 5 }
+            ],
+            2: [
+                { type: 'lobster', count: 7 }
+            ],
+            3: [
+                { type: 'lobster', count: 8 },
+                { type: 'shrimp', count: 2 }
+            ],
+            4: [
+                { type: 'lobster', count: 6 },
+                { type: 'shrimp', count: 4 }
+            ],
+            5: [
+                { type: 'lobster', count: 5 },
+                { type: 'shrimp', count: 3 },
+                { type: 'hermit', count: 2 }
+            ],
+            6: [
+                { type: 'lobster', count: 6 },
+                { type: 'shrimp', count: 4 },
+                { type: 'hermit', count: 2 },
+                { type: 'jellyfish', count: 1 }
+            ],
+            7: [
+                { type: 'lobster', count: 5 },
+                { type: 'shrimp', count: 5 },
+                { type: 'hermit', count: 3 },
+                { type: 'jellyfish', count: 2 }
+            ],
+            8: [
+                { type: 'lobster', count: 6 },
+                { type: 'shrimp', count: 6 },
+                { type: 'hermit', count: 3 },
+                { type: 'jellyfish', count: 2 },
+                { type: 'flyingfish', count: 3 }
+            ],
+            9: [
+                { type: 'lobster', count: 7 },
+                { type: 'shrimp', count: 7 },
+                { type: 'hermit', count: 4 },
+                { type: 'jellyfish', count: 3 },
+                { type: 'flyingfish', count: 4 }
+            ],
+            10: [
+                { type: 'lobster', count: 8 },
+                { type: 'shrimp', count: 8 },
+                { type: 'hermit', count: 5 },
+                { type: 'jellyfish', count: 4 },
+                { type: 'flyingfish', count: 5 }
+            ]
+        };
+
+        return compositions[waveNumber] || compositions[10];
     }
 
     startNextWave() {
@@ -24,34 +88,44 @@ export class WaveManager {
 
         console.log('Starting wave', this.currentWave);
 
-        // Determine enemy count based on wave
-        const baseEnemies = 3;
-        const enemyCount = baseEnemies + (this.currentWave - 1) * 2;
+        // Get composition for this wave
+        const composition = this.getWaveComposition(this.currentWave);
 
-        this.enemiesInWave = enemyCount;
-        this.enemiesRemaining = enemyCount;
+        // Calculate total enemies
+        const totalEnemies = composition.reduce((sum, group) => sum + group.count, 0);
 
-        // Spawn enemies
-        this.spawnEnemies(enemyCount);
+        this.enemiesInWave = totalEnemies;
+        this.enemiesRemaining = totalEnemies;
+
+        // Spawn enemies by composition
+        this.spawnEnemiesByComposition(composition);
 
         this.isSpawning = false;
     }
 
-    spawnEnemies(count) {
-        const spawnPoints = this.getSpawnPoints(count);
+    spawnEnemiesByComposition(composition) {
+        // Calculate total count for spawn point distribution
+        const totalCount = composition.reduce((sum, group) => sum + group.count, 0);
+        const spawnPoints = this.getSpawnPoints(totalCount);
 
-        for (let i = 0; i < count; i++) {
-            const point = spawnPoints[i];
-            const enemy = new this.scene.Enemy(
-                this.scene,
-                point.x,
-                point.y,
-                'lobster'
-            );
-            this.scene.enemies.push(enemy);
-        }
+        let spawnIndex = 0;
 
-        console.log('Spawned', count, 'enemies');
+        // Spawn each enemy group
+        composition.forEach(group => {
+            for (let i = 0; i < group.count; i++) {
+                const point = spawnPoints[spawnIndex];
+                const enemy = new this.scene.Enemy(
+                    this.scene,
+                    point.x,
+                    point.y,
+                    group.type
+                );
+                this.scene.enemies.push(enemy);
+                spawnIndex++;
+            }
+        });
+
+        console.log('Spawned', totalCount, 'enemies');
     }
 
     getSpawnPoints(count) {
