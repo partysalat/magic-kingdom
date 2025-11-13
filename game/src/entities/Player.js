@@ -24,6 +24,10 @@ export class Player {
         this.fireRate = 200; // milliseconds between shots
         this.nextFire = 0;
 
+        // Damage cooldown properties
+        this.lastHitTime = 0;
+        this.hitCooldown = 1000; // milliseconds between damage (1 second)
+
         console.log('Player created at', x, y);
     }
 

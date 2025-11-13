@@ -93,7 +93,7 @@ export class GameScene extends Phaser.Scene {
 
         // Check collisions
         this.checkBulletCollisions();
-        this.checkPlayerCollisions();
+        this.checkPlayerCollisions(time);
     }
 
     checkBulletCollisions() {
@@ -125,7 +125,7 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
-    checkPlayerCollisions() {
+    checkPlayerCollisions(time) {
         if (!this.player || this.player.isDead()) return;
 
         for (let i = this.enemies.length - 1; i >= 0; i--) {
@@ -139,11 +139,15 @@ export class GameScene extends Phaser.Scene {
 
             // Collision if distance less than combined radii
             if (distance < 35) { // 20 (player) + 15 (enemy)
-                const health = this.player.takeDamage(enemy.getDamage());
-                this.updateHealthUI();
+                // Check damage cooldown to prevent frame-rate dependent damage
+                if (time - this.player.lastHitTime >= this.player.hitCooldown) {
+                    const health = this.player.takeDamage(enemy.getDamage());
+                    this.updateHealthUI();
+                    this.player.lastHitTime = time;
 
-                if (this.player.isDead()) {
-                    this.handleGameOver();
+                    if (this.player.isDead()) {
+                        this.handleGameOver();
+                    }
                 }
 
                 // Push enemy back to prevent stacking
