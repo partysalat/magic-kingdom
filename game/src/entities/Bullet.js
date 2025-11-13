@@ -2,9 +2,12 @@ export class Bullet {
     constructor(scene, x, y, angle) {
         this.scene = scene;
 
-        // Create bullet sprite (yellow circle)
-        this.sprite = scene.add.circle(x, y, 4, 0xffff00);
+        // Create bullet sprite
+        this.sprite = scene.add.image(x, y, 'bullet');
         scene.physics.add.existing(this.sprite);
+
+        // Set collision body to match sprite
+        this.sprite.body.setCircle(4);
 
         // Set velocity based on angle
         const speed = 800;
