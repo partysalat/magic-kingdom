@@ -1,6 +1,7 @@
 import { Player } from '../entities/Player.js';
 import { Bullet } from '../entities/Bullet.js';
 import { Enemy } from '../entities/Enemy.js';
+import { WaveManager } from '../systems/WaveManager.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -21,8 +22,9 @@ export class GameScene extends Phaser.Scene {
         // Create player in center
         this.player = new Player(this, 960, 540);
 
-        // Make Bullet class available to player
+        // Make classes available globally in scene
         this.Bullet = Bullet;
+        this.Enemy = Enemy;
 
         // Setup input
         this.keys = this.input.keyboard.addKeys({
@@ -46,9 +48,8 @@ export class GameScene extends Phaser.Scene {
         // Create enemy array
         this.enemies = [];
 
-        // Spawn a test enemy
-        const testEnemy = new Enemy(this, 1400, 300, 'lobster');
-        this.enemies.push(testEnemy);
+        // Initialize wave manager
+        this.waveManager = new WaveManager(this);
 
         // Add UI text
         this.add.text(20, 20, 'WASD: Move | Mouse: Aim & Shoot', {
@@ -62,6 +63,19 @@ export class GameScene extends Phaser.Scene {
             fontSize: '32px',
             color: '#ff0000',
             fontFamily: 'Arial'
+        });
+
+        // Add wave display
+        this.waveText = this.add.text(960, 20, 'Wave: 0/3', {
+            fontSize: '36px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5, 0);
+
+        // Start first wave after brief delay
+        this.time.delayedCall(1000, () => {
+            this.waveManager.startNextWave();
+            this.updateWaveUI();
         });
     }
 
@@ -86,6 +100,8 @@ export class GameScene extends Phaser.Scene {
                 return true;
             } else if (!enemy.isAlive()) {
                 enemy.destroy();
+                this.waveManager.enemyKilled();
+                this.updateWaveUI();
                 return false;
             }
             return true;
@@ -164,6 +180,36 @@ export class GameScene extends Phaser.Scene {
         if (this.player) {
             this.healthText.setText(`Health: ${this.player.health}`);
         }
+    }
+
+    updateWaveUI() {
+        const current = this.waveManager.getCurrentWave();
+        const max = this.waveManager.getMaxWaves();
+        this.waveText.setText(`Wave: ${current}/${max}`);
+    }
+
+    handleVictory() {
+        console.log('Victory!');
+        this.isGameOver = true;
+
+        // Display victory text
+        this.add.text(960, 540, 'VICTORY!', {
+            fontSize: '96px',
+            color: '#00ff00',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        this.add.text(960, 640, 'All waves completed!', {
+            fontSize: '36px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        this.add.text(960, 700, 'Refresh to restart', {
+            fontSize: '24px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
     }
 
     handleGameOver() {
