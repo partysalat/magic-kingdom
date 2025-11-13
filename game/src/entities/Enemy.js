@@ -62,9 +62,12 @@ const ENEMY_TYPES = {
 export { ENEMY_TYPES };
 
 export class Enemy {
-    constructor(scene, x, y, type = 'lobster') {
+    constructor(scene, x, y, type = 'lobster', isBounty = false, bountyValue = 0) {
         this.scene = scene;
         this.type = type;
+        this.isBounty = isBounty;
+        this.bountyValue = bountyValue;
+        this.bountyName = '';
 
         // Get configuration for this enemy type
         const config = ENEMY_TYPES[type];
@@ -98,6 +101,11 @@ export class Enemy {
 
         // Visual indicators based on type
         this.createVisualIndicators();
+
+        // After existing properties, add bounty visual indicator
+        if (this.isBounty) {
+            this.createBountyIndicator();
+        }
 
         this.alive = true;
 
@@ -143,6 +151,53 @@ export class Enemy {
                 this.wing2 = this.scene.add.circle(this.sprite.x + 10, this.sprite.y, 6, 0x0099cc);
                 break;
         }
+    }
+
+    createBountyIndicator() {
+        // Wanted poster icon above enemy
+        this.bountyIcon = this.scene.add.circle(
+            this.sprite.x,
+            this.sprite.y - 30,
+            10,
+            0xffff00
+        );
+        this.bountyIcon.setStrokeStyle(2, 0xff0000);
+
+        // Spotlight effect
+        this.spotLight = this.scene.add.circle(
+            this.sprite.x,
+            this.sprite.y,
+            this.config.radius + 15,
+            0xffff00,
+            0.3
+        );
+    }
+
+    updateBountyVisuals() {
+        if (this.isBounty && this.bountyIcon && this.spotLight) {
+            this.bountyIcon.setPosition(this.sprite.x, this.sprite.y - 30);
+            this.spotLight.setPosition(this.sprite.x, this.sprite.y);
+
+            // Pulse animation
+            const pulse = Math.sin(Date.now() / 300) * 0.15 + 0.85;
+            this.spotLight.setScale(pulse);
+        }
+    }
+
+    getBountyValue() {
+        return this.bountyValue;
+    }
+
+    isBountyEnemy() {
+        return this.isBounty;
+    }
+
+    setBountyName(name) {
+        this.bountyName = name;
+    }
+
+    getBountyName() {
+        return this.bountyName;
     }
 
     update(time, playerX, playerY) {
@@ -347,6 +402,9 @@ export class Enemy {
                 }
                 break;
         }
+
+        // Update bounty visuals if this is a bounty enemy
+        this.updateBountyVisuals();
     }
 
     takeDamage(amount) {
@@ -402,5 +460,9 @@ export class Enemy {
                 if (this.wing2) this.wing2.destroy();
                 break;
         }
+
+        // Clean up bounty visuals
+        if (this.bountyIcon) this.bountyIcon.destroy();
+        if (this.spotLight) this.spotLight.destroy();
     }
 }

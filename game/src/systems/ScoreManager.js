@@ -22,6 +22,12 @@ export class ScoreManager {
         return this.score;
     }
 
+    addBountyKill(bountyValue) {
+        this.score += bountyValue;
+        console.log('Bounty killed! Bonus:', bountyValue, 'Score:', this.score);
+        return this.score;
+    }
+
     getScore() {
         return this.score;
     }
