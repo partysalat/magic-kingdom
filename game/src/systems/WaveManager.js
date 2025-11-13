@@ -240,6 +240,36 @@ export class WaveManager {
         console.log('Health pickup spawned');
     }
 
+    spawnCocktails() {
+        console.log('Spawning cocktails...');
+
+        // Get 3 random cocktail types
+        const types = Object.keys(this.scene.COCKTAIL_TYPES);
+        const selectedTypes = [];
+
+        while (selectedTypes.length < 3 && selectedTypes.length < types.length) {
+            const randomType = types[Math.floor(Math.random() * types.length)];
+            if (!selectedTypes.includes(randomType)) {
+                selectedTypes.push(randomType);
+            }
+        }
+
+        // Spawn at different locations
+        const positions = [
+            { x: 400, y: 540 },
+            { x: 960, y: 540 },
+            { x: 1520, y: 540 }
+        ];
+
+        selectedTypes.forEach((type, index) => {
+            const pos = positions[index];
+            const cocktail = new this.scene.Cocktail(this.scene, pos.x, pos.y, type);
+            this.scene.cocktails.push(cocktail);
+        });
+
+        console.log('Spawned', selectedTypes.length, 'cocktails');
+    }
+
     enemyKilled() {
         this.enemiesRemaining--;
         console.log('Enemies remaining:', this.enemiesRemaining);
@@ -264,8 +294,37 @@ export class WaveManager {
             this.spawnHealthPickup();
         }
 
-        // Start next wave after delay
-        this.scene.time.delayedCall(2000, () => {
+        // Spawn cocktails between waves
+        this.spawnCocktails();
+
+        // Show "Get Ready" message
+        const readyText = this.scene.add.text(960, 300, 'GRAB A COCKTAIL!', {
+            fontSize: '48px',
+            color: '#ffff00',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        // Countdown timer
+        let countdown = 10;
+        const countdownText = this.scene.add.text(960, 360, `${countdown}`, {
+            fontSize: '36px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        const countdownTimer = this.scene.time.addEvent({
+            delay: 1000,
+            repeat: 9,
+            callback: () => {
+                countdown--;
+                countdownText.setText(`${countdown}`);
+            }
+        });
+
+        // Start next wave after 10 second delay
+        this.scene.time.delayedCall(10000, () => {
+            readyText.destroy();
+            countdownText.destroy();
             this.startNextWave();
             if (this.scene.updateWaveUI) {
                 this.scene.updateWaveUI();

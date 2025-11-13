@@ -4,6 +4,7 @@ import { Enemy } from '../entities/Enemy.js';
 import { WaveManager } from '../systems/WaveManager.js';
 import { ScoreManager } from '../systems/ScoreManager.js';
 import { HealthPickup } from '../entities/HealthPickup.js';
+import { Cocktail, COCKTAIL_TYPES } from '../entities/Cocktail.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -39,6 +40,8 @@ export class GameScene extends Phaser.Scene {
         this.Bullet = Bullet;
         this.Enemy = Enemy;
         this.HealthPickup = HealthPickup;
+        this.Cocktail = Cocktail;
+        this.COCKTAIL_TYPES = COCKTAIL_TYPES;
 
         // Setup input
         this.keys = this.input.keyboard.addKeys({
@@ -64,6 +67,9 @@ export class GameScene extends Phaser.Scene {
 
         // Create health pickups array
         this.healthPickups = [];
+
+        // Create cocktails array
+        this.cocktails = [];
 
         // Initialize wave manager
         this.waveManager = new WaveManager(this);
