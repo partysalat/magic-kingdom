@@ -1,12 +1,20 @@
 export class Player {
-    constructor(scene, x, y) {
+    constructor(scene, x, y, color = 'red') {
         this.scene = scene;
+        this.color = color;
 
-        // Create placeholder graphics (red crab)
-        this.sprite = scene.add.circle(x, y, 20, 0xff0000);
+        // Create sprite (Gisela the kawaii cowboy crab!)
+        this.sprite = scene.add.sprite(x, y, `gisela-${color}`);
+        this.sprite.play(`gisela-${color}-idle`);
+
+        // Scale down to appropriate size (96x96 sprite -> 48x48 display)
+        this.sprite.setScale(0.5);
+
         scene.physics.add.existing(this.sprite);
 
-        // Physics body configuration
+        // Physics body configuration - use circular collision
+        this.sprite.body.setCircle(20); // Collision radius
+        this.sprite.body.setOffset(28, 28); // Center the collision circle (adjusted for 96x96 sprite)
         this.sprite.body.setCollideWorldBounds(true);
         this.sprite.body.setDrag(500);
         this.sprite.body.setMaxVelocity(300);
@@ -15,9 +23,6 @@ export class Player {
         this.speed = 300;
         this.health = 100;
         this.maxHealth = 100;
-
-        // Add a small "hat" indicator (triangle pointing up)
-        this.hat = scene.add.triangle(x, y - 25, 0, 10, -8, -5, 8, -5, 0x8b4513);
 
         // Shooting properties
         this.bullets = [];
@@ -28,7 +33,7 @@ export class Player {
         this.lastHitTime = 0;
         this.hitCooldown = 1000; // milliseconds between damage (1 second)
 
-        console.log('Player created at', x, y);
+        console.log(`Player created at ${x}, ${y} (${color} Gisela)`);
     }
 
     update(keys) {
@@ -56,9 +61,6 @@ export class Player {
 
         // Apply velocity
         this.sprite.body.setVelocity(velocityX, velocityY);
-
-        // Position hat above player
-        this.hat.setPosition(this.sprite.x, this.sprite.y - 25);
 
         // Update bullets
         this.bullets = this.bullets.filter(bullet => {
@@ -113,12 +115,19 @@ export class Player {
         return this.health;
     }
 
+    heal(amount) {
+        const oldHealth = this.health;
+        this.health = Math.min(this.health + amount, this.maxHealth);
+        const actualHealing = this.health - oldHealth;
+        console.log('Player healed:', actualHealing, 'New health:', this.health);
+        return actualHealing;
+    }
+
     isDead() {
         return this.health <= 0;
     }
 
     destroy() {
         this.sprite.destroy();
-        this.hat.destroy();
     }
 }

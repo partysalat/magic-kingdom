@@ -164,6 +164,20 @@ export class WaveManager {
         return points;
     }
 
+    spawnHealthPickup() {
+        // Spawn health pickup at random location
+        const x = 200 + Math.random() * 1520;
+        const y = 200 + Math.random() * 680;
+
+        const pickup = new this.scene.HealthPickup(this.scene, x, y);
+        if (!this.scene.healthPickups) {
+            this.scene.healthPickups = [];
+        }
+        this.scene.healthPickups.push(pickup);
+
+        console.log('Health pickup spawned');
+    }
+
     enemyKilled() {
         this.enemiesRemaining--;
         console.log('Enemies remaining:', this.enemiesRemaining);
@@ -181,6 +195,11 @@ export class WaveManager {
         if (this.scene.scoreManager) {
             this.scene.scoreManager.addWaveSurvivalBonus();
             this.scene.updateScoreUI();
+        }
+
+        // Spawn health pickup every 2 waves
+        if (this.currentWave % 2 === 0) {
+            this.spawnHealthPickup();
         }
 
         // Start next wave after delay
