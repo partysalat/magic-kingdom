@@ -83,6 +83,13 @@ export class GameScene extends Phaser.Scene {
             fontFamily: 'Arial'
         }).setOrigin(0.5, 0);
 
+        // Add enemy count display
+        this.enemyText = this.add.text(960, 65, 'Enemies: 0', {
+            fontSize: '28px',
+            color: '#ffaa00',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5, 0);
+
         // Start first wave after brief delay
         this.time.delayedCall(1000, () => {
             this.waveManager.startNextWave();
@@ -203,6 +210,18 @@ export class GameScene extends Phaser.Scene {
                 if (distance < 19) { // 4 (bullet) + 15 (enemy)
                     enemy.takeDamage(bullet.getDamage());
                     bullet.destroy();
+
+                    // Screen shake on hit
+                    this.cameras.main.shake(100, 0.002);
+
+                    // Flash enemy white
+                    enemy.getSprite().setFillStyle(0xffffff);
+                    this.time.delayedCall(100, () => {
+                        if (enemy.isAlive()) {
+                            enemy.getSprite().setFillStyle(0xff6600);
+                        }
+                    });
+
                     console.log('Bullet hit enemy!');
                     break;
                 }
@@ -254,7 +273,10 @@ export class GameScene extends Phaser.Scene {
     updateWaveUI() {
         const current = this.waveManager.getCurrentWave();
         const max = this.waveManager.getMaxWaves();
+        const enemiesAlive = this.enemies.filter(e => e.isAlive()).length;
+
         this.waveText.setText(`Wave: ${current}/${max}`);
+        this.enemyText.setText(`Enemies: ${enemiesAlive}`);
     }
 
     handleVictory() {
