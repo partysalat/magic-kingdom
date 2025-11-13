@@ -33,6 +33,17 @@ export class Player {
         this.lastHitTime = 0;
         this.hitCooldown = 1000; // milliseconds between damage (1 second)
 
+        // Buff system
+        this.activeBuff = null;
+        this.buffEndTime = 0;
+        this.buffAura = null;
+        this.damageRampMultiplier = 1.0;
+        this.rampShotsFired = 0;
+
+        // Shooting properties for buff calculations
+        this.shootCooldown = this.fireRate;
+        this.bulletDamage = 10;
+
         console.log(`Player created at ${x}, ${y} (${color} Gisela)`);
     }
 
@@ -70,30 +81,83 @@ export class Player {
             }
             return false;
         });
+
+        // Update buff aura position
+        if (this.buffAura) {
+            this.buffAura.setPosition(this.sprite.x, this.sprite.y);
+        }
+
+        // Check buff expiration
+        this.getActiveBuff();
     }
 
     shoot(targetX, targetY, currentTime) {
-        if (currentTime < this.nextFire) return null;
+        // Check cooldown (modified by rapid_fire buff)
+        const activeBuff = this.getActiveBuff();
+        let cooldown = this.shootCooldown;
 
-        // Calculate angle to mouse
-        const angle = Math.atan2(
-            targetY - this.sprite.y,
-            targetX - this.sprite.x
-        );
+        if (activeBuff === 'rapid_fire') {
+            cooldown = this.shootCooldown / 2;
+        }
 
-        // Create bullet
-        const bullet = new this.scene.Bullet(
-            this.scene,
-            this.sprite.x,
-            this.sprite.y,
-            angle
-        );
+        if (currentTime < this.nextFire) {
+            return;
+        }
 
-        this.bullets.push(bullet);
-        this.nextFire = currentTime + this.fireRate;
+        this.nextFire = currentTime + cooldown;
 
-        console.log('Player fired bullet');
-        return bullet;
+        // Calculate base angle
+        const dx = targetX - this.sprite.x;
+        const dy = targetY - this.sprite.y;
+        const baseAngle = Math.atan2(dy, dx);
+
+        // Calculate damage with buffs
+        let damage = this.bulletDamage;
+
+        if (activeBuff === 'heavy_hitter') {
+            damage *= 2;
+        } else if (activeBuff === 'damage_ramp') {
+            this.rampShotsFired++;
+            this.damageRampMultiplier = 1.0 + (this.rampShotsFired * 0.05);
+            damage *= this.damageRampMultiplier;
+        } else if (activeBuff === 'critical') {
+            if (Math.random() < 0.5) {
+                damage *= 3;
+            }
+        }
+
+        // Determine number of bullets and angles based on buff
+        const bulletAngles = [];
+
+        if (activeBuff === 'spread_shot') {
+            // 5 bullets in fan pattern
+            for (let i = -2; i <= 2; i++) {
+                bulletAngles.push(baseAngle + (i * Math.PI / 12));
+            }
+        } else {
+            // Single bullet
+            bulletAngles.push(baseAngle);
+        }
+
+        // Create bullets
+        bulletAngles.forEach(angle => {
+            const bullet = new this.scene.Bullet(
+                this.scene,
+                this.sprite.x,
+                this.sprite.y,
+                angle,
+                damage
+            );
+
+            // Mark piercing bullets
+            if (activeBuff === 'piercing') {
+                bullet.piercing = true;
+            }
+
+            this.bullets.push(bullet);
+        });
+
+        console.log('Player shot', bulletAngles.length, 'bullet(s) at', targetX, targetY);
     }
 
     getX() {
@@ -125,6 +189,56 @@ export class Player {
 
     isDead() {
         return this.health <= 0;
+    }
+
+    applyBuff(cocktailConfig) {
+        console.log('Applying buff:', cocktailConfig.name);
+
+        // Remove old buff visuals if any
+        if (this.buffAura) {
+            this.buffAura.destroy();
+        }
+
+        // Set new buff
+        this.activeBuff = cocktailConfig.effect;
+        this.buffEndTime = Date.now() + cocktailConfig.duration;
+
+        // Reset damage ramp if applicable
+        if (this.activeBuff === 'damage_ramp') {
+            this.damageRampMultiplier = 1.0;
+            this.rampShotsFired = 0;
+        }
+
+        // Create aura visual
+        this.buffAura = this.scene.add.circle(
+            this.sprite.x,
+            this.sprite.y,
+            30,
+            cocktailConfig.color,
+            0.4
+        );
+        this.buffAura.setDepth(-1);
+    }
+
+    getActiveBuff() {
+        // Check if buff expired
+        if (this.activeBuff && Date.now() > this.buffEndTime) {
+            this.clearBuff();
+        }
+        return this.activeBuff;
+    }
+
+    clearBuff() {
+        console.log('Buff expired');
+        this.activeBuff = null;
+        this.buffEndTime = 0;
+        this.damageRampMultiplier = 1.0;
+        this.rampShotsFired = 0;
+
+        if (this.buffAura) {
+            this.buffAura.destroy();
+            this.buffAura = null;
+        }
     }
 
     destroy() {
