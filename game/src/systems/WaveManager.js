@@ -187,7 +187,50 @@ export class WaveManager {
 
     announceBounty(name, value) {
         console.log(`WANTED: ${name} - ${value} Points!`);
-        // Visual announcement will be added in next task
+
+        // Create announcement banner
+        const banner = this.scene.add.rectangle(960, 150, 800, 100, 0x000000, 0.8);
+        banner.setStrokeStyle(4, 0xffff00);
+
+        const wantedText = this.scene.add.text(960, 130, 'WANTED', {
+            fontSize: '32px',
+            color: '#ff0000',
+            fontFamily: 'Arial',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        const nameText = this.scene.add.text(960, 165, name, {
+            fontSize: '36px',
+            color: '#ffff00',
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 3
+        }).setOrigin(0.5);
+
+        const valueText = this.scene.add.text(960, 200, `${value} POINTS!`, {
+            fontSize: '24px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+
+        // Screen flash
+        this.scene.cameras.main.flash(300, 255, 255, 0);
+
+        // Fade out after 3 seconds
+        this.scene.time.delayedCall(3000, () => {
+            this.scene.tweens.add({
+                targets: [banner, wantedText, nameText, valueText],
+                alpha: 0,
+                duration: 500,
+                onComplete: () => {
+                    banner.destroy();
+                    wantedText.destroy();
+                    nameText.destroy();
+                    valueText.destroy();
+                }
+            });
+        });
     }
 
     getSpawnPoints(count) {
