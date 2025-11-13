@@ -292,6 +292,8 @@ export class GameScene extends Phaser.Scene {
             const bullet = bullets[i];
             if (!bullet.isAlive()) continue;
 
+            let hitEnemy = false;
+
             for (let j = this.enemies.length - 1; j >= 0; j--) {
                 const enemy = this.enemies[j];
                 if (!enemy.isAlive()) continue;
@@ -304,7 +306,7 @@ export class GameScene extends Phaser.Scene {
                 // Collision if distance less than combined radii
                 if (distance < 19) { // 4 (bullet) + 15 (enemy)
                     enemy.takeDamage(bullet.getDamage());
-                    bullet.destroy();
+                    hitEnemy = true;
 
                     // Screen shake on hit
                     this.cameras.main.shake(100, 0.002);
@@ -313,14 +315,22 @@ export class GameScene extends Phaser.Scene {
                     enemy.getSprite().setFillStyle(0xffffff);
                     this.time.delayedCall(100, () => {
                         if (enemy.isAlive()) {
-                            enemy.getSprite().setFillStyle(0xff6600);
+                            enemy.getSprite().setFillStyle(enemy.config.color);
                         }
                     });
 
                     console.log('Bullet hit enemy!');
-                    break;
+
+                    // Only destroy bullet if not piercing
+                    if (!bullet.isPiercing()) {
+                        bullet.destroy();
+                        break;
+                    }
                 }
             }
+
+            // If piercing bullet didn't hit anything this frame, continue
+            // Non-piercing bullets already destroyed above
         }
     }
 

@@ -1,5 +1,5 @@
 export class Bullet {
-    constructor(scene, x, y, angle) {
+    constructor(scene, x, y, angle, damage = 10) {
         this.scene = scene;
 
         // Create bullet sprite
@@ -17,8 +17,9 @@ export class Bullet {
         );
 
         // Bullet properties
-        this.damage = 10;
+        this.damage = damage;
         this.alive = true;
+        this.piercing = false;
     }
 
     update() {
@@ -42,6 +43,14 @@ export class Bullet {
 
     isAlive() {
         return this.alive;
+    }
+
+    isPiercing() {
+        return this.piercing;
+    }
+
+    setPiercing(value) {
+        this.piercing = value;
     }
 
     destroy() {
