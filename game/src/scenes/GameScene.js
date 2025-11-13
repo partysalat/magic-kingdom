@@ -508,21 +508,103 @@ export class GameScene extends Phaser.Scene {
         console.log('Victory!');
         this.isGameOver = true;
 
-        // Display victory text
-        this.add.text(960, 540, 'VICTORY!', {
+        // Black overlay
+        const overlay = this.add.rectangle(960, 540, 1920, 1080, 0x000000, 0.8);
+
+        // Victory banner
+        const victoryText = this.add.text(960, 200, 'VICTORY!', {
             fontSize: '96px',
             color: '#00ff00',
-            fontFamily: 'Arial'
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 8
         }).setOrigin(0.5);
 
-        // Display final score
-        this.add.text(960, 640, `Final Score: ${this.scoreManager.getScore()}`, {
-            fontSize: '36px',
+        // Pulse animation
+        this.tweens.add({
+            targets: victoryText,
+            scale: 1.1,
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+
+        // MVP Section
+        this.add.text(960, 320, 'MVP: ' + this.playerName, {
+            fontSize: '48px',
+            color: '#ffff00',
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 4
+        }).setOrigin(0.5);
+
+        // Spotlight effect on player
+        const spotlight = this.add.circle(
+            this.player.getX(),
+            this.player.getY(),
+            100,
+            0xffff00,
+            0.3
+        );
+
+        this.tweens.add({
+            targets: spotlight,
+            alpha: 0.5,
+            scale: 1.2,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1
+        });
+
+        // Score breakdown
+        const finalScore = this.scoreManager.getScore();
+        const waveCount = this.waveManager.getCurrentWave();
+
+        this.add.text(960, 420, 'SCORE BREAKDOWN', {
+            fontSize: '32px',
+            color: '#ffffff',
+            fontFamily: 'Arial',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        this.add.text(960, 480, `Waves Completed: ${waveCount}`, {
+            fontSize: '24px',
             color: '#ffffff',
             fontFamily: 'Arial'
         }).setOrigin(0.5);
 
-        this.add.text(960, 700, 'Refresh to restart', {
+        this.add.text(960, 520, `Final Score: ${finalScore}`, {
+            fontSize: '32px',
+            color: '#ffff00',
+            fontFamily: 'Arial',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        // Check high score
+        const highScore = localStorage.getItem('highScore') || 0;
+        if (finalScore > highScore) {
+            localStorage.setItem('highScore', finalScore);
+
+            this.add.text(960, 580, 'NEW HIGH SCORE!', {
+                fontSize: '36px',
+                color: '#ff00ff',
+                fontFamily: 'Arial',
+                fontStyle: 'bold',
+                stroke: '#000000',
+                strokeThickness: 4
+            }).setOrigin(0.5);
+        } else {
+            this.add.text(960, 580, `High Score: ${highScore}`, {
+                fontSize: '24px',
+                color: '#aaaaaa',
+                fontFamily: 'Arial'
+            }).setOrigin(0.5);
+        }
+
+        this.add.text(960, 700, 'Refresh to Play Again', {
             fontSize: '24px',
             color: '#ffffff',
             fontFamily: 'Arial'
