@@ -124,6 +124,31 @@ export class GameScene extends Phaser.Scene {
         // Create leaderboard panel
         this.createLeaderboard();
 
+        // Target lock visuals
+        this.targetReticle = this.add.circle(0, 0, 35);
+        this.targetReticle.setStrokeStyle(3, 0x00ff00);
+        this.targetReticle.setFillStyle(0x00ff00, 0.1);
+        this.targetReticle.setVisible(false);
+
+        this.lockedReticle = this.add.circle(0, 0, 40);
+        this.lockedReticle.setStrokeStyle(4, 0xffff00);
+        this.lockedReticle.setFillStyle(0xffff00, 0.2);
+        this.lockedReticle.setVisible(false);
+
+        // Lock line
+        this.lockLine = this.add.line(0, 0, 0, 0, 0, 0, 0xffff00);
+        this.lockLine.setLineWidth(2);
+        this.lockLine.setVisible(false);
+
+        // Target lock display
+        this.lockText = this.add.text(960, 100, '', {
+            fontSize: '24px',
+            color: '#ffff00',
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 3
+        }).setOrigin(0.5, 0);
+
         // Start first wave after brief delay
         this.time.delayedCall(1000, () => {
             this.waveManager.startNextWave();
@@ -317,21 +342,52 @@ export class GameScene extends Phaser.Scene {
         // Update buff UI
         this.updateBuffUI();
 
-        // Debug: visualize current target
-        if (this.targetSelector.getCurrentTarget()) {
-            const target = this.targetSelector.getCurrentTarget();
-            if (!this.debugTargetCircle) {
-                this.debugTargetCircle = this.add.circle(0, 0, 30);
-                this.debugTargetCircle.setStrokeStyle(3, 0x00ff00);
-                this.debugTargetCircle.setFillStyle(0x00ff00, 0);
-            }
-            this.debugTargetCircle.setPosition(
-                target.getSprite().x,
-                target.getSprite().y
+        // Update target visuals
+        const currentTarget = this.targetSelector.getCurrentTarget();
+        const lockedTarget = this.targetSelector.getLockedTarget();
+
+        if (lockedTarget && lockedTarget.isAlive()) {
+            // Show locked target reticle
+            this.lockedReticle.setPosition(
+                lockedTarget.getSprite().x,
+                lockedTarget.getSprite().y
             );
-            this.debugTargetCircle.setVisible(true);
-        } else if (this.debugTargetCircle) {
-            this.debugTargetCircle.setVisible(false);
+            this.lockedReticle.setVisible(true);
+
+            // Pulse animation
+            const pulse = Math.sin(Date.now() / 200) * 0.1 + 1.0;
+            this.lockedReticle.setScale(pulse);
+
+            // Line from player to locked target
+            this.lockLine.setTo(
+                this.player.getX(),
+                this.player.getY(),
+                lockedTarget.getSprite().x,
+                lockedTarget.getSprite().y
+            );
+            this.lockLine.setVisible(true);
+        } else {
+            this.lockedReticle.setVisible(false);
+            this.lockLine.setVisible(false);
+        }
+
+        if (currentTarget && currentTarget.isAlive() && currentTarget !== lockedTarget) {
+            // Show current auto-target reticle
+            this.targetReticle.setPosition(
+                currentTarget.getSprite().x,
+                currentTarget.getSprite().y
+            );
+            this.targetReticle.setVisible(true);
+        } else {
+            this.targetReticle.setVisible(false);
+        }
+
+        // Update lock UI
+        if (this.targetSelector.isTargetLocked()) {
+            const locked = this.targetSelector.getLockedTarget();
+            this.lockText.setText(`🎯 LOCKED: ${locked.getBountyName()}`);
+        } else {
+            this.lockText.setText('');
         }
     }
 
