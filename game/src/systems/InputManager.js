@@ -13,6 +13,10 @@ export class InputManager {
         // Input mode (auto-detected)
         this.inputMode = 'keyboard'; // 'keyboard' or 'gamepad'
 
+        // Button edge detection
+        this.lastL1 = false;
+        this.lastR1 = false;
+
         this.setupKeyboard();
         this.setupGamepad();
     }
@@ -50,7 +54,6 @@ export class InputManager {
             const pads = this.scene.input.gamepad.gamepads;
             if (pads[this.playerIndex]) {
                 this.gamepad = pads[this.playerIndex];
-                console.log('Gamepad connected for player', this.playerIndex);
             }
         }
 
@@ -70,10 +73,22 @@ export class InputManager {
         this.movement.x = 0;
         this.movement.y = 0;
 
-        if (this.keys.W.isDown) this.movement.y = -1;
-        if (this.keys.S.isDown) this.movement.y = 1;
-        if (this.keys.A.isDown) this.movement.x = -1;
-        if (this.keys.D.isDown) this.movement.x = 1;
+        if (this.keys.W.isDown) {
+            this.movement.y = -1;
+            this.inputMode = 'keyboard';
+        }
+        if (this.keys.S.isDown) {
+            this.movement.y = 1;
+            this.inputMode = 'keyboard';
+        }
+        if (this.keys.A.isDown) {
+            this.movement.x = -1;
+            this.inputMode = 'keyboard';
+        }
+        if (this.keys.D.isDown) {
+            this.movement.x = 1;
+            this.inputMode = 'keyboard';
+        }
 
         // Aim influence from mouse position
         const pointer = this.scene.input.activePointer;
@@ -83,9 +98,11 @@ export class InputManager {
         // Target cycling with Q/E
         if (Phaser.Input.Keyboard.JustDown(this.keys.Q)) {
             this.cycleTargetPrev = true;
+            this.inputMode = 'keyboard';
         }
         if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
             this.cycleTargetNext = true;
+            this.inputMode = 'keyboard';
         }
     }
 
@@ -139,5 +156,11 @@ export class InputManager {
 
     shouldCycleTargetPrev() {
         return this.cycleTargetPrev;
+    }
+
+    destroy() {
+        // Remove event listeners to prevent memory leaks
+        this.scene.input.off('pointerdown');
+        this.scene.input.off('pointerup');
     }
 }

@@ -58,16 +58,6 @@ export class GameScene extends Phaser.Scene {
             D: Phaser.Input.Keyboard.KeyCodes.D
         });
 
-        // Setup mouse input
-        this.input.on('pointerdown', () => {
-            this.isShooting = true;
-        });
-
-        this.input.on('pointerup', () => {
-            this.isShooting = false;
-        });
-
-        this.isShooting = false;
 
         // Create enemy array
         this.enemies = [];
@@ -192,9 +182,9 @@ export class GameScene extends Phaser.Scene {
             this.player.update(this.keys);
 
             // Handle shooting
-            if (this.isShooting) {
-                const pointer = this.input.activePointer;
-                this.player.shoot(pointer.worldX, pointer.worldY, time);
+            if (this.inputManager.isFiringPressed()) {
+                const aimInfluence = this.inputManager.getAimInfluence();
+                this.player.shoot(aimInfluence.x, aimInfluence.y, time);
             }
         }
 
