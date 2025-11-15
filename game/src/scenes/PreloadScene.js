@@ -1,0 +1,155 @@
+export class PreloadScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'PreloadScene' });
+    }
+
+    preload() {
+        // Add loading bar (optional but nice)
+        this.createLoadingBar();
+
+        // === PLAYER SPRITES ===
+
+        this.load.spritesheet('gisela-red', 'assets/sprites/player/gisela-red-idle.png', {
+            frameWidth: 96,
+            frameHeight: 96
+        });
+
+        this.load.spritesheet('gisela-blue', 'assets/sprites/player/gisela-blue-idle.png', {
+            frameWidth: 96,
+            frameHeight: 96
+        });
+
+        this.load.spritesheet('gisela-green', 'assets/sprites/player/gisela-green-idle.png', {
+            frameWidth: 96,
+            frameHeight: 96
+        });
+
+        this.load.spritesheet('gisela-yellow', 'assets/sprites/player/gisela-yellow-idle.png', {
+            frameWidth: 96,
+            frameHeight: 96
+        });
+
+        // === ENEMY SPRITES ===
+
+        this.load.spritesheet('lobster-bandit', 'assets/sprites/enemies/lobster-bandit-idle.png', {
+            frameWidth: 64,
+            frameHeight: 48
+        });
+
+        // this.load.spritesheet('shrimp-quickdraw', 'assets/sprites/enemies/shrimp-quickdraw-idle.png', {
+        //     frameWidth: 32,
+        //     frameHeight: 32
+        // });
+
+        // this.load.spritesheet('hermit-tank', 'assets/sprites/enemies/hermit-tank-idle.png', {
+        //     frameWidth: 56,
+        //     frameHeight: 56
+        // });
+
+        // this.load.spritesheet('jellyfish-ghost', 'assets/sprites/enemies/jellyfish-ghost-float.png', {
+        //     frameWidth: 48,
+        //     frameHeight: 64
+        // });
+
+        // this.load.spritesheet('flyingfish', 'assets/sprites/enemies/flyingfish-fly.png', {
+        //     frameWidth: 48,
+        //     frameHeight: 32
+        // });
+
+        // === PROJECTILES ===
+
+        this.load.image('bullet', 'assets/sprites/projectiles/bullet.png');
+
+        // === POWERUPS (COCKTAILS) ===
+
+        this.load.image('cocktail-margarita', 'assets/sprites/powerups/cocktail-margarita.png');
+        this.load.image('cocktail-mojito', 'assets/sprites/powerups/cocktail-mojito.png');
+        this.load.image('cocktail-oldfashioned', 'assets/sprites/powerups/cocktail-oldfashioned.png');
+        this.load.image('cocktail-tequilasunrise', 'assets/sprites/powerups/cocktail-tequilasunrise.png');
+        this.load.image('cocktail-whiskeysour', 'assets/sprites/powerups/cocktail-whiskeysour.png');
+        this.load.image('cocktail-manhattan', 'assets/sprites/powerups/cocktail-manhattan.png');
+
+        // === ENVIRONMENT ===
+
+        // this.load.image('barrel', 'assets/sprites/environment/barrel.png');
+        // this.load.image('saloon-doors', 'assets/sprites/environment/saloon-doors.png');
+
+        // === UI ===
+
+        // this.load.image('bounty-poster', 'assets/ui/bounty-poster.png');
+    }
+
+    create() {
+        console.log('Assets loaded, creating animations...');
+
+        // === CREATE ANIMATIONS ===
+
+        // Player animations
+        this.createPlayerAnimation('gisela-red');
+        this.createPlayerAnimation('gisela-blue');
+        this.createPlayerAnimation('gisela-green');
+        this.createPlayerAnimation('gisela-yellow');
+
+        // Enemy animations
+        this.createEnemyIdleAnimation('lobster-bandit', 2); // 2 frames
+
+        console.log('Starting game...');
+        this.scene.start('GameScene');
+    }
+
+    createLoadingBar() {
+        const width = 400;
+        const height = 30;
+        const x = (this.cameras.main.width / 2) - (width / 2);
+        const y = (this.cameras.main.height / 2) - (height / 2);
+
+        // Background
+        const bg = this.add.graphics();
+        bg.fillStyle(0x222222, 0.8);
+        bg.fillRect(x, y, width, height);
+
+        // Progress bar
+        const progressBar = this.add.graphics();
+
+        this.load.on('progress', (value) => {
+            progressBar.clear();
+            progressBar.fillStyle(0xffffff, 1);
+            progressBar.fillRect(x, y, width * value, height);
+        });
+
+        // Loading text
+        this.add.text(this.cameras.main.width / 2, y - 30, 'Loading Gisela\'s Last Stand...', {
+            fontSize: '24px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
+    }
+
+    createPlayerAnimation(spriteKey) {
+        // Idle animation (assuming 3 frames)
+        this.anims.create({
+            key: `${spriteKey}-idle`,
+            frames: this.anims.generateFrameNumbers(spriteKey, { start: 0, end: 2 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        // Walk animation (if you add walk sprites, uncomment this)
+        // this.anims.create({
+        //     key: `${spriteKey}-walk`,
+        //     frames: this.anims.generateFrameNumbers(`${spriteKey}-walk`, { start: 0, end: 3 }),
+        //     frameRate: 12,
+        //     repeat: -1
+        // });
+    }
+
+    createEnemyIdleAnimation(spriteKey, frameCount) {
+        const endFrame = frameCount - 1;
+        this.anims.create({
+            key: `${spriteKey}-idle`,
+            frames: this.anims.generateFrameNumbers(spriteKey, { start: 0, end: endFrame }),
+            frameRate: 6,
+            repeat: -1
+        });
+    }
+}

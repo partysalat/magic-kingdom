@@ -1,0 +1,25 @@
+{
+  "name": "giselas-last-stand",
+  "version": "0.1.0",
+  "description": "A twin-stick wave survival shooter featuring Gisela the cowboy crab",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "serve -l 8000",
+    "dev": "serve -l 8000",
+    "generate-sprites": "node tools/generateSprites.js"
+  },
+  "keywords": [
+    "game",
+    "phaser",
+    "shooter"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^2.11.2"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
