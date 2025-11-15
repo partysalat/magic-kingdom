@@ -5,6 +5,7 @@ import { WaveManager } from '../systems/WaveManager.js';
 import { ScoreManager } from '../systems/ScoreManager.js';
 import { HealthPickup } from '../entities/HealthPickup.js';
 import { Cocktail, COCKTAIL_TYPES } from '../entities/Cocktail.js';
+import { InputManager } from '../systems/InputManager.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -45,6 +46,9 @@ export class GameScene extends Phaser.Scene {
         this.HealthPickup = HealthPickup;
         this.Cocktail = Cocktail;
         this.COCKTAIL_TYPES = COCKTAIL_TYPES;
+
+        // Create input manager
+        this.inputManager = new InputManager(this, 0);
 
         // Setup input
         this.keys = this.input.keyboard.addKeys({
@@ -179,6 +183,9 @@ export class GameScene extends Phaser.Scene {
 
     update(time, delta) {
         if (this.isGameOver) return;
+
+        // Update input manager
+        this.inputManager.update();
 
         // Update player with input
         if (this.player) {
