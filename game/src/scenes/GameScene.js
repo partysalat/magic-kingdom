@@ -54,14 +54,13 @@ export class GameScene extends Phaser.Scene {
         // Create target selector
         this.targetSelector = new TargetSelector(this);
 
-        // Setup input
+        // Setup input (WASD keys for player movement)
         this.keys = this.input.keyboard.addKeys({
             W: Phaser.Input.Keyboard.KeyCodes.W,
             A: Phaser.Input.Keyboard.KeyCodes.A,
             S: Phaser.Input.Keyboard.KeyCodes.S,
             D: Phaser.Input.Keyboard.KeyCodes.D
         });
-
 
         // Create enemy array
         this.enemies = [];
@@ -214,10 +213,10 @@ export class GameScene extends Phaser.Scene {
         if (this.player) {
             this.player.update(this.keys);
 
-            // Handle shooting
+            // Handle shooting with auto-aim
             if (this.inputManager.isFiringPressed()) {
-                const aimInfluence = this.inputManager.getAimInfluence();
-                this.player.shoot(aimInfluence.x, aimInfluence.y, time);
+                const target = this.targetSelector.getCurrentTarget();
+                this.player.shoot(target, time);
             }
         }
 

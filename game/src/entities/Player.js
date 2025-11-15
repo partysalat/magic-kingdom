@@ -91,7 +91,12 @@ export class Player {
         this.getActiveBuff();
     }
 
-    shoot(targetX, targetY, currentTime) {
+    shoot(targetEnemy, currentTime) {
+        // Check if we have a target
+        if (!targetEnemy || !targetEnemy.isAlive()) {
+            return;
+        }
+
         // Check cooldown (modified by rapid_fire buff)
         const activeBuff = this.getActiveBuff();
         let cooldown = this.shootCooldown;
@@ -106,7 +111,9 @@ export class Player {
 
         this.nextFire = currentTime + cooldown;
 
-        // Calculate base angle
+        // Calculate angle to target enemy
+        const targetX = targetEnemy.getSprite().x;
+        const targetY = targetEnemy.getSprite().y;
         const dx = targetX - this.sprite.x;
         const dy = targetY - this.sprite.y;
         const baseAngle = Math.atan2(dy, dx);
@@ -157,7 +164,7 @@ export class Player {
             this.bullets.push(bullet);
         });
 
-        console.log('Player shot', bulletAngles.length, 'bullet(s) at', targetX, targetY);
+        console.log('Player shot', bulletAngles.length, 'bullet(s) at enemy');
     }
 
     getX() {
