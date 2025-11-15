@@ -54,6 +54,9 @@ export class GameScene extends Phaser.Scene {
         // Create target selector
         this.targetSelector = new TargetSelector(this);
 
+        // Track input mode for UI updates
+        this.lastInputMode = 'keyboard';
+
         // Setup input (WASD keys for player movement)
         this.keys = this.input.keyboard.addKeys({
             W: Phaser.Input.Keyboard.KeyCodes.W,
@@ -77,12 +80,15 @@ export class GameScene extends Phaser.Scene {
         // Initialize score manager
         this.scoreManager = new ScoreManager(this);
 
-        // Add UI text
-        this.add.text(20, 20, 'WASD: Move | Mouse: Aim & Shoot', {
-            fontSize: '24px',
+        // Control instructions (updates based on input mode)
+        this.controlsText = this.add.text(20, 20, '', {
+            fontSize: '20px',
             color: '#ffffff',
-            fontFamily: 'Arial'
+            fontFamily: 'Arial',
+            backgroundColor: '#000000',
+            padding: { x: 10, y: 5 }
         });
+        this.updateControlsText();
 
         // Add health display
         this.healthText = this.add.text(20, 60, 'Health: 100', {
@@ -395,6 +401,12 @@ export class GameScene extends Phaser.Scene {
         } else {
             this.lockText.setText('');
         }
+
+        // Update controls display if input mode changed
+        if (this.lastInputMode !== this.inputManager.getInputMode()) {
+            this.updateControlsText();
+            this.lastInputMode = this.inputManager.getInputMode();
+        }
     }
 
     checkBulletCollisions() {
@@ -609,6 +621,23 @@ export class GameScene extends Phaser.Scene {
             this.buffText.setText(`BUFF: ${buff.toUpperCase().replace('_', ' ')} (${timeLeft}s)`);
         } else {
             this.buffText.setText('');
+        }
+    }
+
+    updateControlsText() {
+        if (!this.inputManager) return;
+
+        const mode = this.inputManager.getInputMode();
+
+        if (mode === 'gamepad') {
+            this.controlsText.setText(
+                'Left Stick: Move | Right Trigger: Fire\n' +
+                'Right Stick: Aim Influence | L1/R1: Lock Bounty'
+            );
+        } else {
+            this.controlsText.setText(
+                'WASD: Move | Mouse: Fire & Aim Influence | Q/E: Lock Bounty'
+            );
         }
     }
 
