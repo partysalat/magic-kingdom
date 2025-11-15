@@ -6,6 +6,7 @@ import { ScoreManager } from '../systems/ScoreManager.js';
 import { HealthPickup } from '../entities/HealthPickup.js';
 import { Cocktail, COCKTAIL_TYPES } from '../entities/Cocktail.js';
 import { InputManager } from '../systems/InputManager.js';
+import { TargetSelector } from '../systems/TargetSelector.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -49,6 +50,9 @@ export class GameScene extends Phaser.Scene {
 
         // Create input manager
         this.inputManager = new InputManager(this, 0);
+
+        // Create target selector
+        this.targetSelector = new TargetSelector(this);
 
         // Setup input
         this.keys = this.input.keyboard.addKeys({
@@ -177,6 +181,35 @@ export class GameScene extends Phaser.Scene {
         // Update input manager
         this.inputManager.update();
 
+        // Update target selection
+        const aimInfluence = this.inputManager.getAimInfluence();
+        const inputMode = this.inputManager.getInputMode();
+        this.targetSelector.update(
+            this.player.getX(),
+            this.player.getY(),
+            aimInfluence,
+            inputMode,
+            this.enemies
+        );
+
+        // Handle target cycling
+        if (this.inputManager.shouldCycleTargetNext()) {
+            this.targetSelector.cycleToBountyTarget(
+                this.player.getX(),
+                this.player.getY(),
+                this.enemies,
+                'next'
+            );
+        }
+        if (this.inputManager.shouldCycleTargetPrev()) {
+            this.targetSelector.cycleToBountyTarget(
+                this.player.getX(),
+                this.player.getY(),
+                this.enemies,
+                'prev'
+            );
+        }
+
         // Update player with input
         if (this.player) {
             this.player.update(this.keys);
@@ -284,6 +317,23 @@ export class GameScene extends Phaser.Scene {
 
         // Update buff UI
         this.updateBuffUI();
+
+        // Debug: visualize current target
+        if (this.targetSelector.getCurrentTarget()) {
+            const target = this.targetSelector.getCurrentTarget();
+            if (!this.debugTargetCircle) {
+                this.debugTargetCircle = this.add.circle(0, 0, 30);
+                this.debugTargetCircle.setStrokeStyle(3, 0x00ff00);
+                this.debugTargetCircle.setFillStyle(0x00ff00, 0);
+            }
+            this.debugTargetCircle.setPosition(
+                target.getSprite().x,
+                target.getSprite().y
+            );
+            this.debugTargetCircle.setVisible(true);
+        } else if (this.debugTargetCircle) {
+            this.debugTargetCircle.setVisible(false);
+        }
     }
 
     checkBulletCollisions() {
