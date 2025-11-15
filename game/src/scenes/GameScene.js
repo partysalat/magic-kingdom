@@ -144,10 +144,16 @@ export class GameScene extends Phaser.Scene {
         this.lockText = this.add.text(960, 100, '', {
             fontSize: '24px',
             color: '#ffff00',
-            fontFamily: 'Arial',
+            fontFamily: 'Arial, "Apple Color Emoji", "Segoe UI Emoji"',
             stroke: '#000000',
             strokeThickness: 3
         }).setOrigin(0.5, 0);
+
+        // Set explicit depth values for proper layering
+        this.targetReticle.setDepth(10);
+        this.lockedReticle.setDepth(10);
+        this.lockLine.setDepth(5);
+        this.lockText.setDepth(100);
 
         // Start first wave after brief delay
         this.time.delayedCall(1000, () => {
@@ -355,7 +361,7 @@ export class GameScene extends Phaser.Scene {
             this.lockedReticle.setVisible(true);
 
             // Pulse animation
-            const pulse = Math.sin(Date.now() / 200) * 0.1 + 1.0;
+            const pulse = Math.sin(time / 200) * 0.1 + 1.0;
             this.lockedReticle.setScale(pulse);
 
             // Line from player to locked target
