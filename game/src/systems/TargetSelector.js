@@ -125,13 +125,11 @@ export class TargetSelector {
     lockTarget(target) {
         if (target && target.isBountyEnemy()) {
             this.lockedTarget = target;
-            console.log('Locked target:', target.getBountyName());
         }
     }
 
     clearLock() {
         this.lockedTarget = null;
-        console.log('Target lock cleared');
     }
 
     cycleToBountyTarget(playerX, playerY, enemies, direction) {

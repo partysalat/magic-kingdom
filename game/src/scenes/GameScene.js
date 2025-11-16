@@ -18,8 +18,6 @@ export class GameScene extends Phaser.Scene {
     }
 
     create() {
-        console.log('GameScene created');
-
         // Scene setup
         this.cameras.main.setBackgroundColor('#4a3428'); // Wooden saloon floor
         this.isGameOver = false;
@@ -207,8 +205,6 @@ export class GameScene extends Phaser.Scene {
             this.physics.add.existing(barrel, true); // true = static body
             this.obstacles.push(barrel);
         });
-
-        console.log('Created', this.obstacles.length, 'obstacles');
     }
 
     update(time, delta) {
@@ -318,7 +314,6 @@ export class GameScene extends Phaser.Scene {
 
                     // Visual feedback
                     this.cameras.main.flash(200, 0, 255, 0);
-                    console.log('Player healed for', healed);
                     return false;
                 }
             }
@@ -342,8 +337,6 @@ export class GameScene extends Phaser.Scene {
                     cocktail.collect();
                     this.showCocktailFeedback(config);
                     this.updateBuffUI();
-
-                    console.log('Player collected:', config.name);
                     return false;
                 }
             }
@@ -444,8 +437,6 @@ export class GameScene extends Phaser.Scene {
                             enemy.getSprite().setFillStyle(enemy.config.color);
                         }
                     });
-
-                    console.log('Bullet hit enemy!');
 
                     // Only destroy bullet if not piercing
                     if (!bullet.isPiercing()) {
@@ -642,7 +633,6 @@ export class GameScene extends Phaser.Scene {
     }
 
     handleVictory() {
-        console.log('Victory!');
         this.isGameOver = true;
 
         // Black overlay
@@ -749,7 +739,6 @@ export class GameScene extends Phaser.Scene {
     }
 
     handleGameOver() {
-        console.log('Game Over!');
         this.isGameOver = true;
 
         // Black overlay

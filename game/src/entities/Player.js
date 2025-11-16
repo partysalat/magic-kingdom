@@ -43,8 +43,6 @@ export class Player {
         // Shooting properties for buff calculations
         this.shootCooldown = this.fireRate;
         this.bulletDamage = 10;
-
-        console.log(`Player created at ${x}, ${y} (${color} Gisela)`);
     }
 
     update(keys) {
@@ -163,8 +161,6 @@ export class Player {
 
             this.bullets.push(bullet);
         });
-
-        console.log('Player shot', bulletAngles.length, 'bullet(s) at enemy');
     }
 
     getX() {
@@ -182,7 +178,6 @@ export class Player {
     takeDamage(amount) {
         this.health -= amount;
         if (this.health < 0) this.health = 0;
-        console.log('Player health:', this.health);
         return this.health;
     }
 
@@ -190,7 +185,6 @@ export class Player {
         const oldHealth = this.health;
         this.health = Math.min(this.health + amount, this.maxHealth);
         const actualHealing = this.health - oldHealth;
-        console.log('Player healed:', actualHealing, 'New health:', this.health);
         return actualHealing;
     }
 
@@ -199,8 +193,6 @@ export class Player {
     }
 
     applyBuff(cocktailConfig) {
-        console.log('Applying buff:', cocktailConfig.name);
-
         // Remove old buff visuals if any
         if (this.buffAura) {
             this.buffAura.destroy();
@@ -236,7 +228,6 @@ export class Player {
     }
 
     clearBuff() {
-        console.log('Buff expired');
         this.activeBuff = null;
         this.buffEndTime = 0;
         this.damageRampMultiplier = 1.0;
