@@ -215,6 +215,12 @@ export class Enemy {
         this.inkTriggered2 = false;
         this.lastSweepTime = 0;
 
+        // Formation system properties
+        this.role = null; // 'tank', 'shooter', or null
+        this.formationGroup = null; // identifier for which formation this enemy belongs to
+        this.formationLeader = null; // reference to tank if this is a shooter
+        this.formationMembers = []; // references to shooters if this is a tank
+
         // Visual indicators based on type
         this.createVisualIndicators();
 
@@ -305,6 +311,23 @@ export class Enemy {
             // Pulse animation
             const pulse = Math.sin(Date.now() / 300) * 0.15 + 0.85;
             this.spotLight.setScale(pulse);
+        }
+    }
+
+    updateFormationVisuals() {
+        // Update tank indicator
+        if (this.role === 'tank' && this.tankGlow && this.tankLabel) {
+            this.tankGlow.setPosition(this.sprite.x, this.sprite.y);
+            this.tankLabel.setPosition(this.sprite.x, this.sprite.y - this.config.radius - 20);
+
+            // Pulsing animation
+            const pulse = Math.sin(Date.now() / 500) * 0.1 + 0.4;
+            this.tankGlow.setAlpha(pulse);
+        }
+
+        // Update shooter indicator
+        if (this.role === 'shooter' && this.shooterLabel) {
+            this.shooterLabel.setPosition(this.sprite.x, this.sprite.y - this.config.radius - 20);
         }
     }
 
@@ -544,6 +567,9 @@ export class Enemy {
 
         // Update bounty visuals if this is a bounty enemy
         this.updateBountyVisuals();
+
+        // Update formation role visuals
+        this.updateFormationVisuals();
     }
 
     takeDamage(amount) {
@@ -635,6 +661,11 @@ export class Enemy {
         // Clean up bounty visuals
         if (this.bountyIcon) this.bountyIcon.destroy();
         if (this.spotLight) this.spotLight.destroy();
+
+        // Clean up formation visuals
+        if (this.tankGlow) this.tankGlow.destroy();
+        if (this.tankLabel) this.tankLabel.destroy();
+        if (this.shooterLabel) this.shooterLabel.destroy();
     }
 
     /**
@@ -1631,6 +1662,10 @@ export class Enemy {
         if (this.wing2) this.wing2.setAlpha(this.alphaValue);
         if (this.bountyIcon) this.bountyIcon.setAlpha(this.alphaValue);
         if (this.spotLight) this.spotLight.setAlpha(this.alphaValue * 0.5);
+        // Formation visuals
+        if (this.tankGlow) this.tankGlow.setAlpha(this.alphaValue * 0.3);
+        if (this.tankLabel) this.tankLabel.setAlpha(this.alphaValue);
+        if (this.shooterLabel) this.shooterLabel.setAlpha(this.alphaValue);
     }
 
     /**
@@ -1638,5 +1673,87 @@ export class Enemy {
      */
     isCollisionEnabled() {
         return this.collisionEnabled;
+    }
+
+    /**
+     * Assign a formation role to this enemy
+     * @param {string} role - 'tank' or 'shooter'
+     * @param {string|number} formationGroup - identifier for the formation
+     */
+    assignRole(role, formationGroup) {
+        this.role = role;
+        this.formationGroup = formationGroup;
+
+        // Add visual indicator based on role
+        if (role === 'tank') {
+            this.addTankIndicator();
+        } else if (role === 'shooter') {
+            this.addShooterIndicator();
+        }
+    }
+
+    /**
+     * Link formation members (called on tank to link with shooters)
+     * @param {Enemy} leader - The tank leader (should be this)
+     * @param {Enemy[]} members - Array of shooter enemies
+     */
+    linkFormation(leader, members) {
+        if (this.role === 'tank') {
+            this.formationMembers = members;
+            members.forEach(shooter => {
+                shooter.formationLeader = this;
+            });
+        }
+    }
+
+    /**
+     * Add visual indicator for tank role
+     * Creates pulsing blue/cyan glow and "TANK" label
+     */
+    addTankIndicator() {
+        // Pulsing glow effect
+        this.tankGlow = this.scene.add.circle(
+            this.sprite.x,
+            this.sprite.y,
+            this.config.radius + 10,
+            0x00ffff,
+            0.3
+        );
+        this.tankGlow.setDepth(this.sprite.depth - 1);
+
+        // "TANK" label
+        this.tankLabel = this.scene.add.text(
+            this.sprite.x,
+            this.sprite.y - this.config.radius - 20,
+            'TANK',
+            {
+                fontSize: '12px',
+                color: '#00ffff',
+                fontFamily: 'Arial',
+                fontStyle: 'bold'
+            }
+        ).setOrigin(0.5);
+    }
+
+    /**
+     * Add visual indicator for shooter role
+     * Creates orange/red tint and "SHOOTER" label
+     */
+    addShooterIndicator() {
+        // Apply orange/red tint to sprite
+        this.sprite.setTint(0xff6600);
+
+        // "SHOOTER" label
+        this.shooterLabel = this.scene.add.text(
+            this.sprite.x,
+            this.sprite.y - this.config.radius - 20,
+            'SHOOTER',
+            {
+                fontSize: '12px',
+                color: '#ff6600',
+                fontFamily: 'Arial',
+                fontStyle: 'bold'
+            }
+        ).setOrigin(0.5);
     }
 }
