@@ -17,6 +17,36 @@
         #game-container {
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
+
+        /* Spawn Animation Keyframes */
+        @keyframes doorSwing {
+            0% { transform: scaleY(0); }
+            50% { transform: scaleY(1.1) translateX(-15px); }
+            100% { transform: scaleY(1) translateX(0); }
+        }
+
+        @keyframes doorSwingBounty {
+            0% { transform: scaleY(0); }
+            30% { transform: scaleY(1.15) translateX(-20px); }
+            50% { transform: scaleY(1.15) translateX(-20px); }
+            100% { transform: scaleY(1) translateX(0); }
+        }
+
+        @keyframes glassShatter {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--target-x), var(--target-y)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bountyFlash {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
 <body>

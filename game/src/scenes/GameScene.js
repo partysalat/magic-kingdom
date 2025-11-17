@@ -66,6 +66,9 @@ export class GameScene extends Phaser.Scene {
         // Create enemy array
         this.enemies = [];
 
+        // Create enemy bullets array
+        this.enemyBullets = [];
+
         // Create health pickups array
         this.healthPickups = [];
 
@@ -210,6 +213,11 @@ export class GameScene extends Phaser.Scene {
     update(time, delta) {
         if (this.isGameOver) return;
 
+        // Update wave manager (for spawn animations)
+        if (this.waveManager) {
+            this.waveManager.update(time);
+        }
+
         // Update input manager
         this.inputManager.update();
 
@@ -293,6 +301,9 @@ export class GameScene extends Phaser.Scene {
             return true;
         });
 
+        // Update enemy bullets
+        this.updateEnemyBullets(delta);
+
         // Check collisions
         this.checkBulletCollisions();
         this.checkPlayerCollisions(time);
@@ -323,7 +334,10 @@ export class GameScene extends Phaser.Scene {
 
         // Check cocktail collisions
         this.cocktails = this.cocktails.filter(cocktail => {
-            if (!cocktail.isAlive()) return false;
+            if (!cocktail.isAlive()) {
+                cocktail.destroy();  // Clean up sprites for non-alive cocktails
+                return false;
+            }
 
             if (this.player && !this.player.isDead()) {
                 const dx = this.player.getX() - cocktail.getSprite().x;
@@ -335,6 +349,7 @@ export class GameScene extends Phaser.Scene {
                     const config = cocktail.getConfig();
                     this.player.applyBuff(config);
                     cocktail.collect();
+                    cocktail.destroy();  // Remove visual from scene
                     this.showCocktailFeedback(config);
                     this.updateBuffUI();
                     return false;
@@ -416,6 +431,9 @@ export class GameScene extends Phaser.Scene {
             for (let j = this.enemies.length - 1; j >= 0; j--) {
                 const enemy = this.enemies[j];
                 if (!enemy.isAlive()) continue;
+
+                // Skip collision if enemy is spawning
+                if (!enemy.isCollisionEnabled()) continue;
 
                 // Check distance between bullet and enemy
                 const dx = bullet.getSprite().x - enemy.getSprite().x;
@@ -802,5 +820,55 @@ export class GameScene extends Phaser.Scene {
         if (this.player) {
             this.player.destroy();
         }
+    }
+
+    /**
+     * Update all enemy bullets and check collisions with player
+     */
+    updateEnemyBullets(deltaTime) {
+        if (!this.enemyBullets) return;
+
+        // Update each bullet
+        this.enemyBullets.forEach(bullet => {
+            bullet.update(deltaTime);
+        });
+
+        // Check collisions with player
+        this.enemyBullets = this.enemyBullets.filter(bullet => {
+            if (!bullet.isActive()) {
+                return false;
+            }
+
+            // Check collision with player
+            if (this.player && !this.player.isDead()) {
+                const playerRadius = 20;  // Player collision radius
+                const bulletSprite = bullet.getSprite();
+
+                if (bullet.checkCollision(this.player.getX(), this.player.getY(), playerRadius)) {
+                    // Hit player!
+                    console.log('Player hit by bullet! Damage:', bullet.getDamage());
+                    const newHealth = this.player.takeDamage(bullet.getDamage());
+                    console.log('Player health after hit:', newHealth);
+
+                    // Update health UI
+                    this.updateHealthUI();
+
+                    // Screen shake on hit
+                    this.cameras.main.shake(150, 0.003);
+
+                    // Check for explosion (bounty lobster bullets)
+                    const explosion = bullet.explode();
+                    if (explosion) {
+                        // Explosion AoE - player already hit, no additional damage needed for single player
+                        // In multiplayer, this would damage other players in radius
+                    }
+
+                    bullet.destroy();
+                    return false;
+                }
+            }
+
+            return true;  // Keep bullet
+        });
     }
 }

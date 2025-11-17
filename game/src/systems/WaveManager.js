@@ -1,3 +1,5 @@
+import { SpawnPointManager } from './SpawnPointManager.js';
+
 const BOUNTY_NAMES = [
     { name: 'Big Claw McGraw', type: 'lobster' },
     { name: 'Shelly the Shellfish', type: 'hermit' },
@@ -14,6 +16,9 @@ export class WaveManager {
         this.waveActive = false;
         this.enemiesInWave = 0;
         this.enemiesRemaining = 0;
+
+        // Initialize spawn point manager
+        this.spawnPointManager = new SpawnPointManager(scene);
 
         console.log('WaveManager initialized');
     }
@@ -137,10 +142,6 @@ export class WaveManager {
 
     spawnEnemiesByComposition(composition) {
         const totalCount = composition.reduce((sum, group) => sum + group.count, 0);
-        const spawnPoints = this.getSpawnPoints(totalCount);
-
-        let spawnIndex = 0;
-        let bountySpawned = false;
 
         // Determine if we should spawn a bounty
         const spawnBounty = this.shouldSpawnBounty(this.currentWave);
@@ -150,10 +151,16 @@ export class WaveManager {
         // Random index for bounty spawn
         const bountyIndex = spawnBounty ? Math.floor(Math.random() * totalCount) : -1;
 
+        // Get spawn points (bountyIndex determines where bounty spawns)
+        const spawnPoints = this.getSpawnPoints(totalCount, bountyIndex);
+
+        let spawnIndex = 0;
+        let bountySpawned = false;
+
         // Spawn each enemy group
         composition.forEach(group => {
             for (let i = 0; i < group.count; i++) {
-                const point = spawnPoints[spawnIndex];
+                const spawnData = spawnPoints[spawnIndex];
 
                 // Check if this should be the bounty enemy
                 const isBounty = spawnBounty && !bountySpawned &&
@@ -162,8 +169,8 @@ export class WaveManager {
 
                 const enemy = new this.scene.Enemy(
                     this.scene,
-                    point.x,
-                    point.y,
+                    spawnData.x,
+                    spawnData.y,
                     group.type,
                     isBounty,
                     isBounty ? bountyValue : 0
@@ -175,6 +182,18 @@ export class WaveManager {
 
                     // Announce bounty
                     this.announceBounty(bountyInfo.name, bountyValue);
+                }
+
+                // Queue spawn animation
+                if (enemy.setCollisionEnabled && enemy.setAlpha) {
+                    enemy.setCollisionEnabled(false);  // Disable collision during spawn animation
+                    enemy.setAlpha(0);                 // Start invisible
+
+                    this.spawnPointManager.queueSpawn(
+                        enemy,
+                        spawnData.spawnPoint,
+                        spawnData.isBounty
+                    );
                 }
 
                 this.scene.enemies.push(enemy);
@@ -233,40 +252,30 @@ export class WaveManager {
         });
     }
 
-    getSpawnPoints(count) {
-        // Spawn enemies around screen edges
-        const points = [];
-        const margin = 100;
-        const width = 1920;
-        const height = 1080;
+    getSpawnPoints(count, bountyIndex = -1) {
+        // Use thematic spawn point system (door + windows)
+        const spawnPoints = [];
 
         for (let i = 0; i < count; i++) {
-            const side = i % 4; // 0=top, 1=right, 2=bottom, 3=left
+            let spawnPoint;
 
-            let x, y;
-            switch(side) {
-                case 0: // top
-                    x = margin + Math.random() * (width - margin * 2);
-                    y = margin;
-                    break;
-                case 1: // right
-                    x = width - margin;
-                    y = margin + Math.random() * (height - margin * 2);
-                    break;
-                case 2: // bottom
-                    x = margin + Math.random() * (width - margin * 2);
-                    y = height - margin;
-                    break;
-                case 3: // left
-                    x = margin;
-                    y = margin + Math.random() * (height - margin * 2);
-                    break;
+            // Bounty enemies always spawn at main door
+            if (i === bountyIndex) {
+                spawnPoint = this.spawnPointManager.getMainDoorSpawnPoint();
+            } else {
+                // Regular enemies spawn at random available points
+                spawnPoint = this.spawnPointManager.getRandomSpawnPoint();
             }
 
-            points.push({ x, y });
+            spawnPoints.push({
+                x: spawnPoint.x,
+                y: spawnPoint.y,
+                spawnPoint: spawnPoint,
+                isBounty: i === bountyIndex
+            });
         }
 
-        return points;
+        return spawnPoints;
     }
 
     spawnHealthPickup() {
@@ -394,5 +403,27 @@ export class WaveManager {
 
     isActive() {
         return this.waveActive;
+    }
+
+    /**
+     * Update spawn animations
+     * Call this every frame from GameScene
+     */
+    update(time) {
+        this.spawnPointManager.update(time);
+    }
+
+    /**
+     * Reset spawn point manager
+     */
+    reset() {
+        this.currentWave = 0;
+        this.waveActive = false;
+        this.isSpawning = false;
+        this.enemiesInWave = 0;
+        this.enemiesRemaining = 0;
+
+        // Reset spawn point manager
+        this.spawnPointManager.reset();
     }
 }

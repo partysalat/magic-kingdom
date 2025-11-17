@@ -119,6 +119,73 @@ Q / E (or Tab):   Cycle through active bounty targets
 
 ## Gameplay Adjustments
 
+### Enemy Spawn System
+
+**Design Goal:** Reinforce saloon setting with thematic enemy entrances while maintaining strategic spawn patterns
+
+**Spawn Points (2-3 Total):**
+- **Main Saloon Door:** Double swinging doors at one edge of the arena (e.g., bottom or side wall)
+- **Window 1:** Side window with breakable glass effect
+- **Window 2 (Optional):** Opposite side window for additional variety
+
+**Spawn Point Layout:**
+```
+Top-down view example:
+┌─────────────────────┐
+│                     │ ← Window 1 (left wall)
+│                     │
+│    [ARENA SPACE]    │
+│                     │
+│                     │ ← Window 2 (right wall)
+└──────[DOOR]─────────┘
+    ↑ Main Door
+```
+
+**Spawn Animations:**
+
+| Spawn Point | Animation | Audio | Duration |
+|-------------|-----------|-------|----------|
+| **Main Door** | Swinging doors burst open, enemy enters, doors swing closed | Saloon door creak/slam | 0.5-0.8 seconds |
+| **Windows** | Glass shatters (first use), enemy crashes through, glass particles scatter | Breaking glass, loud crash | 0.4-0.6 seconds |
+| **Windows (subsequent)** | Enemy leaps through already-broken window frame | Lighter crash/thud | 0.3-0.4 seconds |
+
+**Spawn Rules:**
+
+**Regular Enemies:**
+- Spawn randomly at any available spawn point
+- Small delay between spawns at same point (0.5-1 second) to avoid clumping
+- Wave spawns distributed across all spawn points for variety
+
+**Bounty Enemies (Special Treatment):**
+- **Always spawn through Main Door** for dramatic entrance
+- Extended animation: doors slam open, brief pause (0.2s), bounty strides in confidently
+- Distinct audio cue: louder door slam + western "showdown" music sting
+- Visual indicator: "WANTED" poster briefly flashes on screen with bounty name/value
+- Camera can briefly focus/zoom slightly on door entrance (optional polish)
+
+**Spectator Appeal:**
+- **Telegraphing:** Door/window animations give split-second warning before enemy fully enters
+- **Thematic Immersion:** Reinforces "defending the saloon" fantasy
+- **Bounty Drama:** Main door entrance makes high-value targets feel like "boss entrances"
+- **Environmental Storytelling:** Broken window frames persist, showing battle damage
+
+**Technical Details:**
+- Spawn points positioned outside playable arena boundary (enemies enter from off-screen)
+- Collision disabled during spawn animation (becomes active when animation completes)
+- Spawn animation can be interrupted/skipped if too many enemies queued (wave intensity)
+- First window break creates persistent broken frame sprite (remains for rest of game session)
+
+**Wave Integration:**
+- Early waves: slower spawn rate, animations fully play out - players can anticipate
+- Late waves: faster spawn rate, animations may overlap - increases pressure
+- Bounty spawns always fully animated regardless of wave intensity
+
+**Strategic Implications:**
+- **Predictable Positioning:** Players can position defensively to cover spawn points
+- **Risk/Reward:** Camping spawn points is effective but leaves you vulnerable to existing enemies
+- **Bounty Hunting:** Main door becomes focal point when bounty announced
+- **Map Control:** Controlling center vs covering entrances becomes tactical choice
+
 ### Enemy Behavior Changes
 
 **Flying Fish Redesign:**
@@ -128,10 +195,56 @@ Q / E (or Tab):   Cycle through active bounty targets
 - **Visual:** Clear "shadow" or outline showing they're airborne
 
 **Other Enemies:**
-- **Bandit Lobsters:** Minimal changes, work fine top-down
-- **Quick-Draw Shrimp:** Dart behavior still works
-- **Hermit Crab Tanks:** Slow advance, works perfectly
-- **Jellyfish Ghosts:** Teleporting translates well to top-down
+- **Bandit Lobsters:** Now have ranged attacks (see Ranged Combat System below)
+- **Quick-Draw Shrimp:** Enhanced with rapid-fire shooting ability (see Ranged Combat System below)
+- **Hermit Crab Tanks:** Slow advance, works perfectly (melee only)
+- **Jellyfish Ghosts:** Teleporting translates well to top-down (melee only)
+
+### Enemy Ranged Combat System
+
+**Design Goal:** Create spectacular shootout moments that are exciting for spectators while maintaining tactical depth
+
+**Shooting Enemy Types:**
+
+| Enemy Type | Ranged Behavior | Thematic Fit |
+|------------|-----------------|--------------|
+| **Quick-Draw Shrimp** | Rapid-fire, low-damage bullets. Quick animation, frequent shots. Fast-moving, kiting behavior. | Perfect western theme - the "quick draw" name now has mechanical meaning |
+| **Bandit Lobsters** | Heavy, slow-firing shots with higher damage. Wind-up animation telegraphs attack. Stationary while shooting. | Classic "outlaw with a rifle" archetype - dangerous but predictable |
+
+**Shooting Mechanics:**
+- **Bullet Type:** Slow-moving projectiles (not hitscan) - creates dodging opportunities
+- **Visual Design:** Stylized "comic book" bullets with trail effects - clear to see from spectator distance
+- **Audio:** Distinct sound effects per enemy type (quick pops for shrimp, heavy bangs for lobsters)
+- **Telegraphing:** Clear animation wind-up before firing (especially for Lobsters)
+- **Cooldown:** Shrimp fire every 1-2 seconds, Lobsters every 3-4 seconds
+- **Accuracy:** Imperfect aim - bullets target player position with some spread/inaccuracy
+
+**Auto-Aim Integration:**
+- Shooting enemies have **normal targeting priority** (not automatically prioritized)
+- Players must use **aim influence** (right stick/mouse) to focus ranged threats
+- Creates tactical decision: "Do I shoot the closest enemy or the one shooting at me?"
+- Skilled players can prioritize threats; casual players rely on natural target selection
+
+**Wave Integration:**
+- **Early Waves (1-3):** Few or no shooting enemies - players learn movement and basic combat
+- **Mid Waves (4-7):** Mix of melee and ranged - introduces dodging and threat prioritization
+- **Late Waves (8-10):** Heavy ranged presence - creates intense "bullet hell lite" scenarios
+
+**Spectator Appeal:**
+- **Bullet Dodging:** Visible projectiles create exciting near-miss moments
+- **Western Shootouts:** Reinforces saloon gunfight fantasy
+- **Tactical Reads:** Spectators can see skilled players prioritizing dangerous enemies
+- **Chaos Escalation:** Late-game bullet storms look spectacular from outside
+
+**Bounty Variant:**
+- **"The Desperado"** (Bounty Quick-Draw Shrimp) - Fires in 3-round bursts, moves even faster
+- **"Big Iron"** (Bounty Bandit Lobster) - Fires explosive bullets that create small AoE on impact
+
+**Balance Considerations:**
+- Bullet speed should allow dodging with good movement (not too fast)
+- Damage balanced so ranged enemies aren't automatically "correct" to target first
+- Number of shooting enemies per wave should create pressure without overwhelming
+- Visual clarity essential - bullets must be distinguishable from other effects
 
 ### Cocktail Buffs (No Changes Needed)
 

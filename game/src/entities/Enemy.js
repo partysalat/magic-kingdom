@@ -1,3 +1,5 @@
+import { EnemyBullet } from './EnemyBullet.js';
+
 // Enemy type configurations
 const ENEMY_TYPES = {
     lobster: {
@@ -7,9 +9,12 @@ const ENEMY_TYPES = {
         damage: 10,
         color: 0xff6600,
         radius: 15,
-        behavior: 'basic_shooter',
+        behavior: 'ranged_shooter',        // CHANGED for ranged combat
         attackRange: 400,
-        attackCooldown: 1000
+        attackCooldown: 3500,              // CHANGED - 3.5 second cooldown
+        shootSpeed: 250,                   // NEW
+        bulletDamage: 8,                   // NEW
+        telegraphDuration: 400             // NEW - wind-up before shot
     },
     shrimp: {
         name: 'Quick-Draw Shrimp',
@@ -18,9 +23,12 @@ const ENEMY_TYPES = {
         damage: 5,
         color: 0xff9999,
         radius: 10,
-        behavior: 'fast_melee',
-        attackRange: 50,
-        attackCooldown: 500
+        behavior: 'ranged_kiter',          // CHANGED for ranged combat
+        attackRange: 350,                  // CHANGED
+        attackCooldown: 1500,              // CHANGED - 1.5 second cooldown
+        shootSpeed: 400,                   // NEW
+        bulletDamage: 4,                   // NEW
+        kiteDistance: 200                  // NEW - maintain distance while shooting
     },
     hermit: {
         name: 'Hermit Crab Tank',
@@ -99,6 +107,11 @@ export class Enemy {
         this.swoopPhase = 'idle'; // for flying fish: 'idle', 'rising', 'swooping'
         this.swoopTarget = { x: 0, y: 0 };
 
+        // Shooting properties
+        this.lastShotTime = 0;
+        this.isWindingUp = false;
+        this.windUpStartTime = 0;
+
         // Visual indicators based on type
         this.createVisualIndicators();
 
@@ -108,6 +121,10 @@ export class Enemy {
         }
 
         this.alive = true;
+
+        // Spawn animation properties
+        this.collisionEnabled = true;
+        this.alphaValue = 1.0;
 
         console.log('Enemy created:', config.name, 'at', x, y);
     }
@@ -205,6 +222,12 @@ export class Enemy {
 
         // Route to behavior-specific update
         switch(this.config.behavior) {
+            case 'ranged_shooter':
+                this.updateRangedShooter(time, playerX, playerY);
+                break;
+            case 'ranged_kiter':
+                this.updateRangedKiter(time, playerX, playerY);
+                break;
             case 'basic_shooter':
                 this.updateBasicShooter(time, playerX, playerY);
                 break;
@@ -464,5 +487,220 @@ export class Enemy {
         // Clean up bounty visuals
         if (this.bountyIcon) this.bountyIcon.destroy();
         if (this.spotLight) this.spotLight.destroy();
+    }
+
+    /**
+     * Ranged Shooter behavior (Bandit Lobster)
+     * Advances toward player, stops, winds up, shoots
+     */
+    updateRangedShooter(time, playerX, playerY) {
+        const dx = playerX - this.sprite.x;
+        const dy = playerY - this.sprite.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const currentTime = Date.now();
+
+        // Wind-up animation in progress
+        if (this.isWindingUp) {
+            const windUpElapsed = currentTime - this.windUpStartTime;
+
+            // Visual: Pulsing/growing during wind-up
+            const pulseFactor = 1 + Math.sin(windUpElapsed / 50) * 0.15;
+            this.sprite.setScale(pulseFactor);
+
+            if (windUpElapsed >= this.config.telegraphDuration) {
+                // Fire!
+                this.fireBullet(playerX, playerY, 'heavy');
+                this.isWindingUp = false;
+                this.sprite.setScale(1);
+                this.lastShotTime = currentTime;
+            }
+
+            return;  // Don't move during wind-up
+        }
+
+        // Check if can shoot
+        const canShoot = (currentTime - this.lastShotTime) >= this.config.attackCooldown;
+
+        if (distance <= this.config.attackRange && canShoot) {
+            // Start wind-up
+            this.isWindingUp = true;
+            this.windUpStartTime = currentTime;
+            this.sprite.body.setVelocity(0, 0);
+        } else if (distance > 50) {
+            // Move toward player
+            const angle = Math.atan2(dy, dx);
+            this.sprite.body.setVelocity(
+                Math.cos(angle) * this.config.speed,
+                Math.sin(angle) * this.config.speed
+            );
+        } else {
+            // Close enough, stop
+            this.sprite.body.setVelocity(0, 0);
+        }
+    }
+
+    /**
+     * Ranged Kiter behavior (Quick-Draw Shrimp)
+     * Maintains distance while shooting rapidly
+     */
+    updateRangedKiter(time, playerX, playerY) {
+        const dx = playerX - this.sprite.x;
+        const dy = playerY - this.sprite.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const currentTime = Date.now();
+        const canShoot = (currentTime - this.lastShotTime) >= this.config.attackCooldown;
+
+        // Shoot if in range
+        if (distance <= this.config.attackRange && canShoot) {
+            this.fireBullet(playerX, playerY, 'normal');
+            this.lastShotTime = currentTime;
+        }
+
+        // Kiting behavior: maintain optimal distance
+        if (distance < this.config.kiteDistance) {
+            // Too close - back away
+            const angle = Math.atan2(dy, dx);
+            this.sprite.body.setVelocity(
+                -Math.cos(angle) * this.config.speed,
+                -Math.sin(angle) * this.config.speed
+            );
+        } else if (distance > this.config.attackRange) {
+            // Too far - move closer
+            const angle = Math.atan2(dy, dx);
+            this.sprite.body.setVelocity(
+                Math.cos(angle) * this.config.speed,
+                Math.sin(angle) * this.config.speed
+            );
+        } else {
+            // Good range - strafe
+            const angle = Math.atan2(dy, dx);
+            const strafeDirection = (Math.random() > 0.5 ? 1 : -1);
+            const strafeAngle = angle + (Math.PI / 2) * strafeDirection;
+
+            this.sprite.body.setVelocity(
+                Math.cos(strafeAngle) * this.config.speed * 0.7,
+                Math.sin(strafeAngle) * this.config.speed * 0.7
+            );
+        }
+    }
+
+    /**
+     * Fire a bullet at target
+     */
+    fireBullet(targetX, targetY, bulletType = 'normal') {
+        // Check if bounty - use special bullets
+        if (this.isBounty && bulletType === 'normal') {
+            bulletType = 'burst';  // Desperado shoots 3-round bursts
+        } else if (this.isBounty && bulletType === 'heavy') {
+            bulletType = 'explosive';  // Big Iron shoots explosive rounds
+        }
+
+        const bullet = new EnemyBullet(
+            this.scene,
+            this.sprite.x,
+            this.sprite.y,
+            targetX,
+            targetY,
+            this.config.bulletDamage || this.config.damage,
+            bulletType
+        );
+
+        // Add to scene's bullet array (managed in GameScene)
+        if (!this.scene.enemyBullets) {
+            this.scene.enemyBullets = [];
+        }
+        this.scene.enemyBullets.push(bullet);
+
+        // Bounty burst: fire 2 more bullets with slight delay
+        if (bulletType === 'burst') {
+            setTimeout(() => {
+                if (this.alive) this.fireBullet(targetX, targetY, 'normal');
+            }, 150);
+            setTimeout(() => {
+                if (this.alive) this.fireBullet(targetX, targetY, 'normal');
+            }, 300);
+        }
+    }
+
+    /**
+     * Get x position
+     */
+    get x() {
+        return this.sprite.x;
+    }
+
+    /**
+     * Set x position
+     */
+    set x(value) {
+        this.sprite.x = value;
+    }
+
+    /**
+     * Get y position
+     */
+    get y() {
+        return this.sprite.y;
+    }
+
+    /**
+     * Set y position
+     */
+    set y(value) {
+        this.sprite.y = value;
+    }
+
+    /**
+     * Set position (x, y)
+     */
+    setPosition(x, y) {
+        this.sprite.x = x;
+        this.sprite.y = y;
+    }
+
+    /**
+     * Enable/disable collision during spawn animation
+     */
+    setCollisionEnabled(enabled) {
+        this.collisionEnabled = enabled;
+
+        // Update visual to indicate disabled collision during spawn
+        if (!enabled) {
+            this.sprite.setAlpha(0.5);
+        } else {
+            this.sprite.setAlpha(this.alphaValue);
+        }
+    }
+
+    /**
+     * Set enemy visibility (0-1)
+     */
+    setAlpha(alpha) {
+        this.alphaValue = Math.max(0, Math.min(1, alpha));
+
+        if (this.collisionEnabled) {
+            this.sprite.setAlpha(this.alphaValue);
+        }
+
+        // Also update child elements
+        if (this.claw1) this.claw1.setAlpha(this.alphaValue);
+        if (this.claw2) this.claw2.setAlpha(this.alphaValue);
+        if (this.antenna1) this.antenna1.setAlpha(this.alphaValue);
+        if (this.antenna2) this.antenna2.setAlpha(this.alphaValue);
+        if (this.shell) this.shell.setAlpha(this.alphaValue);
+        if (this.tentacles) {
+            this.tentacles.forEach(t => t.setAlpha(this.alphaValue));
+        }
+        if (this.wing1) this.wing1.setAlpha(this.alphaValue);
+        if (this.wing2) this.wing2.setAlpha(this.alphaValue);
+        if (this.bountyIcon) this.bountyIcon.setAlpha(this.alphaValue);
+        if (this.spotLight) this.spotLight.setAlpha(this.alphaValue * 0.5);
+    }
+
+    /**
+     * Check if collision is enabled
+     */
+    isCollisionEnabled() {
+        return this.collisionEnabled;
     }
 }
