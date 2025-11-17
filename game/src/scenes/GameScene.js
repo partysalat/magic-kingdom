@@ -911,107 +911,82 @@ export class GameScene extends Phaser.Scene {
     handleVictory() {
         this.isGameOver = true;
 
-        // Black overlay
-        const overlay = this.add.rectangle(960, 540, 1920, 1080, 0x000000, 0.8);
+        // Save high scores
+        this.saveHighScores();
 
-        // Victory banner
-        const victoryText = this.add.text(960, 200, 'VICTORY!', {
-            fontSize: '96px',
+        // Get final scores sorted by score
+        const finalScores = Object.values(this.scoreManager.playerScores)
+            .sort((a, b) => b.score - a.score);
+
+        const mvp = finalScores[0];
+
+        // Create victory UI
+        const centerX = 960;
+        const centerY = 250;
+
+        // Dim background
+        const overlay = this.add.rectangle(0, 0, 1920, 1080, 0x000000, 0.8);
+        overlay.setOrigin(0, 0);
+        overlay.setDepth(1000);
+
+        // VICTORY text
+        const victoryText = this.add.text(centerX, centerY, 'VICTORY!', {
+            fontSize: '100px',
             color: '#00ff00',
-            fontFamily: 'Arial',
-            fontStyle: 'bold',
-            stroke: '#000000',
-            strokeThickness: 8
-        }).setOrigin(0.5);
-
-        // Pulse animation
-        this.tweens.add({
-            targets: victoryText,
-            scale: 1.1,
-            duration: 500,
-            yoyo: true,
-            repeat: -1,
-            ease: 'Sine.easeInOut'
-        });
-
-        // MVP Section
-        this.add.text(960, 320, 'MVP: ' + this.playerName, {
-            fontSize: '48px',
-            color: '#ffff00',
-            fontFamily: 'Arial',
-            fontStyle: 'bold',
-            stroke: '#000000',
-            strokeThickness: 4
-        }).setOrigin(0.5);
-
-        // Spotlight effect on player
-        const spotlight = this.add.circle(
-            this.player.getX(),
-            this.player.getY(),
-            100,
-            0xffff00,
-            0.3
-        );
-
-        this.tweens.add({
-            targets: spotlight,
-            alpha: 0.5,
-            scale: 1.2,
-            duration: 1000,
-            yoyo: true,
-            repeat: -1
-        });
-
-        // Score breakdown
-        const finalScore = this.scoreManager.getScore();
-        const waveCount = this.waveManager.getCurrentWave();
-
-        this.add.text(960, 420, 'SCORE BREAKDOWN', {
-            fontSize: '32px',
-            color: '#ffffff',
-            fontFamily: 'Arial',
+            fontFamily: 'Georgia, serif',
             fontStyle: 'bold'
         }).setOrigin(0.5);
+        victoryText.setDepth(1001);
 
-        this.add.text(960, 480, `Waves Completed: ${waveCount}`, {
-            fontSize: '24px',
+        // Saloon saved text
+        this.add.text(centerX, centerY + 100, 'The Saloon is Safe!', {
+            fontSize: '36px',
             color: '#ffffff',
-            fontFamily: 'Arial'
-        }).setOrigin(0.5);
+            fontFamily: 'Georgia, serif'
+        }).setOrigin(0.5).setDepth(1001);
 
-        this.add.text(960, 520, `Final Score: ${finalScore}`, {
-            fontSize: '32px',
-            color: '#ffff00',
+        // Final scoreboard
+        let yOffset = centerY + 180;
+        this.add.text(centerX, yOffset, 'FINAL SCORES', {
+            fontSize: '36px',
+            color: '#ffcc00',
             fontFamily: 'Arial',
             fontStyle: 'bold'
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setDepth(1001);
 
-        // Check high score
-        const highScore = localStorage.getItem('highScore') || 0;
-        if (finalScore > highScore) {
-            localStorage.setItem('highScore', finalScore);
+        yOffset += 50;
+        finalScores.forEach((playerData, index) => {
+            const isMVP = index === 0;
+            const player = this.playerManager.players.find(p =>
+                p.playerIndex === playerData.playerIndex
+            );
+            const isDead = player ? player.isDead : false;
 
-            this.add.text(960, 580, 'NEW HIGH SCORE!', {
-                fontSize: '36px',
-                color: '#ff00ff',
+            const statusText = isDead ? ' [DEAD]' : ' [ALIVE]';
+
+            const text = this.add.text(centerX, yOffset,
+                `${playerData.name}: ${playerData.score} pts${statusText}${isMVP ? ' MVP' : ''}`, {
+                fontSize: isMVP ? '28px' : '24px',
+                color: isMVP ? '#ffd700' : '#ffffff',
                 fontFamily: 'Arial',
-                fontStyle: 'bold',
-                stroke: '#000000',
-                strokeThickness: 4
+                fontStyle: isMVP ? 'bold' : 'normal'
             }).setOrigin(0.5);
-        } else {
-            this.add.text(960, 580, `High Score: ${highScore}`, {
-                fontSize: '24px',
-                color: '#aaaaaa',
-                fontFamily: 'Arial'
-            }).setOrigin(0.5);
-        }
+            text.setDepth(1001);
 
-        this.add.text(960, 700, 'Refresh to Play Again', {
-            fontSize: '24px',
-            color: '#ffffff',
+            yOffset += 40;
+        });
+
+        // Return to lobby instruction
+        this.add.text(centerX, centerY + 550, 'Press ENTER to return to lobby', {
+            fontSize: '28px',
+            color: '#00ff00',
             fontFamily: 'Arial'
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setDepth(1001);
+
+        // Listen for ENTER button
+        this.input.keyboard.once('keydown-ENTER', () => {
+            this.scene.start('StartScene');
+        });
     }
 
     handleGameOver() {
