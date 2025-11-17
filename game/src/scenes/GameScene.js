@@ -28,19 +28,11 @@ export class GameScene extends Phaser.Scene {
         // Create floor grid pattern
         this.createFloorPattern();
 
-        // Create obstacles
-        this.createObstacles();
-
         // Create player in center
         this.player = new Player(this, 960, 540);
 
         // Player name (for single player, just "Player 1")
         this.playerName = 'Player 1';
-
-        // Setup obstacle collisions with player
-        this.obstacles.forEach(obstacle => {
-            this.physics.add.collider(this.player.sprite, obstacle);
-        });
 
         // Make classes available globally in scene
         this.Bullet = Bullet;
@@ -201,27 +193,6 @@ export class GameScene extends Phaser.Scene {
         graphics.setDepth(-100);
     }
 
-    createObstacles() {
-        this.obstacles = [];
-
-        // Create barrel obstacles (brown circles)
-        const barrelPositions = [
-            { x: 400, y: 300 },
-            { x: 1520, y: 300 },
-            { x: 400, y: 780 },
-            { x: 1520, y: 780 },
-            { x: 960, y: 200 },
-            { x: 960, y: 880 }
-        ];
-
-        barrelPositions.forEach(pos => {
-            const barrel = this.add.circle(pos.x, pos.y, 40, 0x654321);
-            barrel.setStrokeStyle(4, 0x4a3428);
-            this.physics.add.existing(barrel, true); // true = static body
-            this.obstacles.push(barrel);
-        });
-    }
-
     update(time, delta) {
         if (this.isGameOver) return;
 
@@ -315,20 +286,6 @@ export class GameScene extends Phaser.Scene {
         this.enemies = this.enemies.filter(enemy => {
             if (enemy.isAlive() && this.player) {
                 enemy.update(time, this.player.getX(), this.player.getY());
-
-                // Check obstacle collisions for enemy
-                this.obstacles.forEach(obstacle => {
-                    const dx = enemy.getSprite().x - obstacle.x;
-                    const dy = enemy.getSprite().y - obstacle.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 55) { // 15 (enemy) + 40 (obstacle)
-                        // Push enemy away from obstacle
-                        const pushAngle = Math.atan2(dy, dx);
-                        enemy.getSprite().x = obstacle.x + Math.cos(pushAngle) * 55;
-                        enemy.getSprite().y = obstacle.y + Math.sin(pushAngle) * 55;
-                    }
-                });
 
                 return true;
             } else if (!enemy.isAlive()) {
