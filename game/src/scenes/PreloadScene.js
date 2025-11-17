@@ -94,7 +94,7 @@ export class PreloadScene extends Phaser.Scene {
         this.createEnemyIdleAnimation('lobster-bandit', 2); // 2 frames
 
         console.log('Starting game...');
-        this.scene.start('GameScene');
+        this.scene.start('StartScene');
     }
 
     createLoadingBar() {

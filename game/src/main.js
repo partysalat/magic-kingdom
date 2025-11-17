@@ -1,10 +1,11 @@
 import { gameConfig } from './config.js';
 import { PreloadScene } from './scenes/PreloadScene.js';
+import { StartScene } from './scenes/StartScene.js';
 import { GameScene } from './scenes/GameScene.js';
 
 const config = {
     ...gameConfig,
-    scene: [PreloadScene, GameScene]
+    scene: [PreloadScene, StartScene, GameScene]
 };
 
 const game = new Phaser.Game(config);
