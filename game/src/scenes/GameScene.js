@@ -1017,66 +1017,104 @@ export class GameScene extends Phaser.Scene {
     handleGameOver() {
         this.isGameOver = true;
 
-        // Black overlay
-        const overlay = this.add.rectangle(960, 540, 1920, 1080, 0x000000, 0.8);
+        // Stop all game activity
+        this.waveManager.stopWaves();
 
-        // Game Over text
-        const gameOverText = this.add.text(960, 300, 'GAME OVER', {
-            fontSize: '96px',
+        // Save high scores
+        this.saveHighScores();
+
+        // Get final scores sorted by score
+        const finalScores = Object.values(this.scoreManager.playerScores)
+            .sort((a, b) => b.score - a.score);
+
+        // Find MVP (highest score)
+        const mvp = finalScores[0];
+
+        // Create game over UI
+        const centerX = 960;
+        const centerY = 300;
+
+        // Dim background
+        const overlay = this.add.rectangle(0, 0, 1920, 1080, 0x000000, 0.8);
+        overlay.setOrigin(0, 0);
+        overlay.setDepth(1000);
+
+        // GAME OVER text
+        const gameOverText = this.add.text(centerX, centerY, 'GAME OVER', {
+            fontSize: '80px',
             color: '#ff0000',
-            fontFamily: 'Arial',
-            fontStyle: 'bold',
-            stroke: '#000000',
-            strokeThickness: 8
-        }).setOrigin(0.5);
-
-        // Performance summary
-        const finalScore = this.scoreManager.getScore();
-        const waveReached = this.waveManager.getCurrentWave();
-
-        this.add.text(960, 450, `Survived to Wave ${waveReached}/10`, {
-            fontSize: '36px',
-            color: '#ffffff',
-            fontFamily: 'Arial'
-        }).setOrigin(0.5);
-
-        this.add.text(960, 520, `Final Score: ${finalScore}`, {
-            fontSize: '32px',
-            color: '#ffff00',
-            fontFamily: 'Arial',
+            fontFamily: 'Georgia, serif',
             fontStyle: 'bold'
         }).setOrigin(0.5);
+        gameOverText.setDepth(1001);
 
-        // High score comparison
-        const highScore = localStorage.getItem('highScore') || 0;
-        if (finalScore > highScore) {
-            localStorage.setItem('highScore', finalScore);
-
-            this.add.text(960, 600, 'NEW HIGH SCORE!', {
-                fontSize: '36px',
-                color: '#ff00ff',
-                fontFamily: 'Arial',
-                fontStyle: 'bold',
-                stroke: '#000000',
-                strokeThickness: 4
-            }).setOrigin(0.5);
-        } else {
-            this.add.text(960, 600, `High Score: ${highScore}`, {
-                fontSize: '24px',
-                color: '#aaaaaa',
-                fontFamily: 'Arial'
-            }).setOrigin(0.5);
-        }
-
-        this.add.text(960, 700, 'Refresh to Try Again', {
-            fontSize: '24px',
+        // Wave survived
+        const waveText = this.add.text(centerX, centerY + 100,
+            `Survived to Wave ${this.waveManager.currentWave}/10`, {
+            fontSize: '32px',
             color: '#ffffff',
             fontFamily: 'Arial'
         }).setOrigin(0.5);
+        waveText.setDepth(1001);
 
-        // Destroy player visually
-        if (this.player) {
-            this.player.destroy();
+        // Final scoreboard
+        let yOffset = centerY + 180;
+        this.add.text(centerX, yOffset, 'FINAL SCORES', {
+            fontSize: '36px',
+            color: '#ffcc00',
+            fontFamily: 'Arial',
+            fontStyle: 'bold'
+        }).setOrigin(0.5).setDepth(1001);
+
+        yOffset += 50;
+        finalScores.forEach((playerData, index) => {
+            const isMVP = index === 0;
+            const text = this.add.text(centerX, yOffset,
+                `${playerData.name}: ${playerData.score} pts (${playerData.kills} kills)${isMVP ? ' MVP' : ''}`, {
+                fontSize: isMVP ? '28px' : '24px',
+                color: isMVP ? '#ffd700' : '#ffffff',
+                fontFamily: 'Arial',
+                fontStyle: isMVP ? 'bold' : 'normal'
+            }).setOrigin(0.5);
+            text.setDepth(1001);
+
+            yOffset += 40;
+        });
+
+        // Return to lobby instruction
+        this.add.text(centerX, centerY + 500, 'Press ENTER to return to lobby', {
+            fontSize: '28px',
+            color: '#00ff00',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5).setDepth(1001);
+
+        // Listen for ENTER button
+        this.input.keyboard.once('keydown-ENTER', () => {
+            this.scene.start('StartScene');
+        });
+    }
+
+    saveHighScores() {
+        try {
+            const existing = localStorage.getItem('giselasLastStand_highScores');
+            const scores = existing ? JSON.parse(existing) : [];
+
+            // Add all player scores from this game
+            Object.values(this.scoreManager.playerScores).forEach(playerData => {
+                scores.push({
+                    playerName: playerData.name,
+                    score: playerData.score,
+                    wave: this.waveManager.currentWave
+                });
+            });
+
+            // Sort and keep top 50
+            scores.sort((a, b) => b.score - a.score);
+            const topScores = scores.slice(0, 50);
+
+            localStorage.setItem('giselasLastStand_highScores', JSON.stringify(topScores));
+        } catch (error) {
+            console.error('Error saving high scores:', error);
         }
     }
 
