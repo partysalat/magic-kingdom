@@ -64,6 +64,91 @@ const ENEMY_TYPES = {
         attackRange: 600,
         attackCooldown: 2500,
         swoopDistance: 300
+    },
+    boss_iron_shell: {
+        name: 'Iron Shell',
+        health: 400,
+        speed: 60,
+        damage: 15,
+        color: 0x4a4a4a,
+        radius: 45,  // 3x normal hermit (15)
+        behavior: 'boss_iron_shell',
+        attackRange: 500,
+        attackCooldown: 3000,
+        isBoss: true,
+        // Phase-specific properties
+        phase2Speed: 120,
+        phase2Cooldown: 2000,
+        phase2Threshold: 0.5,  // 50% HP
+        chargeSpeed: 400,
+        chargeDamage: 20,
+        chargeTelegraphDuration: 500,
+        chargeDistance: 400,
+        bubbleSpeed: 300,
+        bubbleDamage: 12,
+        bubbleCount: 3
+    },
+    boss_kraken_arm: {
+        name: "The Kraken's Arm",
+        health: 300,  // Body health
+        speed: 40,
+        damage: 20,
+        color: 0x9966cc,
+        radius: 60,
+        behavior: 'boss_kraken_arm',
+        attackRange: 600,
+        attackCooldown: 4000,
+        isBoss: true,
+        // Tentacle properties
+        tentacleHealth: 80,
+        tentacleCount: 4,
+        tentacleRegenRate: 5,  // HP per second
+        tentacleLength: 40,
+        // Ink cloud properties
+        inkCloudRadius: 100,
+        inkCloudDuration: 8000,
+        inkCloudSlowFactor: 0.7,
+        inkTrigger1: 0.6,  // 60% body HP
+        inkTrigger2: 0.3,  // 30% body HP
+        // Sweep attack
+        sweepCooldown: 10000,
+        sweepDamage: 25
+    },
+    boss_leviathan: {
+        name: 'The Leviathan',
+        health: 400,  // Per phase
+        speed: 80,
+        damage: 25,
+        color: 0xff4500,
+        radius: 60,
+        behavior: 'boss_leviathan',
+        attackRange: 700,
+        attackCooldown: 5000,
+        isBoss: true,
+        // Multi-phase
+        totalPhases: 2,
+        phase2Color: 0x4169e1,  // Changes color in phase 2
+        // Attack patterns
+        bulletStormCount: 12,
+        bulletStormDamage: 8,
+        bulletStormCooldown: 5000,
+        bulletStormSpeed: 350,
+        groundPoundDamage: 30,
+        groundPoundRadius: 200,
+        groundPoundCooldown: 8000,
+        chargeDamage: 25,
+        chargeSpeed: 500,
+        chargeCooldown: 6000,
+        lightningCount: 3,
+        lightningDamage: 35,
+        lightningRadius: 80,
+        lightningCooldown: 7000,
+        tidalWaveDamage: 40,
+        tidalWaveCooldown: 12000,
+        // Minion spawning
+        phase2InitialAdds: ['shrimp', 'shrimp', 'lobster', 'lobster'],
+        phase2MidAdds: ['shrimp', 'lobster'],
+        minionSpawnThreshold: 0.5
     }
 };
 
