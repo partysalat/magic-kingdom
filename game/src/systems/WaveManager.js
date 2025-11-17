@@ -1,4 +1,5 @@
 import { SpawnPointManager } from './SpawnPointManager.js';
+import { BossAnnouncer } from './BossAnnouncer.js';
 
 const BOUNTY_NAMES = [
     { name: 'Big Claw McGraw', type: 'lobster' },
@@ -20,26 +21,20 @@ export class WaveManager {
         // Initialize spawn point manager
         this.spawnPointManager = new SpawnPointManager(scene);
 
+        // Initialize boss announcer
+        this.bossAnnouncer = new BossAnnouncer(scene);
+
         console.log('WaveManager initialized');
     }
 
     getWaveComposition(waveNumber) {
-        // Returns array of enemy types to spawn
-        // Early waves: mostly lobsters
-        // Mid waves: introduce variety
-        // Late waves: all enemy types
-
         const compositions = {
-            1: [
-                { type: 'lobster', count: 5 }
-            ],
-            2: [
-                { type: 'lobster', count: 7 }
-            ],
-            3: [
-                { type: 'lobster', count: 8 },
-                { type: 'shrimp', count: 2 }
-            ],
+            1: [{ type: 'lobster', count: 5 }],
+            2: [{ type: 'lobster', count: 7 }],
+
+            // BOSS WAVE 3: Iron Shell
+            3: [{ type: 'boss_iron_shell', count: 1, isBoss: true }],
+
             4: [
                 { type: 'lobster', count: 6 },
                 { type: 'shrimp', count: 4 }
@@ -49,12 +44,10 @@ export class WaveManager {
                 { type: 'shrimp', count: 3 },
                 { type: 'hermit', count: 2 }
             ],
-            6: [
-                { type: 'lobster', count: 6 },
-                { type: 'shrimp', count: 4 },
-                { type: 'hermit', count: 2 },
-                { type: 'jellyfish', count: 1 }
-            ],
+
+            // BOSS WAVE 6: Kraken's Arm
+            6: [{ type: 'boss_kraken_arm', count: 1, isBoss: true }],
+
             7: [
                 { type: 'lobster', count: 5 },
                 { type: 'shrimp', count: 5 },
@@ -68,13 +61,10 @@ export class WaveManager {
                 { type: 'jellyfish', count: 2 },
                 { type: 'flyingfish', count: 3 }
             ],
-            9: [
-                { type: 'lobster', count: 7 },
-                { type: 'shrimp', count: 7 },
-                { type: 'hermit', count: 4 },
-                { type: 'jellyfish', count: 3 },
-                { type: 'flyingfish', count: 4 }
-            ],
+
+            // BOSS WAVE 9: The Leviathan
+            9: [{ type: 'boss_leviathan', count: 1, isBoss: true }],
+
             10: [
                 { type: 'lobster', count: 8 },
                 { type: 'shrimp', count: 8 },
@@ -85,6 +75,38 @@ export class WaveManager {
         };
 
         return compositions[waveNumber] || compositions[10];
+    }
+
+    /**
+     * Check if wave is a boss wave
+     */
+    isBossWave(waveNumber) {
+        return waveNumber === 3 || waveNumber === 6 || waveNumber === 9;
+    }
+
+    /**
+     * Get boss announcement details
+     */
+    getBossDetails(bossType) {
+        const details = {
+            boss_iron_shell: {
+                name: 'Iron Shell',
+                subtitle: 'The Armored Terror',
+                color: 0x4a4a4a
+            },
+            boss_kraken_arm: {
+                name: "The Kraken's Arm",
+                subtitle: 'Terror from the Deep',
+                color: 0x9966cc
+            },
+            boss_leviathan: {
+                name: 'The Leviathan',
+                subtitle: 'The Unstoppable Force',
+                color: 0xff4500
+            }
+        };
+
+        return details[bossType] || { name: 'Unknown Boss', subtitle: '', color: 0xff0000 };
     }
 
     startNextWave() {
@@ -103,14 +125,32 @@ export class WaveManager {
         // Get composition for this wave
         const composition = this.getWaveComposition(this.currentWave);
 
+        // Check if this is a boss wave
+        if (this.isBossWave(this.currentWave)) {
+            const bossType = composition[0].type;
+            const bossDetails = this.getBossDetails(bossType);
+
+            // Announce boss
+            this.bossAnnouncer.announceBoss(
+                bossDetails.name,
+                bossDetails.subtitle,
+                bossDetails.color
+            );
+
+            // Delay spawn until after announcement
+            this.scene.time.delayedCall(4000, () => {
+                this.spawnEnemiesByComposition(composition);
+            });
+        } else {
+            // Normal wave - spawn immediately
+            this.spawnEnemiesByComposition(composition);
+        }
+
         // Calculate total enemies
         const totalEnemies = composition.reduce((sum, group) => sum + group.count, 0);
 
         this.enemiesInWave = totalEnemies;
         this.enemiesRemaining = totalEnemies;
-
-        // Spawn enemies by composition
-        this.spawnEnemiesByComposition(composition);
 
         this.isSpawning = false;
     }
