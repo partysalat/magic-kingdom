@@ -541,6 +541,7 @@ export class GameScene extends Phaser.Scene {
 
     checkBulletCollisions() {
         // Check bullet collisions for all players
+        // Note: Player bullets only check collision with enemies (no friendly fire)
         this.playerManager.players.forEach(player => {
             const bullets = player.bullets;
 

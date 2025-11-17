@@ -20,6 +20,10 @@ export class Bullet {
         this.damage = damage;
         this.alive = true;
         this.piercing = false;
+
+        // Note: Player bullets do not collide with ANY players (no friendly fire)
+        // Collision checking is handled in GameScene.checkBulletCollisions()
+        // which only checks bullets against enemies, not players
     }
 
     update() {
