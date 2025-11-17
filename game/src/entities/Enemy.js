@@ -977,9 +977,9 @@ export class Enemy {
             }
         });
 
-        // Check if body should be vulnerable
-        const damagedTentacles = this.tentacles.filter(t => t.alive && t.health < t.maxHealth * 0.5).length;
-        this.bodyInvulnerable = damagedTentacles < this.config.tentacleCount;
+        // Check if body should be vulnerable (when all tentacles destroyed)
+        const aliveTentacles = this.tentacles.filter(t => t.alive).length;
+        this.bodyInvulnerable = aliveTentacles > 0;
 
         // Visual indicator for invulnerability
         if (this.bodyInvulnerable) {
