@@ -6,6 +6,7 @@ import { ScoreManager } from '../systems/ScoreManager.js';
 import { HealthPickup } from '../entities/HealthPickup.js';
 import { Cocktail, COCKTAIL_TYPES } from '../entities/Cocktail.js';
 import { InputManager } from '../systems/InputManager.js';
+import { PlayerManager } from '../systems/PlayerManager.js';
 import { TargetSelector } from '../systems/TargetSelector.js';
 import { BossAnnouncer } from '../systems/BossAnnouncer.js';
 import { BossHealthBar } from '../ui/BossHealthBar.js';
@@ -20,16 +21,24 @@ export class GameScene extends Phaser.Scene {
         // Assets will be loaded here
     }
 
-    create() {
+    create(data) {
         // Scene setup
         this.cameras.main.setBackgroundColor('#4a3428'); // Wooden saloon floor
         this.isGameOver = false;
 
+        // Get player configs from StartScene
+        const playerConfigs = data.players || [
+            { index: 0, color: 'red', name: 'Player 1' } // Fallback for testing
+        ];
+
         // Create floor grid pattern
         this.createFloorPattern();
 
-        // Create player in center
-        this.player = new Player(this, 960, 540);
+        // Create PlayerManager instead of single player
+        this.playerManager = new PlayerManager(this, playerConfigs);
+
+        // Keep reference to first player for legacy code compatibility
+        this.player = this.playerManager.players[0];
 
         // Player name (for single player, just "Player 1")
         this.playerName = 'Player 1';
@@ -41,10 +50,7 @@ export class GameScene extends Phaser.Scene {
         this.Cocktail = Cocktail;
         this.COCKTAIL_TYPES = COCKTAIL_TYPES;
 
-        // Create input manager
-        this.inputManager = new InputManager(this, 0);
-
-        // Create target selector
+        // Create target selector (will be updated for multiplayer later)
         this.targetSelector = new TargetSelector(this);
 
         // Track input mode for UI updates
@@ -210,47 +216,65 @@ export class GameScene extends Phaser.Scene {
             this.coverManager.update();
         }
 
-        // Update input manager
-        this.inputManager.update();
+        // Update PlayerManager (handles all players and input)
+        if (this.playerManager) {
+            // Update input managers for all players
+            Object.values(this.playerManager.inputManagers).forEach(inputManager => {
+                inputManager.update();
+            });
 
-        // Update target selection
-        const aimInfluence = this.inputManager.getAimInfluence();
-        const inputMode = this.inputManager.getInputMode();
-        this.targetSelector.update(
-            this.player.getX(),
-            this.player.getY(),
-            aimInfluence,
-            inputMode,
-            this.enemies
-        );
+            // Update camera to follow center point of living players
+            const center = this.playerManager.getCenterPoint();
+            this.cameras.main.centerOn(center.x, center.y);
 
-        // Handle target cycling
-        if (this.inputManager.shouldCycleTargetNext()) {
-            this.targetSelector.cycleToBountyTarget(
-                this.player.getX(),
-                this.player.getY(),
-                this.enemies,
-                'next'
-            );
-        }
-        if (this.inputManager.shouldCycleTargetPrev()) {
-            this.targetSelector.cycleToBountyTarget(
-                this.player.getX(),
-                this.player.getY(),
-                this.enemies,
-                'prev'
-            );
+            // Update PlayerManager
+            this.playerManager.update(time, delta);
         }
 
-        // Update player with input
-        if (this.player) {
+        // Update target selection (using first player for now, will be per-player later)
+        const firstInputManager = this.playerManager.inputManagers[this.player.playerIndex];
+        if (firstInputManager) {
+            const aimInfluence = firstInputManager.getAimInfluence();
+            const inputMode = firstInputManager.getInputMode();
+            this.targetSelector.update(
+                this.player.getX(),
+                this.player.getY(),
+                aimInfluence,
+                inputMode,
+                this.enemies
+            );
+
+            // Handle target cycling
+            if (firstInputManager.shouldCycleTargetNext()) {
+                this.targetSelector.cycleToBountyTarget(
+                    this.player.getX(),
+                    this.player.getY(),
+                    this.enemies,
+                    'next'
+                );
+            }
+            if (firstInputManager.shouldCycleTargetPrev()) {
+                this.targetSelector.cycleToBountyTarget(
+                    this.player.getX(),
+                    this.player.getY(),
+                    this.enemies,
+                    'prev'
+                );
+            }
+        }
+
+        // Handle shooting for all living players
+        this.playerManager.getLivingPlayers().forEach(player => {
+            const inputManager = this.playerManager.inputManagers[player.playerIndex];
+            if (!inputManager) return;
+
             // Check if player is in ink cloud (before player.update call)
             let speedMultiplier = 1.0;
             for (const enemy of this.enemies) {
                 if (enemy.type === 'boss_kraken_arm' && enemy.inkClouds) {
                     for (const cloud of enemy.inkClouds) {
-                        const dx = this.player.getX() - cloud.x;
-                        const dy = this.player.getY() - cloud.y;
+                        const dx = player.getX() - cloud.x;
+                        const dy = player.getY() - cloud.y;
                         const dist = Math.sqrt(dx * dx + dy * dy);
 
                         if (dist < enemy.config.inkCloudRadius) {
@@ -262,17 +286,16 @@ export class GameScene extends Phaser.Scene {
                 }
             }
 
-            // Apply to player (modify player.update call or add method)
-            this.player.setSpeedMultiplier(speedMultiplier);
+            // Apply to player
+            player.setSpeedMultiplier(speedMultiplier);
 
-            this.player.update(this.keys);
-
-            // Handle shooting with auto-aim
-            if (this.inputManager.isFiringPressed()) {
+            // Handle shooting with auto-aim (only for first player with target selector for now)
+            if (player === this.player && inputManager.isFiringPressed()) {
                 const target = this.targetSelector.getCurrentTarget();
-                this.player.shoot(target, time);
+                player.shoot(target, time);
             }
-        }
+        });
+
 
         // Update boss health bar if active
         if (this.bossHealthBar) {
@@ -508,20 +531,22 @@ export class GameScene extends Phaser.Scene {
         }
 
         // Update controls display if input mode changed
-        if (this.lastInputMode !== this.inputManager.getInputMode()) {
-            this.updateControlsText();
-            this.lastInputMode = this.inputManager.getInputMode();
+        if (firstInputManager) {
+            if (this.lastInputMode !== firstInputManager.getInputMode()) {
+                this.updateControlsText();
+                this.lastInputMode = firstInputManager.getInputMode();
+            }
         }
     }
 
     checkBulletCollisions() {
-        if (!this.player) return;
+        // Check bullet collisions for all players
+        this.playerManager.players.forEach(player => {
+            const bullets = player.bullets;
 
-        const bullets = this.player.bullets;
-
-        for (let i = bullets.length - 1; i >= 0; i--) {
-            const bullet = bullets[i];
-            if (!bullet.isAlive()) continue;
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                if (!bullet.isAlive()) continue;
 
             // Check cover collision FIRST
             if (this.coverManager) {
@@ -605,44 +630,47 @@ export class GameScene extends Phaser.Scene {
                 }
             }
 
-            // If piercing bullet didn't hit anything this frame, continue
-            // Non-piercing bullets already destroyed above
-        }
+                // If piercing bullet didn't hit anything this frame, continue
+                // Non-piercing bullets already destroyed above
+            }
+        });
     }
 
     checkPlayerCollisions(time) {
-        if (!this.player || this.player.isDead()) return;
+        // Check collisions for all living players
+        this.playerManager.getLivingPlayers().forEach(player => {
+            for (let i = this.enemies.length - 1; i >= 0; i--) {
+                const enemy = this.enemies[i];
+                if (!enemy.isAlive()) continue;
 
-        for (let i = this.enemies.length - 1; i >= 0; i--) {
-            const enemy = this.enemies[i];
-            if (!enemy.isAlive()) continue;
+                // Check distance between player and enemy
+                const dx = player.getX() - enemy.getSprite().x;
+                const dy = player.getY() - enemy.getSprite().y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
 
-            // Check distance between player and enemy
-            const dx = this.player.getX() - enemy.getSprite().x;
-            const dy = this.player.getY() - enemy.getSprite().y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+                // Collision if distance less than combined radii
+                if (distance < 35) { // 20 (player) + 15 (enemy)
+                    // Check damage cooldown to prevent frame-rate dependent damage
+                    if (time - player.lastHitTime >= player.hitCooldown) {
+                        const health = player.takeDamage(enemy.getDamage());
+                        this.updateHealthUI();
+                        player.lastHitTime = time;
 
-            // Collision if distance less than combined radii
-            if (distance < 35) { // 20 (player) + 15 (enemy)
-                // Check damage cooldown to prevent frame-rate dependent damage
-                if (time - this.player.lastHitTime >= this.player.hitCooldown) {
-                    const health = this.player.takeDamage(enemy.getDamage());
-                    this.updateHealthUI();
-                    this.player.lastHitTime = time;
-
-                    if (this.player.isDead()) {
-                        this.handleGameOver();
+                        // Check if all players are dead
+                        if (this.playerManager.allPlayersDead()) {
+                            this.handleGameOver();
+                        }
                     }
-                }
 
-                // Push enemy back to prevent stacking
-                const pushAngle = Math.atan2(dy, dx);
-                enemy.getSprite().setPosition(
-                    enemy.getSprite().x - Math.cos(pushAngle) * 40,
-                    enemy.getSprite().y - Math.sin(pushAngle) * 40
-                );
+                    // Push enemy back to prevent stacking
+                    const pushAngle = Math.atan2(dy, dx);
+                    enemy.getSprite().setPosition(
+                        enemy.getSprite().x - Math.cos(pushAngle) * 40,
+                        enemy.getSprite().y - Math.sin(pushAngle) * 40
+                    );
+                }
             }
-        }
+        });
     }
 
     updateHealthUI() {
@@ -775,9 +803,12 @@ export class GameScene extends Phaser.Scene {
     }
 
     updateControlsText() {
-        if (!this.inputManager) return;
+        if (!this.playerManager || !this.player) return;
 
-        const mode = this.inputManager.getInputMode();
+        const firstInputManager = this.playerManager.inputManagers[this.player.playerIndex];
+        if (!firstInputManager) return;
+
+        const mode = firstInputManager.getInputMode();
 
         if (mode === 'gamepad') {
             this.controlsText.setText(
@@ -995,15 +1026,15 @@ export class GameScene extends Phaser.Scene {
                 }
             }
 
-            // Check collision with player
-            if (this.player && !this.player.isDead()) {
+            // Check collision with all living players
+            for (const player of this.playerManager.getLivingPlayers()) {
                 const playerRadius = 20;  // Player collision radius
                 const bulletSprite = bullet.getSprite();
 
-                if (bullet.checkCollision(this.player.getX(), this.player.getY(), playerRadius)) {
+                if (bullet.checkCollision(player.getX(), player.getY(), playerRadius)) {
                     // Hit player!
                     console.log('Player hit by bullet! Damage:', bullet.getDamage());
-                    const newHealth = this.player.takeDamage(bullet.getDamage());
+                    const newHealth = player.takeDamage(bullet.getDamage());
                     console.log('Player health after hit:', newHealth);
 
                     // Update health UI
@@ -1015,8 +1046,23 @@ export class GameScene extends Phaser.Scene {
                     // Check for explosion (bounty lobster bullets)
                     const explosion = bullet.explode();
                     if (explosion) {
-                        // Explosion AoE - player already hit, no additional damage needed for single player
-                        // In multiplayer, this would damage other players in radius
+                        // Explosion AoE - damage other players in radius
+                        for (const otherPlayer of this.playerManager.getLivingPlayers()) {
+                            if (otherPlayer === player) continue; // Already hit
+
+                            const dx = otherPlayer.getX() - explosion.x;
+                            const dy = otherPlayer.getY() - explosion.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+
+                            if (dist < explosion.radius) {
+                                otherPlayer.takeDamage(explosion.damage);
+                            }
+                        }
+                    }
+
+                    // Check if all players are dead
+                    if (this.playerManager.allPlayersDead()) {
+                        this.handleGameOver();
                     }
 
                     bullet.destroy();
