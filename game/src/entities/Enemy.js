@@ -1590,9 +1590,6 @@ export class Enemy {
         if (this.antenna1) this.antenna1.setAlpha(this.alphaValue);
         if (this.antenna2) this.antenna2.setAlpha(this.alphaValue);
         if (this.shell) this.shell.setAlpha(this.alphaValue);
-        if (this.tentacles) {
-            this.tentacles.forEach(t => t.setAlpha(this.alphaValue));
-        }
         // Kraken boss tentacle sprites
         if (this.tentacleSprites) {
             this.tentacleSprites.forEach(sprite => {
