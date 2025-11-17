@@ -147,8 +147,10 @@ export class Cover {
             onComplete: () => explosion.destroy()
         });
 
-        // Damage everything in radius
-        this.damageInRadius();
+        // Damage after a tiny delay to allow this explosion to complete
+        this.scene.time.delayedCall(50, () => {
+            this.damageInRadius();
+        });
     }
 
     damageInRadius() {
