@@ -356,6 +356,9 @@ export class Enemy {
             case 'boss_kraken_arm':
                 this.updateBossKrakenArm(time, playerX, playerY);
                 break;
+            case 'boss_leviathan':
+                this.updateBossLeviathan(time, playerX, playerY);
+                break;
         }
 
         // Update visual indicators
@@ -1141,6 +1144,368 @@ export class Enemy {
             }
         }
         return -1;
+    }
+
+    /**
+     * Leviathan Boss Behavior (Wave 9 - Final Boss)
+     * Phase 1 (400 HP): Bullet storm, ground pound, charge
+     * Phase 2 (400 HP): Lightning strikes, tidal wave, spawns minions
+     */
+    updateBossLeviathan(time, playerX, playerY) {
+        const dx = playerX - this.sprite.x;
+        const dy = playerY - this.sprite.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const currentTime = Date.now();
+
+        // Check for phase transition at 0 HP (but don't die)
+        if (this.health <= 0 && this.bossPhase === 1) {
+            this.transitionToPhase2Leviathan();
+            return;
+        }
+
+        // Phase 2: Check for minion spawn at 50% HP
+        if (this.bossPhase === 2 && this.health <= this.maxHealth * this.config.minionSpawnThreshold && !this.minionsSpawned) {
+            this.spawnMinions(this.config.phase2MidAdds);
+            this.minionsSpawned = true;
+        }
+
+        // Handle immunity period during phase transition
+        if (this.phaseTransitioning) {
+            return;
+        }
+
+        // Attack pattern selection based on phase
+        if (this.bossPhase === 1) {
+            this.leviathanPhase1Attacks(currentTime, playerX, playerY, distance);
+        } else {
+            this.leviathanPhase2Attacks(currentTime, playerX, playerY, distance);
+        }
+
+        // Movement
+        if (!this.attackingInProgress && distance > 150) {
+            const angle = Math.atan2(dy, dx);
+            this.sprite.body.setVelocity(
+                Math.cos(angle) * this.config.speed,
+                Math.sin(angle) * this.config.speed
+            );
+        } else if (!this.attackingInProgress) {
+            this.sprite.body.setVelocity(0, 0);
+        }
+    }
+
+    leviathanPhase1Attacks(currentTime, playerX, playerY, distance) {
+        // Bullet Storm attack
+        const bulletStormReady = (currentTime - (this.lastBulletStorm || 0)) >= this.config.bulletStormCooldown;
+        if (bulletStormReady && distance <= this.config.attackRange) {
+            this.bulletStormAttack();
+            this.lastBulletStorm = currentTime;
+            return;
+        }
+
+        // Ground Pound attack
+        const groundPoundReady = (currentTime - (this.lastGroundPound || 0)) >= this.config.groundPoundCooldown;
+        if (groundPoundReady && distance < 300) {
+            this.groundPoundAttack(playerX, playerY);
+            this.lastGroundPound = currentTime;
+            return;
+        }
+
+        // Charge attack
+        const chargeReady = (currentTime - (this.lastCharge || 0)) >= this.config.chargeCooldown;
+        if (chargeReady && distance > 200 && distance <= this.config.attackRange) {
+            this.chargeAttack(playerX, playerY);
+            this.lastCharge = currentTime;
+            return;
+        }
+    }
+
+    leviathanPhase2Attacks(currentTime, playerX, playerY, distance) {
+        // Lightning Strike attack
+        const lightningReady = (currentTime - (this.lastLightning || 0)) >= this.config.lightningCooldown;
+        if (lightningReady) {
+            this.lightningStrikeAttack();
+            this.lastLightning = currentTime;
+            return;
+        }
+
+        // Tidal Wave attack
+        const tidalReady = (currentTime - (this.lastTidalWave || 0)) >= this.config.tidalWaveCooldown;
+        if (tidalReady) {
+            this.tidalWaveAttack();
+            this.lastTidalWave = currentTime;
+            return;
+        }
+
+        // Continue using some Phase 1 attacks
+        const bulletStormReady = (currentTime - (this.lastBulletStorm || 0)) >= this.config.bulletStormCooldown * 1.5;
+        if (bulletStormReady && distance <= this.config.attackRange) {
+            this.bulletStormAttack();
+            this.lastBulletStorm = currentTime;
+            return;
+        }
+    }
+
+    bulletStormAttack() {
+        console.log('Leviathan: Bullet Storm!');
+
+        const angleStep = (Math.PI * 2) / this.config.bulletStormCount;
+
+        for (let i = 0; i < this.config.bulletStormCount; i++) {
+            const angle = angleStep * i;
+            const bullet = new EnemyBullet(
+                this.scene,
+                this.sprite.x,
+                this.sprite.y,
+                this.sprite.x + Math.cos(angle) * 200,
+                this.sprite.y + Math.sin(angle) * 200,
+                this.config.bulletStormDamage,
+                'storm'
+            );
+
+            if (!this.scene.enemyBullets) {
+                this.scene.enemyBullets = [];
+            }
+            this.scene.enemyBullets.push(bullet);
+        }
+    }
+
+    groundPoundAttack(playerX, playerY) {
+        console.log('Leviathan: Ground Pound!');
+        this.attackingInProgress = true;
+
+        // Rise up visual
+        this.sprite.setTint(0xffff00);
+        const originalY = this.sprite.y;
+
+        this.scene.tweens.add({
+            targets: this.sprite,
+            y: originalY - 50,
+            duration: 500,
+            yoyo: true,
+            onComplete: () => {
+                // Impact
+                this.sprite.clearTint();
+                this.scene.cameras.main.shake(300, 0.02);
+
+                // Create shockwave visual
+                const shockwave = this.scene.add.circle(
+                    this.sprite.x,
+                    this.sprite.y,
+                    this.config.groundPoundRadius,
+                    0xff4500,
+                    0.4
+                );
+
+                // Check if player is in radius
+                const dx = playerX - this.sprite.x;
+                const dy = playerY - this.sprite.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance <= this.config.groundPoundRadius) {
+                    this.scene.player.takeDamage(this.config.groundPoundDamage);
+                }
+
+                this.scene.tweens.add({
+                    targets: shockwave,
+                    scale: 1.5,
+                    alpha: 0,
+                    duration: 400,
+                    onComplete: () => {
+                        shockwave.destroy();
+                        this.attackingInProgress = false;
+                    }
+                });
+            }
+        });
+    }
+
+    chargeAttack(playerX, playerY) {
+        console.log('Leviathan: Charge!');
+        this.attackingInProgress = true;
+
+        // Telegraph line showing charge path
+        const line = this.scene.add.line(
+            0, 0,
+            this.sprite.x, this.sprite.y,
+            playerX, playerY,
+            0xff0000
+        );
+        line.setLineWidth(4);
+        line.setOrigin(0, 0);
+
+        this.scene.time.delayedCall(1000, () => {
+            line.destroy();
+
+            // Execute charge
+            const angle = Math.atan2(playerY - this.sprite.y, playerX - this.sprite.x);
+            const chargeDistance = 400;
+            const targetX = this.sprite.x + Math.cos(angle) * chargeDistance;
+            const targetY = this.sprite.y + Math.sin(angle) * chargeDistance;
+
+            this.scene.tweens.add({
+                targets: this.sprite,
+                x: targetX,
+                y: targetY,
+                duration: 600,
+                ease: 'Power2',
+                onUpdate: () => {
+                    // Check collision with player during charge
+                    const dx = this.scene.player.getX() - this.sprite.x;
+                    const dy = this.scene.player.getY() - this.sprite.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < this.config.radius + 20 && !this.chargeHitPlayer) {
+                        this.scene.player.takeDamage(this.config.chargeDamage);
+                        this.chargeHitPlayer = true;
+                    }
+                },
+                onComplete: () => {
+                    this.attackingInProgress = false;
+                    this.chargeHitPlayer = false;
+                }
+            });
+        });
+    }
+
+    lightningStrikeAttack() {
+        console.log('Leviathan: Lightning Strike!');
+
+        for (let i = 0; i < this.config.lightningCount; i++) {
+            const targetX = 300 + Math.random() * 1320;
+            const targetY = 200 + Math.random() * 680;
+
+            // Telegraph
+            const telegraph = this.scene.add.circle(targetX, targetY, this.config.lightningRadius, 0xff0000, 0.3);
+            telegraph.setStrokeStyle(2, 0xffff00);
+
+            this.scene.time.delayedCall(1000, () => {
+                // Strike
+                const lightning = this.scene.add.rectangle(
+                    targetX,
+                    targetY,
+                    this.config.lightningRadius * 2,
+                    1080,
+                    0xffff00,
+                    0.7
+                );
+
+                // Check if player is hit
+                const dx = this.scene.player.getX() - targetX;
+                const dy = this.scene.player.getY() - targetY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance <= this.config.lightningRadius) {
+                    this.scene.player.takeDamage(this.config.lightningDamage);
+                }
+
+                telegraph.destroy();
+
+                this.scene.time.delayedCall(200, () => {
+                    lightning.destroy();
+                });
+            });
+        }
+    }
+
+    tidalWaveAttack() {
+        console.log('Leviathan: Tidal Wave!');
+        this.attackingInProgress = true;
+
+        // Move to edge of arena
+        const targetEdgeX = this.sprite.x < 960 ? 100 : 1820;
+
+        this.scene.tweens.add({
+            targets: this.sprite,
+            x: targetEdgeX,
+            duration: 1000,
+            onComplete: () => {
+                // Create wave traveling across screen
+                const waveHeight = 200;
+                const waveStartX = targetEdgeX < 960 ? 0 : 1920;
+                const waveEndX = targetEdgeX < 960 ? 1920 : 0;
+
+                const wave = this.scene.add.rectangle(
+                    waveStartX,
+                    540,
+                    100,
+                    waveHeight,
+                    0x4169e1,
+                    0.6
+                );
+
+                this.scene.tweens.add({
+                    targets: wave,
+                    x: waveEndX,
+                    duration: 2000,
+                    onUpdate: () => {
+                        // Check collision with player
+                        const px = this.scene.player.getX();
+                        const py = this.scene.player.getY();
+
+                        if (Math.abs(wave.x - px) < 100 && Math.abs(540 - py) < waveHeight / 2) {
+                            if (!this.waveHitPlayer) {
+                                this.scene.player.takeDamage(this.config.tidalWaveDamage);
+                                this.waveHitPlayer = true;
+                            }
+                        }
+                    },
+                    onComplete: () => {
+                        wave.destroy();
+                        this.attackingInProgress = false;
+                        this.waveHitPlayer = false;
+                    }
+                });
+            }
+        });
+    }
+
+    transitionToPhase2Leviathan() {
+        console.log('Leviathan: PHASE 2!');
+        this.bossPhase = 2;
+        this.phaseTransitioning = true;
+
+        // Full health restore
+        this.health = this.maxHealth;
+
+        // Visual effects
+        this.scene.cameras.main.shake(500, 0.03);
+        this.scene.cameras.main.flash(500, 100, 150, 255);
+        this.sprite.setFillStyle(this.config.phase2Color);
+
+        // Announcement
+        const announcement = this.scene.add.text(960, 400, 'THE LEVIATHAN EVOLVES', {
+            fontSize: '64px',
+            color: '#ff0000',
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 6
+        }).setOrigin(0.5);
+
+        // Spawn initial adds
+        this.scene.time.delayedCall(2000, () => {
+            this.spawnMinions(this.config.phase2InitialAdds);
+        });
+
+        // End transition
+        this.scene.time.delayedCall(3000, () => {
+            announcement.destroy();
+            this.phaseTransitioning = false;
+            this.minionsSpawned = false;
+        });
+    }
+
+    spawnMinions(minionTypes) {
+        console.log('Leviathan spawning minions:', minionTypes);
+
+        minionTypes.forEach((type, index) => {
+            const angle = (index / minionTypes.length) * Math.PI * 2;
+            const spawnX = this.sprite.x + Math.cos(angle) * 150;
+            const spawnY = this.sprite.y + Math.sin(angle) * 150;
+
+            const minion = new Enemy(this.scene, spawnX, spawnY, type);
+            this.scene.enemies.push(minion);
+        });
     }
 
     /**
