@@ -38,29 +38,30 @@ export class WaveManager {
 
             // Start formations from wave 4
             4: [
-                { type: 'lobster', count: 3, role: 'tank' },
-                { type: 'shrimp', count: 4, role: 'shooter' }
+                { type: 'hermit', count: 2, role: 'tank' },
+                { type: 'shrimp', count: 4, role: 'shooter' },
+                { type: 'lobster', count: 2 }
             ],
             5: [
-                { type: 'lobster', count: 3, role: 'tank' },
-                { type: 'shrimp', count: 3, role: 'shooter' },
-                { type: 'hermit', count: 2 }
+                { type: 'hermit', count: 2, role: 'tank' },
+                { type: 'shrimp', count: 4, role: 'shooter' },
+                { type: 'lobster', count: 3 }
             ],
 
             // BOSS WAVE 6: Kraken's Arm
             6: [{ type: 'boss_kraken_arm', count: 1, isBoss: true }],
 
             7: [
-                { type: 'lobster', count: 3, role: 'tank' },
-                { type: 'hermit', count: 2, role: 'tank' },
+                { type: 'hermit', count: 4, role: 'tank' },
                 { type: 'shrimp', count: 5, role: 'shooter' },
-                { type: 'jellyfish', count: 2, role: 'shooter' }
+                { type: 'jellyfish', count: 2, role: 'shooter' },
+                { type: 'lobster', count: 2 }
             ],
             8: [
-                { type: 'lobster', count: 4, role: 'tank' },
-                { type: 'hermit', count: 2, role: 'tank' },
+                { type: 'hermit', count: 4, role: 'tank' },
                 { type: 'shrimp', count: 6, role: 'shooter' },
                 { type: 'jellyfish', count: 2, role: 'shooter' },
+                { type: 'lobster', count: 2 },
                 { type: 'flyingfish', count: 3 }
             ],
 
@@ -68,10 +69,10 @@ export class WaveManager {
             9: [{ type: 'boss_leviathan', count: 1, isBoss: true }],
 
             10: [
-                { type: 'lobster', count: 5, role: 'tank' },
-                { type: 'hermit', count: 3, role: 'tank' },
+                { type: 'hermit', count: 6, role: 'tank' },
                 { type: 'shrimp', count: 8, role: 'shooter' },
                 { type: 'jellyfish', count: 4, role: 'shooter' },
+                { type: 'lobster', count: 3 },
                 { type: 'flyingfish', count: 5 }
             ]
         };
