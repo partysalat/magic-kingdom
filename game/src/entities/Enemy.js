@@ -197,6 +197,12 @@ export class Enemy {
         this.isWindingUp = false;
         this.windUpStartTime = 0;
 
+        // Boss-specific properties
+        this.bossPhase = 1;
+        this.phaseTransitioning = false;
+        this.lastAttackType = null;
+        this.attackRotation = 0;
+
         // Visual indicators based on type
         this.createVisualIndicators();
 
@@ -327,6 +333,9 @@ export class Enemy {
                 break;
             case 'swoop':
                 this.updateSwoop(time, playerX, playerY);
+                break;
+            case 'boss_iron_shell':
+                this.updateBossIronShell(time, playerX, playerY);
                 break;
         }
 
@@ -705,6 +714,135 @@ export class Enemy {
                 if (this.alive) this.fireBullet(targetX, targetY, 'normal');
             }, 300);
         }
+    }
+
+    /**
+     * Iron Shell Boss Behavior (Wave 3)
+     * Phase 1 (100-50% HP): Slow tank with bubble spread attacks
+     * Phase 2 (50-0% HP): Faster movement with charge attacks
+     */
+    updateBossIronShell(time, playerX, playerY) {
+        const dx = playerX - this.sprite.x;
+        const dy = playerY - this.sprite.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const currentTime = Date.now();
+
+        // Check for phase transition at 50% HP
+        const healthPercent = this.health / this.maxHealth;
+        if (healthPercent <= this.config.phase2Threshold && this.bossPhase === 1) {
+            this.transitionToPhase2IronShell();
+        }
+
+        // Handle charge attack in progress (Phase 2)
+        if (this.chargingAttack) {
+            const chargeElapsed = currentTime - this.chargeStartTime;
+
+            if (chargeElapsed < this.config.chargeTelegraphDuration) {
+                // Telegraph phase - stay still and glow
+                this.sprite.body.setVelocity(0, 0);
+                const pulseFactor = 1 + Math.sin(chargeElapsed / 50) * 0.2;
+                this.sprite.setScale(pulseFactor);
+                return;
+            } else if (chargeElapsed < this.config.chargeTelegraphDuration + 800) {
+                // Charge phase - rapid movement
+                const chargeAngle = Math.atan2(this.chargeTargetY - this.sprite.y, this.chargeTargetX - this.sprite.x);
+                this.sprite.body.setVelocity(
+                    Math.cos(chargeAngle) * this.config.chargeSpeed,
+                    Math.sin(chargeAngle) * this.config.chargeSpeed
+                );
+            } else {
+                // End charge
+                this.chargingAttack = false;
+                this.sprite.setScale(1);
+                this.sprite.body.setVelocity(0, 0);
+                this.lastChargeTime = currentTime;
+            }
+            return;
+        }
+
+        // Determine current speed based on phase
+        const currentSpeed = this.bossPhase === 1 ? this.config.speed : this.config.phase2Speed;
+        const currentCooldown = this.bossPhase === 1 ? this.config.attackCooldown : this.config.phase2Cooldown;
+
+        // Attack logic
+        const canAttack = (currentTime - this.lastShotTime) >= currentCooldown;
+
+        if (distance <= this.config.attackRange && canAttack) {
+            if (this.bossPhase === 1) {
+                // Phase 1: Bubble spread attack
+                this.fireBubbleSpread(playerX, playerY);
+                this.lastShotTime = currentTime;
+            } else {
+                // Phase 2: Alternate between bubble attack and charge
+                const chargeReady = !this.lastChargeTime || (currentTime - this.lastChargeTime) >= 5000;
+
+                if (this.lastAttackType !== 'charge' && chargeReady) {
+                    // Initiate charge attack
+                    this.chargingAttack = true;
+                    this.chargeStartTime = currentTime;
+                    this.chargeTargetX = playerX;
+                    this.chargeTargetY = playerY;
+                    this.lastAttackType = 'charge';
+                } else {
+                    // Bubble attack
+                    this.fireBubbleSpread(playerX, playerY);
+                    this.lastShotTime = currentTime;
+                    this.lastAttackType = 'bubble';
+                }
+            }
+        }
+
+        // Movement toward player (when not attacking)
+        if (!this.chargingAttack && distance > 100) {
+            const angle = Math.atan2(dy, dx);
+            this.sprite.body.setVelocity(
+                Math.cos(angle) * currentSpeed,
+                Math.sin(angle) * currentSpeed
+            );
+        } else if (!this.chargingAttack) {
+            this.sprite.body.setVelocity(0, 0);
+        }
+    }
+
+    transitionToPhase2IronShell() {
+        this.bossPhase = 2;
+
+        // Visual effects
+        this.scene.cameras.main.shake(200, 0.01);
+        this.scene.cameras.main.flash(200, 255, 100, 100);
+
+        // Add cracks to shell visual
+        if (this.shell) {
+            this.shell.setStrokeStyle(3, 0xff0000);
+        }
+
+        console.log('Iron Shell entered Phase 2!');
+    }
+
+    fireBubbleSpread(targetX, targetY) {
+        // Calculate base angle to player
+        const baseAngle = Math.atan2(targetY - this.sprite.y, targetX - this.sprite.x);
+
+        // Fire 3 bubbles in spread pattern
+        const spreadAngles = [-0.3, 0, 0.3];  // Radians
+
+        spreadAngles.forEach(spreadOffset => {
+            const angle = baseAngle + spreadOffset;
+            const bullet = new EnemyBullet(
+                this.scene,
+                this.sprite.x,
+                this.sprite.y,
+                this.sprite.x + Math.cos(angle) * 100,
+                this.sprite.y + Math.sin(angle) * 100,
+                this.config.bubbleDamage,
+                'bubble'
+            );
+
+            if (!this.scene.enemyBullets) {
+                this.scene.enemyBullets = [];
+            }
+            this.scene.enemyBullets.push(bullet);
+        });
     }
 
     /**

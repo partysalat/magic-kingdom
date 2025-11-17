@@ -7,16 +7,24 @@ export class EnemyBullet {
     constructor(scene, x, y, targetX, targetY, damage, bulletType = 'normal') {
         this.scene = scene;
         this.damage = damage;
-        this.bulletType = bulletType;  // 'normal', 'heavy', 'burst', 'explosive'
+        this.bulletType = bulletType;  // 'normal', 'heavy', 'burst', 'explosive', 'bubble'
         this.alive = true;
-        this.speed = bulletType === 'heavy' ? 250 : 400;  // pixels per second
+
+        // Set speed based on bullet type
+        if (bulletType === 'heavy') {
+            this.speed = 250;
+        } else if (bulletType === 'bubble') {
+            this.speed = 300;  // Boss bubble bullets
+        } else {
+            this.speed = 400;
+        }
 
         // Calculate direction with inaccuracy
         const dx = targetX - x;
         const dy = targetY - y;
 
-        // Add spread/inaccuracy
-        const inaccuracy = bulletType === 'heavy' ? 0.05 : 0.1;  // radians
+        // Add spread/inaccuracy (bubbles have no inaccuracy)
+        const inaccuracy = bulletType === 'heavy' ? 0.05 : (bulletType === 'bubble' ? 0 : 0.1);  // radians
         const baseAngle = Math.atan2(dy, dx);
         const finalAngle = baseAngle + (Math.random() - 0.5) * inaccuracy;
 
@@ -24,12 +32,28 @@ export class EnemyBullet {
         this.velocityY = Math.sin(finalAngle) * this.speed;
         this.angle = finalAngle;
 
-        // Create Phaser sprite
-        const size = bulletType === 'heavy' ? 12 : 8;
-        const color = bulletType === 'heavy' ? 0xFF4500 : 0xFFD700;
+        // Create Phaser sprite with type-specific visuals
+        let size, color;
+        if (bulletType === 'heavy') {
+            size = 12;
+            color = 0xFF4500;
+        } else if (bulletType === 'bubble') {
+            size = 14;  // Larger than normal
+            color = 0x00BFFF;  // Blue-tinted
+        } else {
+            size = 8;
+            color = 0xFFD700;
+        }
 
         this.sprite = scene.add.circle(x, y, size / 2, color);
-        this.sprite.setStrokeStyle(2, 0x000000, 0.5);
+
+        // Bubble bullets have a special visual style
+        if (bulletType === 'bubble') {
+            this.sprite.setStrokeStyle(2, 0x87CEEB, 0.8);
+            this.sprite.setAlpha(0.8);
+        } else {
+            this.sprite.setStrokeStyle(2, 0x000000, 0.5);
+        }
 
         // Add glow effect
         this.sprite.setBlendMode(Phaser.BlendModes.ADD);
@@ -66,7 +90,14 @@ export class EnemyBullet {
         const dy = this.sprite.y - targetY;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        const bulletRadius = this.bulletType === 'heavy' ? 6 : 4;
+        let bulletRadius;
+        if (this.bulletType === 'heavy') {
+            bulletRadius = 6;
+        } else if (this.bulletType === 'bubble') {
+            bulletRadius = 7;  // Larger bubble bullets
+        } else {
+            bulletRadius = 4;
+        }
 
         return distance < (bulletRadius + targetRadius);
     }
