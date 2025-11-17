@@ -650,16 +650,13 @@ export class GameScene extends Phaser.Scene {
 
                 // Collision if distance less than combined radii
                 if (distance < 35) { // 20 (player) + 15 (enemy)
-                    // Check damage cooldown to prevent frame-rate dependent damage
-                    if (time - player.lastHitTime >= player.hitCooldown) {
-                        const health = player.takeDamage(enemy.getDamage());
-                        this.updateHealthUI();
-                        player.lastHitTime = time;
+                    // takeDamage handles cooldown internally
+                    const health = player.takeDamage(enemy.getDamage());
+                    this.updateHealthUI();
 
-                        // Check if all players are dead
-                        if (this.playerManager.allPlayersDead()) {
-                            this.handleGameOver();
-                        }
+                    // Check if all players are dead
+                    if (this.playerManager.allPlayersDead()) {
+                        this.handleGameOver();
                     }
 
                     // Push enemy back to prevent stacking

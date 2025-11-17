@@ -25,6 +25,11 @@ export class Player {
         this.health = 100;
         this.maxHealth = 100;
 
+        // Multiplayer properties
+        this.playerName = 'Player 1'; // Will be set by PlayerManager
+        this.playerIndex = 0; // Will be set by PlayerManager
+        this.isDead = false;
+
         // Shooting properties
         this.bullets = [];
         this.fireRate = 200; // milliseconds between shots
@@ -217,8 +222,30 @@ export class Player {
     }
 
     takeDamage(amount) {
+        const currentTime = this.scene.time.now;
+
+        // Check if still in cooldown
+        if (currentTime < this.lastHitTime + this.hitCooldown) {
+            return this.health; // No damage taken
+        }
+
         this.health -= amount;
         if (this.health < 0) this.health = 0;
+        this.lastHitTime = currentTime;
+
+        // Flash sprite
+        this.sprite.setTint(0xff0000);
+        this.scene.time.delayedCall(100, () => {
+            this.sprite.clearTint();
+        });
+
+        // Check for death
+        if (this.health <= 0 && !this.isDead) {
+            if (this.scene.playerManager) {
+                this.scene.playerManager.handlePlayerDeath(this);
+            }
+        }
+
         return this.health;
     }
 
