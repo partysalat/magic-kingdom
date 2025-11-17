@@ -7,6 +7,7 @@ import { HealthPickup } from '../entities/HealthPickup.js';
 import { Cocktail, COCKTAIL_TYPES } from '../entities/Cocktail.js';
 import { InputManager } from '../systems/InputManager.js';
 import { TargetSelector } from '../systems/TargetSelector.js';
+import { BossAnnouncer } from '../systems/BossAnnouncer.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -80,6 +81,9 @@ export class GameScene extends Phaser.Scene {
 
         // Initialize score manager
         this.scoreManager = new ScoreManager(this);
+
+        // Initialize boss announcer
+        this.bossAnnouncer = new BossAnnouncer(this);
 
         // Control instructions (updates based on input mode)
         this.controlsText = this.add.text(20, 20, '', {
@@ -303,13 +307,18 @@ export class GameScene extends Phaser.Scene {
 
                 return true;
             } else if (!enemy.isAlive()) {
-                // Check if this was a bounty enemy
-                if (enemy.isBountyEnemy()) {
+                // Check if this was a boss
+                if (enemy.config && enemy.config.isBoss) {
+                    const result = this.scoreManager.addBossVictory(enemy.type);
+                    this.bossAnnouncer.announceBossVictory(enemy.config.name, result.bonus);
+                } else if (enemy.isBountyEnemy()) {
+                    // Check if this was a bounty enemy
                     const bountyValue = enemy.getBountyValue();
                     const bountyName = enemy.getBountyName();
                     this.scoreManager.addBountyKill(bountyValue);
                     this.showBountyKillFeedback(bountyName, bountyValue);
                 } else {
+                    // Regular enemy
                     this.scoreManager.addEnemyKill();
                 }
 
