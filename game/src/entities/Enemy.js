@@ -547,6 +547,18 @@ export class Enemy {
     }
 
     takeDamage(amount) {
+        // Leviathan phase 1 protection - prevent death, trigger phase 2
+        if (this.type === 'boss_leviathan' && this.bossPhase === 1) {
+            this.health -= amount;
+            if (this.health <= 0) {
+                this.health = 0;
+                // Don't call kill() - will transition in next update
+                return 0;
+            }
+            console.log('Leviathan took', amount, 'damage. Health:', this.health);
+            return this.health;
+        }
+
         // Kraken-specific invulnerability
         if (this.type === 'boss_kraken_arm' && this.bodyInvulnerable) {
             console.log('Kraken body is invulnerable! Damage tentacles first!');
@@ -1296,9 +1308,9 @@ export class Enemy {
                     0.4
                 );
 
-                // Check if player is in radius
-                const dx = playerX - this.sprite.x;
-                const dy = playerY - this.sprite.y;
+                // Check if player is in radius - USE CURRENT POSITION
+                const dx = this.scene.player.getX() - this.sprite.x;
+                const dy = this.scene.player.getY() - this.sprite.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
                 if (distance <= this.config.groundPoundRadius) {
@@ -1370,6 +1382,9 @@ export class Enemy {
     lightningStrikeAttack() {
         console.log('Leviathan: Lightning Strike!');
 
+        // Prevent multiple hits in single attack
+        this.lightningDamageDealt = false;
+
         for (let i = 0; i < this.config.lightningCount; i++) {
             const targetX = 300 + Math.random() * 1320;
             const targetY = 200 + Math.random() * 680;
@@ -1389,13 +1404,14 @@ export class Enemy {
                     0.7
                 );
 
-                // Check if player is hit
+                // Check if player is hit - ONLY DAMAGE ONCE PER ATTACK
                 const dx = this.scene.player.getX() - targetX;
                 const dy = this.scene.player.getY() - targetY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance <= this.config.lightningRadius) {
+                if (distance <= this.config.lightningRadius && !this.lightningDamageDealt) {
                     this.scene.player.takeDamage(this.config.lightningDamage);
+                    this.lightningDamageDealt = true;  // Prevent multi-hit
                 }
 
                 telegraph.destroy();
