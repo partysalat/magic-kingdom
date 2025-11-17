@@ -1285,8 +1285,9 @@ export class Enemy {
         console.log('Leviathan: Ground Pound!');
         this.attackingInProgress = true;
 
-        // Rise up visual
-        this.sprite.setTint(0xffff00);
+        // Rise up visual - change fill color to yellow
+        const originalColor = this.sprite.fillColor;
+        this.sprite.setFillStyle(0xffff00);
         const originalY = this.sprite.y;
 
         this.scene.tweens.add({
@@ -1295,8 +1296,8 @@ export class Enemy {
             duration: 500,
             yoyo: true,
             onComplete: () => {
-                // Impact
-                this.sprite.clearTint();
+                // Impact - restore original color
+                this.sprite.setFillStyle(originalColor);
                 this.scene.cameras.main.shake(300, 0.02);
 
                 // Create shockwave visual
