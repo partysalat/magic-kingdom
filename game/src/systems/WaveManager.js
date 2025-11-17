@@ -204,6 +204,9 @@ export class WaveManager {
         let spawnIndex = 0;
         let bountySpawned = false;
 
+        // Track newly spawned enemies for formation assignment
+        const newlySpawnedEnemies = [];
+
         // Spawn each enemy group
         composition.forEach(group => {
             for (let i = 0; i < group.count; i++) {
@@ -250,22 +253,23 @@ export class WaveManager {
                 }
 
                 this.scene.enemies.push(enemy);
+                newlySpawnedEnemies.push(enemy);  // Track newly spawned enemy
                 spawnIndex++;
             }
         });
 
         console.log('Spawned', totalCount, 'enemies', bountySpawned ? '(including bounty)' : '');
 
-        // After all enemies are spawned, assign formations
-        this.assignFormations(composition);
+        // After all enemies are spawned, assign formations to newly spawned enemies only
+        this.assignFormations(composition, newlySpawnedEnemies);
     }
 
-    assignFormations(composition) {
-        // Get all tanks and shooters from this wave
+    assignFormations(composition, enemiesToAssign) {
+        // Get all tanks and shooters from newly spawned enemies
         const tanks = [];
         const shooters = [];
 
-        this.scene.enemies.forEach(enemy => {
+        enemiesToAssign.forEach(enemy => {
             const enemyType = enemy.type;
 
             // Find this enemy's group in composition
