@@ -36,13 +36,14 @@ export class WaveManager {
             // BOSS WAVE 3: Iron Shell
             3: [{ type: 'boss_iron_shell', count: 1, isBoss: true }],
 
+            // Start formations from wave 4
             4: [
-                { type: 'lobster', count: 6 },
-                { type: 'shrimp', count: 4 }
+                { type: 'lobster', count: 3, role: 'tank' },
+                { type: 'shrimp', count: 4, role: 'shooter' }
             ],
             5: [
-                { type: 'lobster', count: 5 },
-                { type: 'shrimp', count: 3 },
+                { type: 'lobster', count: 3, role: 'tank' },
+                { type: 'shrimp', count: 3, role: 'shooter' },
                 { type: 'hermit', count: 2 }
             ],
 
@@ -50,16 +51,16 @@ export class WaveManager {
             6: [{ type: 'boss_kraken_arm', count: 1, isBoss: true }],
 
             7: [
-                { type: 'lobster', count: 5 },
-                { type: 'shrimp', count: 5 },
-                { type: 'hermit', count: 3 },
-                { type: 'jellyfish', count: 2 }
+                { type: 'lobster', count: 3, role: 'tank' },
+                { type: 'hermit', count: 2, role: 'tank' },
+                { type: 'shrimp', count: 5, role: 'shooter' },
+                { type: 'jellyfish', count: 2, role: 'shooter' }
             ],
             8: [
-                { type: 'lobster', count: 6 },
-                { type: 'shrimp', count: 6 },
-                { type: 'hermit', count: 3 },
-                { type: 'jellyfish', count: 2 },
+                { type: 'lobster', count: 4, role: 'tank' },
+                { type: 'hermit', count: 2, role: 'tank' },
+                { type: 'shrimp', count: 6, role: 'shooter' },
+                { type: 'jellyfish', count: 2, role: 'shooter' },
                 { type: 'flyingfish', count: 3 }
             ],
 
@@ -67,10 +68,10 @@ export class WaveManager {
             9: [{ type: 'boss_leviathan', count: 1, isBoss: true }],
 
             10: [
-                { type: 'lobster', count: 8 },
-                { type: 'shrimp', count: 8 },
-                { type: 'hermit', count: 5 },
-                { type: 'jellyfish', count: 4 },
+                { type: 'lobster', count: 5, role: 'tank' },
+                { type: 'hermit', count: 3, role: 'tank' },
+                { type: 'shrimp', count: 8, role: 'shooter' },
+                { type: 'jellyfish', count: 4, role: 'shooter' },
                 { type: 'flyingfish', count: 5 }
             ]
         };
@@ -254,6 +255,53 @@ export class WaveManager {
         });
 
         console.log('Spawned', totalCount, 'enemies', bountySpawned ? '(including bounty)' : '');
+
+        // After all enemies are spawned, assign formations
+        this.assignFormations(composition);
+    }
+
+    assignFormations(composition) {
+        // Get all tanks and shooters from this wave
+        const tanks = [];
+        const shooters = [];
+
+        this.scene.enemies.forEach(enemy => {
+            const enemyType = enemy.type;
+
+            // Find this enemy's group in composition
+            for (let group of composition) {
+                if (group.type === enemyType && group.role) {
+                    if (group.role === 'tank') {
+                        enemy.assignRole('tank', null);
+                        tanks.push(enemy);
+                    } else if (group.role === 'shooter') {
+                        enemy.assignRole('shooter', null);
+                        shooters.push(enemy);
+                    }
+                    break;
+                }
+            }
+        });
+
+        // Link shooters to tanks
+        if (tanks.length > 0 && shooters.length > 0) {
+            const shootersPerTank = Math.ceil(shooters.length / tanks.length);
+
+            let shooterIndex = 0;
+            tanks.forEach(tank => {
+                const tankShooters = [];
+                for (let i = 0; i < shootersPerTank && shooterIndex < shooters.length; i++) {
+                    tankShooters.push(shooters[shooterIndex]);
+                    shooterIndex++;
+                }
+
+                if (tankShooters.length > 0) {
+                    tank.linkFormation(tank, tankShooters);
+                }
+            });
+
+            console.log(`Formations assigned: ${tanks.length} tanks protecting ${shooters.length} shooters`);
+        }
     }
 
     announceBounty(name, value) {
