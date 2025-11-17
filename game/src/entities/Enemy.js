@@ -315,6 +315,8 @@ export class Enemy {
     }
 
     updateFormationVisuals() {
+        if (!this.sprite || !this.config) return;
+
         // Update tank indicator
         if (this.role === 'tank' && this.tankGlow && this.tankLabel) {
             this.tankGlow.setPosition(this.sprite.x, this.sprite.y);
@@ -326,7 +328,8 @@ export class Enemy {
         }
 
         // Update shooter indicator
-        if (this.role === 'shooter' && this.shooterLabel) {
+        if (this.role === 'shooter' && this.shooterGlow && this.shooterLabel) {
+            this.shooterGlow.setPosition(this.sprite.x, this.sprite.y);
             this.shooterLabel.setPosition(this.sprite.x, this.sprite.y - this.config.radius - 20);
         }
     }
@@ -665,6 +668,7 @@ export class Enemy {
         // Clean up formation visuals
         if (this.tankGlow) this.tankGlow.destroy();
         if (this.tankLabel) this.tankLabel.destroy();
+        if (this.shooterGlow) this.shooterGlow.destroy();
         if (this.shooterLabel) this.shooterLabel.destroy();
     }
 
@@ -1665,6 +1669,7 @@ export class Enemy {
         // Formation visuals
         if (this.tankGlow) this.tankGlow.setAlpha(this.alphaValue * 0.3);
         if (this.tankLabel) this.tankLabel.setAlpha(this.alphaValue);
+        if (this.shooterGlow) this.shooterGlow.setAlpha(this.alphaValue * 0.25);
         if (this.shooterLabel) this.shooterLabel.setAlpha(this.alphaValue);
     }
 
@@ -1737,11 +1742,18 @@ export class Enemy {
 
     /**
      * Add visual indicator for shooter role
-     * Creates orange/red tint and "SHOOTER" label
+     * Creates orange/red glow and "SHOOTER" label
      */
     addShooterIndicator() {
-        // Apply orange/red tint to sprite
-        this.sprite.setTint(0xff6600);
+        // Glow effect (similar to tank indicator)
+        this.shooterGlow = this.scene.add.circle(
+            this.sprite.x,
+            this.sprite.y,
+            this.config.radius + 8,
+            0xff6600,
+            0.25
+        );
+        this.shooterGlow.setDepth(this.sprite.depth - 1);
 
         // "SHOOTER" label
         this.shooterLabel = this.scene.add.text(
