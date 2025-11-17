@@ -654,7 +654,7 @@ export class Enemy {
 
     /**
      * Update position for tank in formation
-     * Positions tank 70px ahead of shooters (toward player)
+     * Tanks move toward player at reduced speed when protecting shooters
      */
     updateTankPosition() {
         // Clean up dead shooters
@@ -666,35 +666,16 @@ export class Enemy {
             return;
         }
 
-        // Calculate centroid of shooters
-        let avgX = 0, avgY = 0;
-        this.formationMembers.forEach(shooter => {
-            avgX += shooter.getSprite().x;
-            avgY += shooter.getSprite().y;
-        });
-        avgX /= this.formationMembers.length;
-        avgY /= this.formationMembers.length;
-
+        // Tanks simply move toward player at reduced speed
+        // Shooters will position themselves behind the tank
         const playerPos = { x: this.scene.player.getX(), y: this.scene.player.getY() };
 
-        // Calculate angle from shooters to player
-        const angleToPlayer = Math.atan2(
-            playerPos.y - avgY,
-            playerPos.x - avgX
-        );
-
-        // Position tank 70 pixels ahead of shooters (toward player)
-        const distance = 70;
-        const targetX = avgX + Math.cos(angleToPlayer) * distance;
-        const targetY = avgY + Math.sin(angleToPlayer) * distance;
-
-        // Move toward target position
-        const dx = targetX - this.getSprite().x;
-        const dy = targetY - this.getSprite().y;
+        const dx = playerPos.x - this.getSprite().x;
+        const dy = playerPos.y - this.getSprite().y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist > 10) {
-            const moveSpeed = this.config.speed * 0.8; // 20% slower when protecting
+            const moveSpeed = this.config.speed * 0.6; // 40% slower when protecting
             this.getSprite().x += (dx / dist) * moveSpeed;
             this.getSprite().y += (dy / dist) * moveSpeed;
         }
