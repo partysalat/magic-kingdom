@@ -242,12 +242,16 @@ export class StartScene extends Phaser.Scene {
 
     checkForGameStart() {
         // Check if any joined player presses START button
-        for (const playerConfig of this.joinedPlayers) {
-            const pad = this.input.gamepad.getPad(playerConfig.index);
+        if (!this.input.gamepad || !this.input.gamepad.enabled) {
+            // Gamepad not available, only check keyboard
+        } else {
+            for (const playerConfig of this.joinedPlayers) {
+                const pad = this.input.gamepad.getPad(playerConfig.index);
 
-            if (pad && pad.buttons[9] && pad.buttons[9].pressed) {
-                this.startGame();
-                return;
+                if (pad && pad.buttons[9] && pad.buttons[9].pressed) {
+                    this.startGame();
+                    return;
+                }
             }
         }
 

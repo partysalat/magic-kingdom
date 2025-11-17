@@ -226,20 +226,6 @@ export class GameScene extends Phaser.Scene {
                 inputManager.update();
             });
 
-            // Smooth camera following with lerp
-            const center = this.playerManager.getCenterPoint();
-            const camera = this.cameras.main;
-
-            // Lerp camera position for smooth movement
-            const lerpFactor = 0.1; // Lower = smoother but slower
-            const targetX = center.x;
-            const targetY = center.y;
-
-            const newX = Phaser.Math.Linear(camera.scrollX + camera.width / 2, targetX, lerpFactor);
-            const newY = Phaser.Math.Linear(camera.scrollY + camera.height / 2, targetY, lerpFactor);
-
-            camera.centerOn(newX, newY);
-
             // Update PlayerManager
             this.playerManager.update(time, delta);
         }
