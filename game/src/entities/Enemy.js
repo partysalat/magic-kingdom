@@ -353,38 +353,45 @@ export class Enemy {
     update(time, playerX, playerY) {
         if (!this.alive) return;
 
-        // Route to behavior-specific update
-        switch(this.config.behavior) {
-            case 'ranged_shooter':
-                this.updateRangedShooter(time, playerX, playerY);
-                break;
-            case 'ranged_kiter':
-                this.updateRangedKiter(time, playerX, playerY);
-                break;
-            case 'basic_shooter':
-                this.updateBasicShooter(time, playerX, playerY);
-                break;
-            case 'fast_melee':
-                this.updateFastMelee(time, playerX, playerY);
-                break;
-            case 'tank':
-                this.updateTank(time, playerX, playerY);
-                break;
-            case 'teleport':
-                this.updateTeleport(time, playerX, playerY);
-                break;
-            case 'swoop':
-                this.updateSwoop(time, playerX, playerY);
-                break;
-            case 'boss_iron_shell':
-                this.updateBossIronShell(time, playerX, playerY);
-                break;
-            case 'boss_kraken_arm':
-                this.updateBossKrakenArm(time, playerX, playerY);
-                break;
-            case 'boss_leviathan':
-                this.updateBossLeviathan(time, playerX, playerY);
-                break;
+        // Formation positioning takes priority
+        if (this.role === 'shooter' && this.formationLeader) {
+            this.updateShooterPosition();
+        } else if (this.role === 'tank' && this.formationMembers.length > 0) {
+            this.updateTankPosition();
+        } else {
+            // Route to behavior-specific update
+            switch(this.config.behavior) {
+                case 'ranged_shooter':
+                    this.updateRangedShooter(time, playerX, playerY);
+                    break;
+                case 'ranged_kiter':
+                    this.updateRangedKiter(time, playerX, playerY);
+                    break;
+                case 'basic_shooter':
+                    this.updateBasicShooter(time, playerX, playerY);
+                    break;
+                case 'fast_melee':
+                    this.updateFastMelee(time, playerX, playerY);
+                    break;
+                case 'tank':
+                    this.updateTank(time, playerX, playerY);
+                    break;
+                case 'teleport':
+                    this.updateTeleport(time, playerX, playerY);
+                    break;
+                case 'swoop':
+                    this.updateSwoop(time, playerX, playerY);
+                    break;
+                case 'boss_iron_shell':
+                    this.updateBossIronShell(time, playerX, playerY);
+                    break;
+                case 'boss_kraken_arm':
+                    this.updateBossKrakenArm(time, playerX, playerY);
+                    break;
+                case 'boss_leviathan':
+                    this.updateBossLeviathan(time, playerX, playerY);
+                    break;
+            }
         }
 
         // Update visual indicators
@@ -573,6 +580,92 @@ export class Enemy {
 
         // Update formation role visuals
         this.updateFormationVisuals();
+    }
+
+    /**
+     * Update position for shooter in formation
+     * Positions shooter 100px behind their tank (away from player)
+     */
+    updateShooterPosition() {
+        // Check if leader is alive
+        if (!this.formationLeader || !this.formationLeader.isAlive()) {
+            this.role = null;
+            this.formationLeader = null;
+            return;
+        }
+
+        const leader = this.formationLeader;
+        const leaderPos = { x: leader.getSprite().x, y: leader.getSprite().y };
+        const playerPos = { x: this.scene.player.getX(), y: this.scene.player.getY() };
+
+        // Calculate angle from player to tank
+        const angleToTank = Math.atan2(
+            leaderPos.y - playerPos.y,
+            leaderPos.x - playerPos.x
+        );
+
+        // Position shooter 100 pixels behind tank (away from player)
+        const distance = 100;
+        const targetX = leaderPos.x + Math.cos(angleToTank) * distance;
+        const targetY = leaderPos.y + Math.sin(angleToTank) * distance;
+
+        // Move toward target position
+        const dx = targetX - this.getSprite().x;
+        const dy = targetY - this.getSprite().y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 10) {
+            const moveSpeed = this.config.speed;
+            this.getSprite().x += (dx / dist) * moveSpeed;
+            this.getSprite().y += (dy / dist) * moveSpeed;
+        }
+    }
+
+    /**
+     * Update position for tank in formation
+     * Positions tank 70px ahead of shooters (toward player)
+     */
+    updateTankPosition() {
+        // Clean up dead shooters
+        this.formationMembers = this.formationMembers.filter(s => s.isAlive());
+
+        if (this.formationMembers.length === 0) {
+            this.role = null;
+            return;
+        }
+
+        // Calculate centroid of shooters
+        let avgX = 0, avgY = 0;
+        this.formationMembers.forEach(shooter => {
+            avgX += shooter.getSprite().x;
+            avgY += shooter.getSprite().y;
+        });
+        avgX /= this.formationMembers.length;
+        avgY /= this.formationMembers.length;
+
+        const playerPos = { x: this.scene.player.getX(), y: this.scene.player.getY() };
+
+        // Calculate angle from shooters to player
+        const angleToPlayer = Math.atan2(
+            playerPos.y - avgY,
+            playerPos.x - avgX
+        );
+
+        // Position tank 70 pixels ahead of shooters (toward player)
+        const distance = 70;
+        const targetX = avgX + Math.cos(angleToPlayer) * distance;
+        const targetY = avgY + Math.sin(angleToPlayer) * distance;
+
+        // Move toward target position
+        const dx = targetX - this.getSprite().x;
+        const dy = targetY - this.getSprite().y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 10) {
+            const moveSpeed = this.config.speed * 0.8; // 20% slower when protecting
+            this.getSprite().x += (dx / dist) * moveSpeed;
+            this.getSprite().y += (dy / dist) * moveSpeed;
+        }
     }
 
     takeDamage(amount) {
