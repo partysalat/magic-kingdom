@@ -538,6 +538,20 @@ export class GameScene extends Phaser.Scene {
             const bullet = bullets[i];
             if (!bullet.isAlive()) continue;
 
+            // Check cover collision FIRST
+            if (this.coverManager) {
+                const hitCover = this.coverManager.checkBulletCollision(
+                    bullet.getSprite().x,
+                    bullet.getSprite().y,
+                    bullet.getDamage()
+                );
+
+                if (hitCover) {
+                    bullet.destroy();
+                    continue; // Skip enemy collision check
+                }
+            }
+
             let hitEnemy = false;
 
             for (let j = this.enemies.length - 1; j >= 0; j--) {
@@ -979,6 +993,20 @@ export class GameScene extends Phaser.Scene {
         this.enemyBullets = this.enemyBullets.filter(bullet => {
             if (!bullet.isActive()) {
                 return false;
+            }
+
+            // Check cover collision
+            if (this.coverManager) {
+                const hitCover = this.coverManager.checkBulletCollision(
+                    bullet.getX(),
+                    bullet.getY(),
+                    bullet.getDamage()
+                );
+
+                if (hitCover) {
+                    bullet.destroy();
+                    return false;
+                }
             }
 
             // Check collision with player
