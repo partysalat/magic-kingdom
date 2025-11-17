@@ -1,11 +1,13 @@
 import { Player } from '../entities/Player.js';
 import { InputManager } from './InputManager.js';
+import { TargetSelector } from './TargetSelector.js';
 
 export class PlayerManager {
     constructor(scene, playerConfigs) {
         this.scene = scene;
         this.players = [];
         this.inputManagers = {};
+        this.targetSelectors = {};
 
         this.createPlayers(playerConfigs);
     }
@@ -26,6 +28,10 @@ export class PlayerManager {
             // Create InputManager for this player
             const inputManager = new InputManager(this.scene, config.index);
             this.inputManagers[player.playerIndex] = inputManager;
+
+            // Create TargetSelector for this player
+            const targetSelector = new TargetSelector(this.scene);
+            this.targetSelectors[player.playerIndex] = targetSelector;
         });
     }
 
@@ -122,5 +128,15 @@ export class PlayerManager {
 
     getPlayerByIndex(index) {
         return this.players.find(p => p.playerIndex === index);
+    }
+
+    getPlayerColorHex(color) {
+        const colorMap = {
+            'red': 0xff0000,
+            'blue': 0x0000ff,
+            'green': 0x00ff00,
+            'yellow': 0xffff00
+        };
+        return colorMap[color] || 0xffffff;
     }
 }

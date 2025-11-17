@@ -50,9 +50,6 @@ export class GameScene extends Phaser.Scene {
         this.Cocktail = Cocktail;
         this.COCKTAIL_TYPES = COCKTAIL_TYPES;
 
-        // Create target selector (will be updated for multiplayer later)
-        this.targetSelector = new TargetSelector(this);
-
         // Track input mode for UI updates
         this.lastInputMode = 'keyboard';
 
@@ -148,21 +145,34 @@ export class GameScene extends Phaser.Scene {
         // Create health bars for all players
         this.createPlayerHealthBars();
 
-        // Target lock visuals
-        this.targetReticle = this.add.circle(0, 0, 35);
-        this.targetReticle.setStrokeStyle(3, 0x00ff00);
-        this.targetReticle.setFillStyle(0x00ff00, 0.1);
-        this.targetReticle.setVisible(false);
+        // Target lock visuals for each player (color-coded)
+        this.playerReticles = {};
+        this.playerLockedReticles = {};
+        this.playerLockLines = {};
 
-        this.lockedReticle = this.add.circle(0, 0, 40);
-        this.lockedReticle.setStrokeStyle(4, 0xffff00);
-        this.lockedReticle.setFillStyle(0xffff00, 0.2);
-        this.lockedReticle.setVisible(false);
+        this.playerManager.players.forEach(player => {
+            const colorHex = this.playerManager.getPlayerColorHex(player.color);
 
-        // Lock line
-        this.lockLine = this.add.line(0, 0, 0, 0, 0, 0, 0xffff00);
-        this.lockLine.setLineWidth(2);
-        this.lockLine.setVisible(false);
+            // Current target reticle
+            const reticle = this.add.circle(0, 0, 35);
+            reticle.setStrokeStyle(3, colorHex);
+            reticle.setFillStyle(colorHex, 0.1);
+            reticle.setVisible(false);
+            this.playerReticles[player.playerIndex] = reticle;
+
+            // Locked target reticle
+            const lockedReticle = this.add.circle(0, 0, 40);
+            lockedReticle.setStrokeStyle(4, colorHex);
+            lockedReticle.setFillStyle(colorHex, 0.2);
+            lockedReticle.setVisible(false);
+            this.playerLockedReticles[player.playerIndex] = lockedReticle;
+
+            // Line from player to locked target
+            const lockLine = this.add.line(0, 0, 0, 0, 0, 0, colorHex, 0.5);
+            lockLine.setLineWidth(2);
+            lockLine.setVisible(false);
+            this.playerLockLines[player.playerIndex] = lockLine;
+        });
 
         // Target lock display
         this.lockText = this.add.text(960, 100, '', {
@@ -174,10 +184,12 @@ export class GameScene extends Phaser.Scene {
         }).setOrigin(0.5, 0);
 
         // Set explicit depth values for proper layering
-        this.targetReticle.setDepth(10);
-        this.lockedReticle.setDepth(10);
-        this.lockLine.setDepth(5);
         this.lockText.setDepth(100);
+
+        // Set depth for all player reticles
+        Object.values(this.playerReticles).forEach(reticle => reticle.setDepth(10));
+        Object.values(this.playerLockedReticles).forEach(reticle => reticle.setDepth(10));
+        Object.values(this.playerLockLines).forEach(line => line.setDepth(5));
 
         // Start first wave after brief delay
         this.time.delayedCall(1000, () => {
@@ -230,44 +242,42 @@ export class GameScene extends Phaser.Scene {
             this.playerManager.update(time, delta);
         }
 
-        // Update target selection (using first player for now, will be per-player later)
-        const firstInputManager = this.playerManager.inputManagers[this.player.playerIndex];
-        if (firstInputManager) {
-            const aimInfluence = firstInputManager.getAimInfluence();
-            const inputMode = firstInputManager.getInputMode();
-            this.targetSelector.update(
-                this.player.getX(),
-                this.player.getY(),
+        // Update target selection and shooting for all living players
+        this.playerManager.getLivingPlayers().forEach(player => {
+            const inputManager = this.playerManager.inputManagers[player.playerIndex];
+            const targetSelector = this.playerManager.targetSelectors[player.playerIndex];
+            if (!inputManager || !targetSelector) return;
+
+            // Update target selector for this player
+            const aimInfluence = inputManager.getAimInfluence();
+            const inputMode = inputManager.getInputMode();
+            targetSelector.update(
+                player.getX(),
+                player.getY(),
                 aimInfluence,
                 inputMode,
                 this.enemies
             );
 
             // Handle target cycling
-            if (firstInputManager.shouldCycleTargetNext()) {
-                this.targetSelector.cycleToBountyTarget(
-                    this.player.getX(),
-                    this.player.getY(),
+            if (inputManager.shouldCycleTargetNext()) {
+                targetSelector.cycleToBountyTarget(
+                    player.getX(),
+                    player.getY(),
                     this.enemies,
                     'next'
                 );
             }
-            if (firstInputManager.shouldCycleTargetPrev()) {
-                this.targetSelector.cycleToBountyTarget(
-                    this.player.getX(),
-                    this.player.getY(),
+            if (inputManager.shouldCycleTargetPrev()) {
+                targetSelector.cycleToBountyTarget(
+                    player.getX(),
+                    player.getY(),
                     this.enemies,
                     'prev'
                 );
             }
-        }
 
-        // Handle shooting for all living players
-        this.playerManager.getLivingPlayers().forEach(player => {
-            const inputManager = this.playerManager.inputManagers[player.playerIndex];
-            if (!inputManager) return;
-
-            // Check if player is in ink cloud (before player.update call)
+            // Check if player is in ink cloud
             let speedMultiplier = 1.0;
             for (const enemy of this.enemies) {
                 if (enemy.type === 'boss_kraken_arm' && enemy.inkClouds) {
@@ -288,9 +298,9 @@ export class GameScene extends Phaser.Scene {
             // Apply to player
             player.setSpeedMultiplier(speedMultiplier);
 
-            // Handle shooting with auto-aim (only for first player with target selector for now)
-            if (player === this.player && inputManager.isFiringPressed()) {
-                const target = this.targetSelector.getCurrentTarget();
+            // Handle shooting with auto-aim
+            if (inputManager.isFiringPressed()) {
+                const target = targetSelector.getCurrentTarget();
                 player.shoot(target, time);
             }
         });
@@ -456,114 +466,148 @@ export class GameScene extends Phaser.Scene {
             });
         }
 
-        // Update target visuals
-        const currentTarget = this.targetSelector.getCurrentTarget();
-        const lockedTarget = this.targetSelector.getLockedTarget();
-
-        if (lockedTarget) {
-            let targetX, targetY;
-            let isAlive = false;
-
-            // Get coordinates based on target type
-            if (lockedTarget.type === 'tentacle') {
-                const enemy = lockedTarget.enemy;
-                const tentSprite = enemy.tentacleSprites ? enemy.tentacleSprites[lockedTarget.tentacleIndex] : null;
-                const tentData = enemy.tentacles ? enemy.tentacles[lockedTarget.tentacleIndex] : null;
-
-                if (tentSprite && tentData && tentData.alive) {
-                    targetX = tentSprite.x;
-                    targetY = tentSprite.y;
-                    isAlive = true;
+        // Update target visuals for each player
+        this.playerManager.players.forEach(player => {
+            const targetSelector = this.playerManager.targetSelectors[player.playerIndex];
+            if (!targetSelector || player.isDead) {
+                // Hide reticles for dead players or missing target selectors
+                if (this.playerReticles[player.playerIndex]) {
+                    this.playerReticles[player.playerIndex].setVisible(false);
                 }
-            } else if (lockedTarget.type === 'enemy') {
-                if (lockedTarget.enemy && lockedTarget.enemy.isAlive()) {
-                    targetX = lockedTarget.enemy.getSprite().x;
-                    targetY = lockedTarget.enemy.getSprite().y;
-                    isAlive = true;
+                if (this.playerLockedReticles[player.playerIndex]) {
+                    this.playerLockedReticles[player.playerIndex].setVisible(false);
                 }
+                if (this.playerLockLines[player.playerIndex]) {
+                    this.playerLockLines[player.playerIndex].setVisible(false);
+                }
+                return;
             }
 
-            if (isAlive) {
-                // Show locked target reticle
-                this.lockedReticle.setPosition(targetX, targetY);
-                this.lockedReticle.setVisible(true);
+            const currentTarget = targetSelector.getCurrentTarget();
+            const lockedTarget = targetSelector.getLockedTarget();
+            const reticle = this.playerReticles[player.playerIndex];
+            const lockedReticle = this.playerLockedReticles[player.playerIndex];
+            const lockLine = this.playerLockLines[player.playerIndex];
 
-                // Pulse animation
-                const pulse = Math.sin(time / 200) * 0.1 + 1.0;
-                this.lockedReticle.setScale(pulse);
+            // Handle locked target
+            if (lockedTarget) {
+                let targetX, targetY;
+                let isAlive = false;
 
-                // Line from player to locked target
-                this.lockLine.setTo(
-                    this.player.getX(),
-                    this.player.getY(),
-                    targetX,
-                    targetY
-                );
-                this.lockLine.setVisible(true);
+                // Get coordinates based on target type
+                if (lockedTarget.type === 'tentacle') {
+                    const enemy = lockedTarget.enemy;
+                    const tentSprite = enemy.tentacleSprites ? enemy.tentacleSprites[lockedTarget.tentacleIndex] : null;
+                    const tentData = enemy.tentacles ? enemy.tentacles[lockedTarget.tentacleIndex] : null;
+
+                    if (tentSprite && tentData && tentData.alive) {
+                        targetX = tentSprite.x;
+                        targetY = tentSprite.y;
+                        isAlive = true;
+                    }
+                } else if (lockedTarget.type === 'enemy') {
+                    if (lockedTarget.enemy && lockedTarget.enemy.isAlive()) {
+                        targetX = lockedTarget.enemy.getSprite().x;
+                        targetY = lockedTarget.enemy.getSprite().y;
+                        isAlive = true;
+                    }
+                }
+
+                if (isAlive) {
+                    // Show locked target reticle
+                    lockedReticle.setPosition(targetX, targetY);
+                    lockedReticle.setVisible(true);
+
+                    // Pulse animation
+                    const pulse = Math.sin(time / 200) * 0.1 + 1.0;
+                    lockedReticle.setScale(pulse);
+
+                    // Line from player to locked target
+                    lockLine.setTo(
+                        player.getX(),
+                        player.getY(),
+                        targetX,
+                        targetY
+                    );
+                    lockLine.setVisible(true);
+                } else {
+                    lockedReticle.setVisible(false);
+                    lockLine.setVisible(false);
+                }
             } else {
-                this.lockedReticle.setVisible(false);
-                this.lockLine.setVisible(false);
+                lockedReticle.setVisible(false);
+                lockLine.setVisible(false);
             }
-        } else {
-            this.lockedReticle.setVisible(false);
-            this.lockLine.setVisible(false);
-        }
 
-        if (currentTarget) {
-            let targetX, targetY;
-            let isAlive = false;
+            // Handle current target
+            if (currentTarget) {
+                let targetX, targetY;
+                let isAlive = false;
 
-            // Get coordinates based on target type
-            if (currentTarget.type === 'tentacle') {
-                const enemy = currentTarget.enemy;
-                const tentSprite = enemy.tentacleSprites ? enemy.tentacleSprites[currentTarget.tentacleIndex] : null;
-                const tentData = enemy.tentacles ? enemy.tentacles[currentTarget.tentacleIndex] : null;
+                // Get coordinates based on target type
+                if (currentTarget.type === 'tentacle') {
+                    const enemy = currentTarget.enemy;
+                    const tentSprite = enemy.tentacleSprites ? enemy.tentacleSprites[currentTarget.tentacleIndex] : null;
+                    const tentData = enemy.tentacles ? enemy.tentacles[currentTarget.tentacleIndex] : null;
 
-                if (tentSprite && tentData && tentData.alive) {
-                    targetX = tentSprite.x;
-                    targetY = tentSprite.y;
-                    isAlive = true;
-                }
-            } else if (currentTarget.type === 'enemy') {
-                if (currentTarget.enemy && currentTarget.enemy.isAlive()) {
-                    targetX = currentTarget.enemy.getSprite().x;
-                    targetY = currentTarget.enemy.getSprite().y;
-                    isAlive = true;
+                    if (tentSprite && tentData && tentData.alive) {
+                        targetX = tentSprite.x;
+                        targetY = tentSprite.y;
+                        isAlive = true;
+                    }
+                } else if (currentTarget.type === 'enemy') {
+                    if (currentTarget.enemy && currentTarget.enemy.isAlive()) {
+                        targetX = currentTarget.enemy.getSprite().x;
+                        targetY = currentTarget.enemy.getSprite().y;
+                        isAlive = true;
+                    } else if (currentTarget.isAlive && currentTarget.isAlive()) {
+                        // Legacy format (plain enemy object)
+                        targetX = currentTarget.getSprite().x;
+                        targetY = currentTarget.getSprite().y;
+                        isAlive = true;
+                    }
                 } else if (currentTarget.isAlive && currentTarget.isAlive()) {
                     // Legacy format (plain enemy object)
                     targetX = currentTarget.getSprite().x;
                     targetY = currentTarget.getSprite().y;
                     isAlive = true;
                 }
-            } else if (currentTarget.isAlive && currentTarget.isAlive()) {
-                // Legacy format (plain enemy object)
-                targetX = currentTarget.getSprite().x;
-                targetY = currentTarget.getSprite().y;
-                isAlive = true;
-            }
 
-            if (isAlive && currentTarget !== lockedTarget) {
-                // Show current auto-target reticle
-                this.targetReticle.setPosition(targetX, targetY);
-                this.targetReticle.setVisible(true);
+                if (isAlive && currentTarget !== lockedTarget) {
+                    // Show current auto-target reticle
+                    reticle.setPosition(targetX, targetY);
+                    reticle.setVisible(true);
+                } else {
+                    reticle.setVisible(false);
+                }
             } else {
-                this.targetReticle.setVisible(false);
+                reticle.setVisible(false);
             }
-        } else {
-            this.targetReticle.setVisible(false);
-        }
+        });
 
-        // Update lock UI
-        if (lockedTarget) {
-            const label = lockedTarget.label || (lockedTarget.enemy ? lockedTarget.enemy.getBountyName() : 'Unknown');
-            this.lockText.setText(`🎯 LOCKED: ${label}`);
+        // Update lock UI (show first player's lock for now)
+        const firstPlayer = this.playerManager.players[0];
+        if (firstPlayer) {
+            const targetSelector = this.playerManager.targetSelectors[firstPlayer.playerIndex];
+            if (targetSelector) {
+                const lockedTarget = targetSelector.getLockedTarget();
+                if (lockedTarget) {
+                    const label = lockedTarget.label || (lockedTarget.enemy ? lockedTarget.enemy.getBountyName() : 'Unknown');
+                    this.lockText.setText(`🎯 LOCKED: ${label}`);
+                } else {
+                    this.lockText.setText('');
+                }
+            } else {
+                this.lockText.setText('');
+            }
         } else {
             this.lockText.setText('');
         }
 
         // Update controls display if input mode changed
-        if (firstInputManager) {
-            if (this.lastInputMode !== firstInputManager.getInputMode()) {
+        if (firstPlayer) {
+            const firstInputManager = this.playerManager.inputManagers[firstPlayer.playerIndex];
+            if (firstInputManager && this.lastInputMode !== firstInputManager.getInputMode()) {
                 this.updateControlsText();
                 this.lastInputMode = firstInputManager.getInputMode();
             }
