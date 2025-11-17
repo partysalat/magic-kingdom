@@ -1593,6 +1593,12 @@ export class Enemy {
         if (this.tentacles) {
             this.tentacles.forEach(t => t.setAlpha(this.alphaValue));
         }
+        // Kraken boss tentacle sprites
+        if (this.tentacleSprites) {
+            this.tentacleSprites.forEach(sprite => {
+                if (sprite) sprite.setAlpha(this.alphaValue);
+            });
+        }
         if (this.wing1) this.wing1.setAlpha(this.alphaValue);
         if (this.wing2) this.wing2.setAlpha(this.alphaValue);
         if (this.bountyIcon) this.bountyIcon.setAlpha(this.alphaValue);
