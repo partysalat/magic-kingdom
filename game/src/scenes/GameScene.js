@@ -82,6 +82,10 @@ export class GameScene extends Phaser.Scene {
         // Initialize cover manager
         this.coverManager = new CoverManager(this);
 
+        // Create graphics for formation lines
+        this.formationGraphics = this.add.graphics();
+        this.formationGraphics.setDepth(5); // Above ground, below UI
+
         // Boss health bar (created when boss spawns)
         this.bossHealthBar = null;
 
@@ -333,6 +337,9 @@ export class GameScene extends Phaser.Scene {
             }
             return true;
         });
+
+        // Render formation lines
+        this.renderFormationLines();
 
         // Update enemy bullets
         this.updateEnemyBullets(delta);
@@ -1018,6 +1025,39 @@ export class GameScene extends Phaser.Scene {
             }
 
             return true;  // Keep bullet
+        });
+    }
+
+    /**
+     * Render formation lines from shooters to their tank leaders
+     */
+    renderFormationLines() {
+        if (!this.formationGraphics) return;
+
+        this.formationGraphics.clear();
+
+        // Draw lines from shooters to their tanks
+        this.enemies.forEach(enemy => {
+            if (enemy.role === 'shooter' && enemy.formationLeader && enemy.formationLeader.isAlive()) {
+                const shooter = enemy.getSprite();
+                const tank = enemy.formationLeader.getSprite();
+
+                // Draw dotted line
+                this.formationGraphics.lineStyle(2, 0x00ff00, 0.3);
+
+                const steps = 10;
+                for (let i = 0; i < steps; i += 2) {
+                    const t1 = i / steps;
+                    const t2 = (i + 1) / steps;
+
+                    const x1 = shooter.x + (tank.x - shooter.x) * t1;
+                    const y1 = shooter.y + (tank.y - shooter.y) * t1;
+                    const x2 = shooter.x + (tank.x - shooter.x) * t2;
+                    const y2 = shooter.y + (tank.y - shooter.y) * t2;
+
+                    this.formationGraphics.lineBetween(x1, y1, x2, y2);
+                }
+            }
         });
     }
 }
