@@ -213,15 +213,17 @@ export class Cover {
     }
 
     damageInRadius() {
-        // Damage player
-        if (this.scene.player && !this.scene.player.isDead()) {
-            const dx = this.scene.player.getX() - this.x;
-            const dy = this.scene.player.getY() - this.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+        // Damage all living players
+        if (this.scene.playerManager) {
+            this.scene.playerManager.getLivingPlayers().forEach(player => {
+                const dx = player.getX() - this.x;
+                const dy = player.getY() - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (dist < this.explosionRadius) {
-                this.scene.player.takeDamage(this.explosionDamage);
-            }
+                if (dist < this.explosionRadius) {
+                    player.takeDamage(this.explosionDamage);
+                }
+            });
         }
 
         // Damage enemies

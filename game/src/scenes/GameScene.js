@@ -399,14 +399,15 @@ export class GameScene extends Phaser.Scene {
         this.healthPickups = this.healthPickups.filter(pickup => {
             if (!pickup.isAlive()) return false;
 
-            if (this.player && !this.player.isDead()) {
-                const dx = this.player.getX() - pickup.getSprite().x;
-                const dy = this.player.getY() - pickup.getSprite().y;
+            // Check collision with all living players
+            for (const player of this.playerManager.getLivingPlayers()) {
+                const dx = player.getX() - pickup.getSprite().x;
+                const dy = player.getY() - pickup.getSprite().y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
                 // Collision if distance less than combined radii
                 if (distance < 35) { // 20 (player) + 15 (pickup)
-                    const healed = this.player.heal(pickup.getHealAmount());
+                    const healed = player.heal(pickup.getHealAmount());
                     pickup.collect();
                     this.updateHealthUI();
 
@@ -426,15 +427,16 @@ export class GameScene extends Phaser.Scene {
                 return false;
             }
 
-            if (this.player && !this.player.isDead()) {
-                const dx = this.player.getX() - cocktail.getSprite().x;
-                const dy = this.player.getY() - cocktail.getSprite().y;
+            // Check collision with all living players
+            for (const player of this.playerManager.getLivingPlayers()) {
+                const dx = player.getX() - cocktail.getSprite().x;
+                const dy = player.getY() - cocktail.getSprite().y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
                 // Collision if distance less than combined radii
                 if (distance < 35) { // 20 (player) + 15 (cocktail)
                     const config = cocktail.getConfig();
-                    this.player.applyBuff(config);
+                    player.applyBuff(config);
                     cocktail.collect();
                     cocktail.destroy();  // Remove visual from scene
                     this.showCocktailFeedback(config);
