@@ -358,9 +358,17 @@ export class Enemy {
         if (this.role === 'shooter' && this.formationLeader) {
             this.updateShooterPosition();
             formationHandled = true;
+            // Stop physics velocity to prevent conflict with direct position manipulation
+            if (this.sprite.body) {
+                this.sprite.body.setVelocity(0, 0);
+            }
         } else if (this.role === 'tank' && this.formationMembers.length > 0) {
             this.updateTankPosition();
             formationHandled = true;
+            // Stop physics velocity to prevent conflict with direct position manipulation
+            if (this.sprite.body) {
+                this.sprite.body.setVelocity(0, 0);
+            }
         }
 
         // Route to behavior-specific update for attack logic
