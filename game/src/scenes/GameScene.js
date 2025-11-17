@@ -287,6 +287,27 @@ export class GameScene extends Phaser.Scene {
             if (enemy.isAlive() && this.player) {
                 enemy.update(time, this.player.getX(), this.player.getY());
 
+                // Check cover collisions for enemies
+                if (this.coverManager) {
+                    this.coverManager.getCovers().forEach(cover => {
+                        if (!cover.isAlive()) return;
+
+                        const dx = enemy.getSprite().x - cover.x;
+                        const dy = enemy.getSprite().y - cover.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        const enemyRadius = enemy.config.radius || 15;
+                        const coverRadius = Math.max(cover.width, cover.height) / 2;
+
+                        if (distance < (enemyRadius + coverRadius)) {
+                            // Push enemy away from cover
+                            const pushAngle = Math.atan2(dy, dx);
+                            const targetDist = enemyRadius + coverRadius + 1;
+                            enemy.getSprite().x = cover.x + Math.cos(pushAngle) * targetDist;
+                            enemy.getSprite().y = cover.y + Math.sin(pushAngle) * targetDist;
+                        }
+                    });
+                }
+
                 return true;
             } else if (!enemy.isAlive()) {
                 // Check if this was a boss

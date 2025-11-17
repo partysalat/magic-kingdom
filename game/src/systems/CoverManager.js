@@ -24,6 +24,11 @@ export class CoverManager {
         coverLayout.forEach(layout => {
             const cover = new Cover(this.scene, layout.x, layout.y, layout.type);
             this.covers.push(cover);
+
+            // Add collision with player
+            if (this.scene.player) {
+                this.scene.physics.add.collider(this.scene.player.sprite, cover.getSprite());
+            }
         });
     }
 

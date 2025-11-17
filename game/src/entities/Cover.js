@@ -42,8 +42,12 @@ export class Cover {
         );
         this.sprite.setStrokeStyle(3, 0x000000);
 
-        // Enable physics
+        // Enable physics - static body that blocks movement
         this.scene.physics.add.existing(this.sprite, true); // true = static
+
+        // Enable collision on the body
+        this.sprite.body.setSize(this.width, this.height);
+        this.sprite.body.setOffset(-this.width / 2, -this.height / 2)
 
         // Create health bar (initially hidden)
         this.healthBarBg = this.scene.add.rectangle(
