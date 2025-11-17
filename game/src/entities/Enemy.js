@@ -358,16 +358,21 @@ export class Enemy {
         if (this.role === 'shooter' && this.formationLeader) {
             this.updateShooterPosition();
             formationHandled = true;
-            // Stop physics velocity to prevent conflict with direct position manipulation
+            // Disable physics body to prevent conflicts with direct position manipulation
             if (this.sprite.body) {
-                this.sprite.body.setVelocity(0, 0);
+                this.sprite.body.enable = false;
             }
         } else if (this.role === 'tank' && this.formationMembers.length > 0) {
             this.updateTankPosition();
             formationHandled = true;
-            // Stop physics velocity to prevent conflict with direct position manipulation
+            // Disable physics body to prevent conflicts with direct position manipulation
             if (this.sprite.body) {
-                this.sprite.body.setVelocity(0, 0);
+                this.sprite.body.enable = false;
+            }
+        } else {
+            // Re-enable physics body for non-formation enemies
+            if (this.sprite.body && this.sprite.body.enable === false) {
+                this.sprite.body.enable = true;
             }
         }
 
