@@ -1309,6 +1309,16 @@ export class Enemy {
                     0.4
                 );
 
+                // Damage cover in radius
+                if (this.scene.coverManager) {
+                    this.scene.coverManager.damageInRadius(
+                        this.sprite.x,
+                        this.sprite.y,
+                        200,  // shockwave radius
+                        50    // damage to cover
+                    );
+                }
+
                 // Check if player is in radius - USE CURRENT POSITION
                 const dx = this.scene.player.getX() - this.sprite.x;
                 const dy = this.scene.player.getY() - this.sprite.y;
@@ -1405,6 +1415,16 @@ export class Enemy {
                     0.7
                 );
 
+                // Damage cover in radius
+                if (this.scene.coverManager) {
+                    this.scene.coverManager.damageInRadius(
+                        targetX,
+                        targetY,
+                        80,   // lightning radius
+                        30    // damage to cover
+                    );
+                }
+
                 // Check if player is hit - ONLY DAMAGE ONCE PER ATTACK
                 const dx = this.scene.player.getX() - targetX;
                 const dy = this.scene.player.getY() - targetY;
@@ -1449,6 +1469,16 @@ export class Enemy {
                     0x4169e1,
                     0.6
                 );
+
+                // Damage all cover
+                if (this.scene.coverManager) {
+                    const covers = this.scene.coverManager.getCovers();
+                    covers.forEach(cover => {
+                        if (cover.isAlive()) {
+                            cover.takeDamage(50); // Tidal wave damages all cover
+                        }
+                    });
+                }
 
                 this.scene.tweens.add({
                     targets: wave,
