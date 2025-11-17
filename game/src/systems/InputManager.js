@@ -158,6 +158,18 @@ export class InputManager {
         return this.cycleTargetPrev;
     }
 
+    getInputState() {
+        return {
+            movement: {
+                up: this.movement.y < -0.1,
+                down: this.movement.y > 0.1,
+                left: this.movement.x < -0.1,
+                right: this.movement.x > 0.1
+            },
+            isFiring: this.isFiring
+        };
+    }
+
     destroy() {
         // Remove event listeners to prevent memory leaks
         this.scene.input.off('pointerdown');

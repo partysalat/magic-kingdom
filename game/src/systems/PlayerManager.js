@@ -5,7 +5,7 @@ export class PlayerManager {
     constructor(scene, playerConfigs) {
         this.scene = scene;
         this.players = [];
-        this.inputManagers = [];
+        this.inputManagers = {};
 
         this.createPlayers(playerConfigs);
     }
@@ -25,7 +25,7 @@ export class PlayerManager {
 
             // Create InputManager for this player
             const inputManager = new InputManager(this.scene, config.index);
-            this.inputManagers.push(inputManager);
+            this.inputManagers[player.playerIndex] = inputManager;
         });
     }
 
@@ -87,7 +87,9 @@ export class PlayerManager {
             player.sprite.play(`gisela-${player.color}-death`);
         }
         // Disable physics
-        player.sprite.body.enable = false;
+        if (player.sprite.body) {
+            player.sprite.body.enable = false;
+        }
         // Fade out sprite
         this.scene.tweens.add({
             targets: player.sprite,
