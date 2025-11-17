@@ -44,12 +44,41 @@ export class Cover {
 
         // Enable physics
         this.scene.physics.add.existing(this.sprite, true); // true = static
+
+        // Create health bar (initially hidden)
+        this.healthBarBg = this.scene.add.rectangle(
+            this.x,
+            this.y - this.height / 2 - 10,
+            this.width,
+            4,
+            0x000000,
+            0.5
+        );
+
+        this.healthBarFill = this.scene.add.rectangle(
+            this.x,
+            this.y - this.height / 2 - 10,
+            this.width,
+            4,
+            0x00ff00,
+            0.8
+        );
+
+        // Hide health bar initially
+        this.healthBarBg.setVisible(false);
+        this.healthBarFill.setVisible(false);
     }
 
     takeDamage(amount) {
         if (!this.alive) return;
 
         this.health -= amount;
+
+        // Show health bar when first damaged
+        if (this.healthBarBg && this.healthBarFill) {
+            this.healthBarBg.setVisible(true);
+            this.healthBarFill.setVisible(true);
+        }
 
         if (this.health <= 0) {
             this.health = 0;
@@ -62,6 +91,7 @@ export class Cover {
     updateVisualDamage() {
         const healthPercent = this.health / this.maxHealth;
 
+        // Update alpha
         if (healthPercent <= 0.25) {
             // Nearly destroyed - very transparent
             this.sprite.setAlpha(0.4);
@@ -75,6 +105,21 @@ export class Cover {
             // Pristine
             this.sprite.setAlpha(1.0);
         }
+
+        // Update health bar
+        if (this.healthBarFill) {
+            this.healthBarFill.width = this.width * healthPercent;
+            this.healthBarFill.x = this.x - this.width / 2 + (this.width * healthPercent) / 2;
+
+            // Color transition: green -> yellow -> red
+            if (healthPercent > 0.5) {
+                this.healthBarFill.setFillStyle(0x00ff00, 0.8); // Green
+            } else if (healthPercent > 0.25) {
+                this.healthBarFill.setFillStyle(0xffff00, 0.8); // Yellow
+            } else {
+                this.healthBarFill.setFillStyle(0xff0000, 0.8); // Red
+            }
+        }
     }
 
     destroy() {
@@ -87,6 +132,16 @@ export class Cover {
 
         if (this.explosive) {
             this.explode();
+        }
+
+        // Destroy health bar
+        if (this.healthBarBg) {
+            this.healthBarBg.destroy();
+            this.healthBarBg = null;
+        }
+        if (this.healthBarFill) {
+            this.healthBarFill.destroy();
+            this.healthBarFill = null;
         }
 
         // Destroy sprite after particles
