@@ -126,6 +126,11 @@ export class WaveManager {
         // Get composition for this wave
         const composition = this.getWaveComposition(this.currentWave);
 
+        // Spawn cover for this wave
+        if (this.scene.coverManager) {
+            this.scene.coverManager.spawnCoverForWave();
+        }
+
         // Check if this is a boss wave
         if (this.isBossWave(this.currentWave)) {
             const bossType = composition[0].type;

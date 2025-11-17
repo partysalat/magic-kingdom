@@ -9,6 +9,7 @@ import { InputManager } from '../systems/InputManager.js';
 import { TargetSelector } from '../systems/TargetSelector.js';
 import { BossAnnouncer } from '../systems/BossAnnouncer.js';
 import { BossHealthBar } from '../ui/BossHealthBar.js';
+import { CoverManager } from '../systems/CoverManager.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -85,6 +86,9 @@ export class GameScene extends Phaser.Scene {
 
         // Initialize boss announcer
         this.bossAnnouncer = new BossAnnouncer(this);
+
+        // Initialize cover manager
+        this.coverManager = new CoverManager(this);
 
         // Boss health bar (created when boss spawns)
         this.bossHealthBar = null;
@@ -224,6 +228,11 @@ export class GameScene extends Phaser.Scene {
         // Update wave manager (for spawn animations)
         if (this.waveManager) {
             this.waveManager.update(time);
+        }
+
+        // Update cover manager
+        if (this.coverManager) {
+            this.coverManager.update();
         }
 
         // Update input manager
