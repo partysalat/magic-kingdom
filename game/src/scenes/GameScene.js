@@ -109,15 +109,15 @@ export class GameScene extends Phaser.Scene {
             fontFamily: 'Arial'
         });
 
-        // Add wave display
-        this.waveText = this.add.text(960, 20, 'Wave: 0/3', {
+        // Add wave display (moved left to avoid overlap with scores)
+        this.waveText = this.add.text(700, 20, 'Wave: 0/3', {
             fontSize: '36px',
             color: '#ffffff',
             fontFamily: 'Arial'
         }).setOrigin(0.5, 0);
 
-        // Add enemy count display
-        this.enemyText = this.add.text(960, 65, 'Enemies: 0', {
+        // Add enemy count display (moved left to match wave text)
+        this.enemyText = this.add.text(700, 65, 'Enemies: 0', {
             fontSize: '28px',
             color: '#ffaa00',
             fontFamily: 'Arial'
