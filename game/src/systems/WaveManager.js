@@ -305,6 +305,11 @@ export class WaveManager {
             });
 
             console.log(`Formations assigned: ${tanks.length} tanks protecting ${shooters.length} shooters`);
+
+            // Play formation sound effect if available
+            if (this.scene.sound && this.scene.cache.audio.exists('formation_established')) {
+                this.scene.sound.play('formation_established', { volume: 0.5 });
+            }
         }
     }
 

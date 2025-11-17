@@ -619,6 +619,7 @@ export class Enemy {
     updateShooterPosition() {
         // Check if leader is alive
         if (!this.formationLeader || !this.formationLeader.isAlive()) {
+            console.log('Formation broken: Shooter lost tank leader');
             this.role = null;
             this.formationLeader = null;
             return;
@@ -660,6 +661,7 @@ export class Enemy {
         this.formationMembers = this.formationMembers.filter(s => s.isAlive());
 
         if (this.formationMembers.length === 0) {
+            console.log('Formation broken: Tank lost all shooters');
             this.role = null;
             return;
         }
@@ -1912,7 +1914,9 @@ export class Enemy {
                 fontSize: '12px',
                 color: '#00ffff',
                 fontFamily: 'Arial',
-                fontStyle: 'bold'
+                fontStyle: 'bold',
+                backgroundColor: '#000000',
+                padding: { x: 4, y: 2 }
             }
         ).setOrigin(0.5);
     }
@@ -1941,7 +1945,9 @@ export class Enemy {
                 fontSize: '12px',
                 color: '#ff6600',
                 fontFamily: 'Arial',
-                fontStyle: 'bold'
+                fontStyle: 'bold',
+                backgroundColor: '#000000',
+                padding: { x: 4, y: 2 }
             }
         ).setOrigin(0.5);
     }
