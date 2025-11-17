@@ -21,6 +21,7 @@ export class Player {
 
         // Player properties
         this.speed = 300;
+        this.speedMultiplier = 1.0;
         this.health = 100;
         this.maxHealth = 100;
 
@@ -67,6 +68,10 @@ export class Player {
             velocityX *= 0.707; // 1/sqrt(2)
             velocityY *= 0.707;
         }
+
+        // Apply speed multiplier (for ink cloud slow effect)
+        velocityX *= this.speedMultiplier;
+        velocityY *= this.speedMultiplier;
 
         // Apply velocity
         this.sprite.body.setVelocity(velocityX, velocityY);
@@ -237,6 +242,10 @@ export class Player {
             this.buffAura.destroy();
             this.buffAura = null;
         }
+    }
+
+    setSpeedMultiplier(multiplier) {
+        this.speedMultiplier = multiplier;
     }
 
     destroy() {

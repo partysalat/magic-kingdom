@@ -601,6 +601,20 @@ export class Enemy {
                 if (this.wing1) this.wing1.destroy();
                 if (this.wing2) this.wing2.destroy();
                 break;
+            case 'boss_kraken_arm':
+                // Destroy tentacle sprites
+                if (this.tentacleSprites) {
+                    this.tentacleSprites.forEach(sprite => {
+                        if (sprite) sprite.destroy();
+                    });
+                }
+                // Destroy ink clouds
+                if (this.inkClouds) {
+                    this.inkClouds.forEach(cloud => {
+                        if (cloud) cloud.destroy();
+                    });
+                }
+                break;
         }
 
         // Clean up bounty visuals
@@ -1059,6 +1073,8 @@ export class Enemy {
     }
 
     tentacleSweep() {
+        this.sweepDamageDealt = false;  // Add at start
+
         // Make all tentacles glow
         this.tentacleSprites.forEach(sprite => {
             sprite.setFillStyle(0xffff00, 0.8);
@@ -1086,8 +1102,9 @@ export class Enemy {
                         const py = this.scene.player.getY();
                         const dist = Math.sqrt(Math.pow(tx - px, 2) + Math.pow(ty - py, 2));
 
-                        if (dist < 25) {
+                        if (dist < 25 && !this.sweepDamageDealt) {
                             this.scene.player.takeDamage(this.config.sweepDamage);
+                            this.sweepDamageDealt = true;
                         }
                     }
                 });

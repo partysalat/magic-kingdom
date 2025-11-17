@@ -252,6 +252,27 @@ export class GameScene extends Phaser.Scene {
 
         // Update player with input
         if (this.player) {
+            // Check if player is in ink cloud (before player.update call)
+            let speedMultiplier = 1.0;
+            for (const enemy of this.enemies) {
+                if (enemy.type === 'boss_kraken_arm' && enemy.inkClouds) {
+                    for (const cloud of enemy.inkClouds) {
+                        const dx = this.player.getX() - cloud.x;
+                        const dy = this.player.getY() - cloud.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < enemy.config.inkCloudRadius) {
+                            speedMultiplier = enemy.config.inkCloudSlowFactor;
+                            break;
+                        }
+                    }
+                    if (speedMultiplier < 1.0) break;
+                }
+            }
+
+            // Apply to player (modify player.update call or add method)
+            this.player.setSpeedMultiplier(speedMultiplier);
+
             this.player.update(this.keys);
 
             // Handle shooting with auto-aim
@@ -460,6 +481,36 @@ export class GameScene extends Phaser.Scene {
                     if (!bullet.isPiercing()) {
                         bullet.destroy();
                         break;
+                    }
+                }
+
+                // After checking body collision, check tentacles for Kraken boss
+                if (enemy.type === 'boss_kraken_arm' && enemy.tentacleSprites) {
+                    for (let k = 0; k < enemy.tentacleSprites.length; k++) {
+                        const tentSprite = enemy.tentacleSprites[k];
+                        if (!tentSprite || !enemy.tentacles[k] || !enemy.tentacles[k].alive) continue;
+
+                        const tdx = bullet.getSprite().x - tentSprite.x;
+                        const tdy = bullet.getSprite().y - tentSprite.y;
+                        const tdist = Math.sqrt(tdx * tdx + tdy * tdy);
+
+                        if (tdist < 24) { // bullet radius (4) + tentacle radius (20)
+                            enemy.takeTentacleDamage(k, bullet.getDamage());
+                            hitEnemy = true;
+
+                            // Visual feedback
+                            tentSprite.setFillStyle(0xffffff);
+                            this.time.delayedCall(100, () => {
+                                if (tentSprite && enemy.tentacles[k] && enemy.tentacles[k].alive) {
+                                    tentSprite.setFillStyle(0x9966cc);
+                                }
+                            });
+
+                            if (!bullet.isPiercing()) {
+                                bullet.destroy();
+                                break;
+                            }
+                        }
                     }
                 }
             }
