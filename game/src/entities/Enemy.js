@@ -353,187 +353,205 @@ export class Enemy {
     update(time, playerX, playerY) {
         if (!this.alive) return;
 
-        // Formation positioning takes priority
+        // Handle formation positioning for movement
+        let formationHandled = false;
         if (this.role === 'shooter' && this.formationLeader) {
             this.updateShooterPosition();
+            formationHandled = true;
         } else if (this.role === 'tank' && this.formationMembers.length > 0) {
             this.updateTankPosition();
-        } else {
-            // Route to behavior-specific update
-            switch(this.config.behavior) {
-                case 'ranged_shooter':
-                    this.updateRangedShooter(time, playerX, playerY);
-                    break;
-                case 'ranged_kiter':
-                    this.updateRangedKiter(time, playerX, playerY);
-                    break;
-                case 'basic_shooter':
-                    this.updateBasicShooter(time, playerX, playerY);
-                    break;
-                case 'fast_melee':
-                    this.updateFastMelee(time, playerX, playerY);
-                    break;
-                case 'tank':
-                    this.updateTank(time, playerX, playerY);
-                    break;
-                case 'teleport':
-                    this.updateTeleport(time, playerX, playerY);
-                    break;
-                case 'swoop':
-                    this.updateSwoop(time, playerX, playerY);
-                    break;
-                case 'boss_iron_shell':
-                    this.updateBossIronShell(time, playerX, playerY);
-                    break;
-                case 'boss_kraken_arm':
-                    this.updateBossKrakenArm(time, playerX, playerY);
-                    break;
-                case 'boss_leviathan':
-                    this.updateBossLeviathan(time, playerX, playerY);
-                    break;
-            }
+            formationHandled = true;
+        }
+
+        // Route to behavior-specific update for attack logic
+        // Pass formationHandled flag to skip movement if already positioned
+        switch(this.config.behavior) {
+            case 'ranged_shooter':
+                this.updateRangedShooter(time, playerX, playerY, formationHandled);
+                break;
+            case 'ranged_kiter':
+                this.updateRangedKiter(time, playerX, playerY, formationHandled);
+                break;
+            case 'basic_shooter':
+                this.updateBasicShooter(time, playerX, playerY, formationHandled);
+                break;
+            case 'fast_melee':
+                this.updateFastMelee(time, playerX, playerY, formationHandled);
+                break;
+            case 'tank':
+                this.updateTank(time, playerX, playerY, formationHandled);
+                break;
+            case 'teleport':
+                this.updateTeleport(time, playerX, playerY, formationHandled);
+                break;
+            case 'swoop':
+                this.updateSwoop(time, playerX, playerY, formationHandled);
+                break;
+            case 'boss_iron_shell':
+                this.updateBossIronShell(time, playerX, playerY);
+                break;
+            case 'boss_kraken_arm':
+                this.updateBossKrakenArm(time, playerX, playerY);
+                break;
+            case 'boss_leviathan':
+                this.updateBossLeviathan(time, playerX, playerY);
+                break;
         }
 
         // Update visual indicators
         this.updateVisuals();
     }
 
-    updateBasicShooter(time, playerX, playerY) {
-        const dx = playerX - this.sprite.x;
-        const dy = playerY - this.sprite.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+    updateBasicShooter(time, playerX, playerY, skipMovement = false) {
+        // Only handle movement if not in formation
+        if (!skipMovement) {
+            const dx = playerX - this.sprite.x;
+            const dy = playerY - this.sprite.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Move toward player at medium speed
-        if (distance > 50) {
+            // Move toward player at medium speed
+            if (distance > 50) {
+                const angle = Math.atan2(dy, dx);
+                this.sprite.body.setVelocity(
+                    Math.cos(angle) * this.speed,
+                    Math.sin(angle) * this.speed
+                );
+            } else {
+                this.sprite.body.setVelocity(0, 0);
+            }
+        }
+    }
+
+    updateFastMelee(time, playerX, playerY, skipMovement = false) {
+        // Only handle movement if not in formation
+        if (!skipMovement) {
+            const dx = playerX - this.sprite.x;
+            const dy = playerY - this.sprite.y;
+
+            // Dart quickly toward player
             const angle = Math.atan2(dy, dx);
             this.sprite.body.setVelocity(
                 Math.cos(angle) * this.speed,
                 Math.sin(angle) * this.speed
             );
-        } else {
-            this.sprite.body.setVelocity(0, 0);
         }
     }
 
-    updateFastMelee(time, playerX, playerY) {
-        const dx = playerX - this.sprite.x;
-        const dy = playerY - this.sprite.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+    updateTank(time, playerX, playerY, skipMovement = false) {
+        // Only handle movement if not in formation
+        if (!skipMovement) {
+            const dx = playerX - this.sprite.x;
+            const dy = playerY - this.sprite.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Dart quickly toward player
-        const angle = Math.atan2(dy, dx);
-        this.sprite.body.setVelocity(
-            Math.cos(angle) * this.speed,
-            Math.sin(angle) * this.speed
-        );
+            // Slow advance toward player
+            if (distance > 40) {
+                const angle = Math.atan2(dy, dx);
+                this.sprite.body.setVelocity(
+                    Math.cos(angle) * this.speed,
+                    Math.sin(angle) * this.speed
+                );
+            } else {
+                this.sprite.body.setVelocity(0, 0);
+            }
+        }
     }
 
-    updateTank(time, playerX, playerY) {
+    updateTeleport(time, playerX, playerY, skipMovement = false) {
         const dx = playerX - this.sprite.x;
         const dy = playerY - this.sprite.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Slow advance toward player
-        if (distance > 40) {
+        // Only handle movement/teleport if not in formation
+        if (!skipMovement) {
+            // Check if we should teleport
+            if (time - this.lastTeleport > this.config.teleportCooldown && distance > 200) {
+                // Teleport closer to player (but not too close)
+                const angle = Math.atan2(dy, dx);
+                const teleportDistance = 150;
+                const newX = this.sprite.x + Math.cos(angle) * teleportDistance;
+                const newY = this.sprite.y + Math.sin(angle) * teleportDistance;
+
+                // Clamp to world bounds
+                const clampedX = Math.max(50, Math.min(1870, newX));
+                const clampedY = Math.max(50, Math.min(1030, newY));
+
+                this.sprite.setPosition(clampedX, clampedY);
+                this.lastTeleport = time;
+
+                // Visual effect
+                this.scene.cameras.main.flash(200, 200, 150, 255);
+            }
+
+            // Float slowly toward player
             const angle = Math.atan2(dy, dx);
             this.sprite.body.setVelocity(
                 Math.cos(angle) * this.speed,
                 Math.sin(angle) * this.speed
             );
-        } else {
-            this.sprite.body.setVelocity(0, 0);
         }
     }
 
-    updateTeleport(time, playerX, playerY) {
-        const dx = playerX - this.sprite.x;
-        const dy = playerY - this.sprite.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+    updateSwoop(time, playerX, playerY, skipMovement = false) {
+        // Only handle movement if not in formation
+        if (!skipMovement) {
+            const dx = playerX - this.sprite.x;
+            const dy = playerY - this.sprite.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Check if we should teleport
-        if (time - this.lastTeleport > this.config.teleportCooldown && distance > 200) {
-            // Teleport closer to player (but not too close)
-            const angle = Math.atan2(dy, dx);
-            const teleportDistance = 150;
-            const newX = this.sprite.x + Math.cos(angle) * teleportDistance;
-            const newY = this.sprite.y + Math.sin(angle) * teleportDistance;
+            switch(this.swoopPhase) {
+                case 'idle':
+                    // Circle around player at high altitude
+                    const angle = Math.atan2(dy, dx) + Math.PI / 2;
+                    this.sprite.body.setVelocity(
+                        Math.cos(angle) * this.speed * 0.6,
+                        Math.sin(angle) * this.speed * 0.6
+                    );
 
-            // Clamp to world bounds
-            const clampedX = Math.max(50, Math.min(1870, newX));
-            const clampedY = Math.max(50, Math.min(1030, newY));
+                    // Prepare swoop if in range
+                    if (distance < this.attackRange && time - this.nextAttack > this.attackCooldown) {
+                        this.swoopPhase = 'swooping';
+                        this.swoopTarget = { x: playerX, y: playerY };
+                        this.nextAttack = time + this.attackCooldown;
+                    }
+                    break;
 
-            this.sprite.setPosition(clampedX, clampedY);
-            this.lastTeleport = time;
+                case 'swooping':
+                    // Fast attack toward saved target position
+                    const swoopAngle = Math.atan2(
+                        this.swoopTarget.y - this.sprite.y,
+                        this.swoopTarget.x - this.sprite.x
+                    );
+                    this.sprite.body.setVelocity(
+                        Math.cos(swoopAngle) * this.speed * 1.5,
+                        Math.sin(swoopAngle) * this.speed * 1.5
+                    );
 
-            // Visual effect
-            this.scene.cameras.main.flash(200, 200, 150, 255);
-        }
+                    // Check if reached target
+                    const targetDist = Math.sqrt(
+                        Math.pow(this.swoopTarget.x - this.sprite.x, 2) +
+                        Math.pow(this.swoopTarget.y - this.sprite.y, 2)
+                    );
 
-        // Float slowly toward player
-        const angle = Math.atan2(dy, dx);
-        this.sprite.body.setVelocity(
-            Math.cos(angle) * this.speed,
-            Math.sin(angle) * this.speed
-        );
-    }
+                    if (targetDist < 30) {
+                        this.swoopPhase = 'rising';
+                    }
+                    break;
 
-    updateSwoop(time, playerX, playerY) {
-        const dx = playerX - this.sprite.x;
-        const dy = playerY - this.sprite.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+                case 'rising':
+                    // Move away from player after swoop
+                    const escapeAngle = Math.atan2(dy, dx) + Math.PI;
+                    this.sprite.body.setVelocity(
+                        Math.cos(escapeAngle) * this.speed,
+                        Math.sin(escapeAngle) * this.speed
+                    );
 
-        switch(this.swoopPhase) {
-            case 'idle':
-                // Circle around player at high altitude
-                const angle = Math.atan2(dy, dx) + Math.PI / 2;
-                this.sprite.body.setVelocity(
-                    Math.cos(angle) * this.speed * 0.6,
-                    Math.sin(angle) * this.speed * 0.6
-                );
-
-                // Prepare swoop if in range
-                if (distance < this.attackRange && time - this.nextAttack > this.attackCooldown) {
-                    this.swoopPhase = 'swooping';
-                    this.swoopTarget = { x: playerX, y: playerY };
-                    this.nextAttack = time + this.attackCooldown;
-                }
-                break;
-
-            case 'swooping':
-                // Fast attack toward saved target position
-                const swoopAngle = Math.atan2(
-                    this.swoopTarget.y - this.sprite.y,
-                    this.swoopTarget.x - this.sprite.x
-                );
-                this.sprite.body.setVelocity(
-                    Math.cos(swoopAngle) * this.speed * 1.5,
-                    Math.sin(swoopAngle) * this.speed * 1.5
-                );
-
-                // Check if reached target
-                const targetDist = Math.sqrt(
-                    Math.pow(this.swoopTarget.x - this.sprite.x, 2) +
-                    Math.pow(this.swoopTarget.y - this.sprite.y, 2)
-                );
-
-                if (targetDist < 30) {
-                    this.swoopPhase = 'rising';
-                }
-                break;
-
-            case 'rising':
-                // Move away from player after swoop
-                const escapeAngle = Math.atan2(dy, dx) + Math.PI;
-                this.sprite.body.setVelocity(
-                    Math.cos(escapeAngle) * this.speed,
-                    Math.sin(escapeAngle) * this.speed
-                );
-
-                // Return to idle after getting distance
-                if (distance > 200) {
-                    this.swoopPhase = 'idle';
-                }
-                break;
+                    // Return to idle after getting distance
+                    if (distance > 200) {
+                        this.swoopPhase = 'idle';
+                    }
+                    break;
+            }
         }
     }
 
@@ -769,7 +787,7 @@ export class Enemy {
      * Ranged Shooter behavior (Bandit Lobster)
      * Advances toward player, stops, winds up, shoots
      */
-    updateRangedShooter(time, playerX, playerY) {
+    updateRangedShooter(time, playerX, playerY, skipMovement = false) {
         const dx = playerX - this.sprite.x;
         const dy = playerY - this.sprite.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -801,17 +819,22 @@ export class Enemy {
             // Start wind-up
             this.isWindingUp = true;
             this.windUpStartTime = currentTime;
-            this.sprite.body.setVelocity(0, 0);
-        } else if (distance > 50) {
-            // Move toward player
-            const angle = Math.atan2(dy, dx);
-            this.sprite.body.setVelocity(
-                Math.cos(angle) * this.config.speed,
-                Math.sin(angle) * this.config.speed
-            );
-        } else {
-            // Close enough, stop
-            this.sprite.body.setVelocity(0, 0);
+            if (!skipMovement) {
+                this.sprite.body.setVelocity(0, 0);
+            }
+        } else if (!skipMovement) {
+            // Only handle movement if not in formation
+            if (distance > 50) {
+                // Move toward player
+                const angle = Math.atan2(dy, dx);
+                this.sprite.body.setVelocity(
+                    Math.cos(angle) * this.config.speed,
+                    Math.sin(angle) * this.config.speed
+                );
+            } else {
+                // Close enough, stop
+                this.sprite.body.setVelocity(0, 0);
+            }
         }
     }
 
@@ -819,7 +842,7 @@ export class Enemy {
      * Ranged Kiter behavior (Quick-Draw Shrimp)
      * Maintains distance while shooting rapidly
      */
-    updateRangedKiter(time, playerX, playerY) {
+    updateRangedKiter(time, playerX, playerY, skipMovement = false) {
         const dx = playerX - this.sprite.x;
         const dy = playerY - this.sprite.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -832,31 +855,34 @@ export class Enemy {
             this.lastShotTime = currentTime;
         }
 
-        // Kiting behavior: maintain optimal distance
-        if (distance < this.config.kiteDistance) {
-            // Too close - back away
-            const angle = Math.atan2(dy, dx);
-            this.sprite.body.setVelocity(
-                -Math.cos(angle) * this.config.speed,
-                -Math.sin(angle) * this.config.speed
-            );
-        } else if (distance > this.config.attackRange) {
-            // Too far - move closer
-            const angle = Math.atan2(dy, dx);
-            this.sprite.body.setVelocity(
-                Math.cos(angle) * this.config.speed,
-                Math.sin(angle) * this.config.speed
-            );
-        } else {
-            // Good range - strafe
-            const angle = Math.atan2(dy, dx);
-            const strafeDirection = (Math.random() > 0.5 ? 1 : -1);
-            const strafeAngle = angle + (Math.PI / 2) * strafeDirection;
+        // Only handle movement if not in formation
+        if (!skipMovement) {
+            // Kiting behavior: maintain optimal distance
+            if (distance < this.config.kiteDistance) {
+                // Too close - back away
+                const angle = Math.atan2(dy, dx);
+                this.sprite.body.setVelocity(
+                    -Math.cos(angle) * this.config.speed,
+                    -Math.sin(angle) * this.config.speed
+                );
+            } else if (distance > this.config.attackRange) {
+                // Too far - move closer
+                const angle = Math.atan2(dy, dx);
+                this.sprite.body.setVelocity(
+                    Math.cos(angle) * this.config.speed,
+                    Math.sin(angle) * this.config.speed
+                );
+            } else {
+                // Good range - strafe
+                const angle = Math.atan2(dy, dx);
+                const strafeDirection = (Math.random() > 0.5 ? 1 : -1);
+                const strafeAngle = angle + (Math.PI / 2) * strafeDirection;
 
-            this.sprite.body.setVelocity(
-                Math.cos(strafeAngle) * this.config.speed * 0.7,
-                Math.sin(strafeAngle) * this.config.speed * 0.7
-            );
+                this.sprite.body.setVelocity(
+                    Math.cos(strafeAngle) * this.config.speed * 0.7,
+                    Math.sin(strafeAngle) * this.config.speed * 0.7
+                );
+            }
         }
     }
 
