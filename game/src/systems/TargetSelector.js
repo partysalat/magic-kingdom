@@ -9,12 +9,21 @@ export class TargetSelector {
 
     update(playerX, playerY, aimInfluence, inputMode, enemies) {
         // Remove lock if target is dead
-        if (this.lockedTarget && !this.lockedTarget.isAlive()) {
-            this.clearLock();
+        if (this.lockedTarget) {
+            if (this.lockedTarget.type === 'enemy') {
+                if (!this.lockedTarget.enemy || !this.lockedTarget.enemy.isAlive()) {
+                    this.clearLock();
+                }
+            } else if (this.lockedTarget.type === 'tentacle') {
+                const tentacle = this.lockedTarget.enemy.tentacles[this.lockedTarget.tentacleIndex];
+                if (!this.lockedTarget.enemy || !this.lockedTarget.enemy.isAlive() || !tentacle || !tentacle.alive) {
+                    this.clearLock();
+                }
+            }
         }
 
-        // Priority 1: Locked bounty target
-        if (this.lockedTarget && this.lockedTarget.isAlive()) {
+        // Priority 1: Locked target (enemy or tentacle)
+        if (this.lockedTarget) {
             this.currentTarget = this.lockedTarget;
             return this.currentTarget;
         }
@@ -123,9 +132,8 @@ export class TargetSelector {
     }
 
     lockTarget(target) {
-        if (target && target.isBountyEnemy()) {
-            this.lockedTarget = target;
-        }
+        // Accept any target structure (enemy object or tentacle object)
+        this.lockedTarget = target;
     }
 
     clearLock() {
@@ -133,41 +141,73 @@ export class TargetSelector {
     }
 
     cycleToBountyTarget(playerX, playerY, enemies, direction) {
-        // Get all alive bounty enemies
-        const bountyEnemies = enemies.filter(e => e.isAlive() && e.isBountyEnemy());
+        // Build list of all targetable objects (enemies + Kraken tentacles)
+        const targets = [];
 
-        if (bountyEnemies.length === 0) {
+        enemies.forEach(enemy => {
+            if (!enemy.isAlive()) return;
+
+            // Add main enemy body
+            targets.push({
+                type: 'enemy',
+                enemy: enemy,
+                x: enemy.getSprite().x,
+                y: enemy.getSprite().y,
+                label: enemy.config.name
+            });
+
+            // Add Kraken tentacles as separate targets
+            if (enemy.type === 'boss_kraken_arm' && enemy.tentacleSprites) {
+                enemy.tentacleSprites.forEach((sprite, index) => {
+                    if (sprite && enemy.tentacles[index] && enemy.tentacles[index].alive) {
+                        targets.push({
+                            type: 'tentacle',
+                            enemy: enemy,
+                            tentacleIndex: index,
+                            x: sprite.x,
+                            y: sprite.y,
+                            label: `Tentacle ${index + 1}`
+                        });
+                    }
+                });
+            }
+        });
+
+        if (targets.length === 0) {
             this.clearLock();
             return;
         }
 
-        // Sort by distance
-        bountyEnemies.sort((a, b) => {
-            const distA = Math.sqrt(
-                Math.pow(a.getSprite().x - playerX, 2) +
-                Math.pow(a.getSprite().y - playerY, 2)
-            );
-            const distB = Math.sqrt(
-                Math.pow(b.getSprite().x - playerX, 2) +
-                Math.pow(b.getSprite().y - playerY, 2)
-            );
+        // Sort by distance from player
+        targets.sort((a, b) => {
+            const distA = Math.sqrt(Math.pow(a.x - playerX, 2) + Math.pow(a.y - playerY, 2));
+            const distB = Math.sqrt(Math.pow(b.x - playerX, 2) + Math.pow(b.y - playerY, 2));
             return distA - distB;
         });
 
         // Find current lock index
-        let currentIndex = bountyEnemies.findIndex(e => e === this.lockedTarget);
+        let currentIndex = targets.findIndex(t => {
+            if (!this.lockedTarget) return false;
+            if (t.type === 'enemy') {
+                return t.enemy === this.lockedTarget.enemy && this.lockedTarget.type === 'enemy';
+            } else {
+                return t.enemy === this.lockedTarget.enemy &&
+                       t.tentacleIndex === this.lockedTarget.tentacleIndex &&
+                       this.lockedTarget.type === 'tentacle';
+            }
+        });
 
         if (currentIndex === -1) {
             // No current lock, lock nearest
-            this.lockTarget(bountyEnemies[0]);
+            this.lockedTarget = targets[0];
         } else {
             // Cycle to next/prev
             if (direction === 'next') {
-                currentIndex = (currentIndex + 1) % bountyEnemies.length;
+                currentIndex = (currentIndex + 1) % targets.length;
             } else {
-                currentIndex = (currentIndex - 1 + bountyEnemies.length) % bountyEnemies.length;
+                currentIndex = (currentIndex - 1 + targets.length) % targets.length;
             }
-            this.lockTarget(bountyEnemies[currentIndex]);
+            this.lockedTarget = targets[currentIndex];
         }
     }
 

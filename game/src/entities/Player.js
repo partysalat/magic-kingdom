@@ -96,8 +96,26 @@ export class Player {
 
     shoot(targetEnemy, currentTime) {
         // Check if we have a target
-        if (!targetEnemy || !targetEnemy.isAlive()) {
+        if (!targetEnemy) {
             return;
+        }
+
+        // Validate target based on type
+        if (targetEnemy.type === 'tentacle') {
+            const enemy = targetEnemy.enemy;
+            const tentData = enemy.tentacles ? enemy.tentacles[targetEnemy.tentacleIndex] : null;
+            if (!enemy || !enemy.isAlive() || !tentData || !tentData.alive) {
+                return;
+            }
+        } else if (targetEnemy.type === 'enemy') {
+            if (!targetEnemy.enemy || !targetEnemy.enemy.isAlive()) {
+                return;
+            }
+        } else {
+            // Legacy format: plain enemy object
+            if (!targetEnemy.isAlive || !targetEnemy.isAlive()) {
+                return;
+            }
         }
 
         // Check cooldown (modified by rapid_fire buff)
@@ -114,9 +132,27 @@ export class Player {
 
         this.nextFire = currentTime + cooldown;
 
-        // Calculate angle to target enemy
-        const targetX = targetEnemy.getSprite().x;
-        const targetY = targetEnemy.getSprite().y;
+        // Calculate angle to target based on type
+        let targetX, targetY;
+
+        if (targetEnemy.type === 'tentacle') {
+            const enemy = targetEnemy.enemy;
+            const tentSprite = enemy.tentacleSprites ? enemy.tentacleSprites[targetEnemy.tentacleIndex] : null;
+            if (tentSprite) {
+                targetX = tentSprite.x;
+                targetY = tentSprite.y;
+            } else {
+                return; // No sprite available
+            }
+        } else if (targetEnemy.type === 'enemy') {
+            targetX = targetEnemy.enemy.getSprite().x;
+            targetY = targetEnemy.enemy.getSprite().y;
+        } else {
+            // Legacy format: plain enemy object
+            targetX = targetEnemy.getSprite().x;
+            targetY = targetEnemy.getSprite().y;
+        }
+
         const dx = targetX - this.sprite.x;
         const dy = targetY - this.sprite.y;
         const baseAngle = Math.atan2(dy, dx);
