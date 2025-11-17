@@ -6,6 +6,14 @@ export class StartScene extends Phaser.Scene {
     create() {
         this.cameras.main.setBackgroundColor('#2d1810'); // Dark western brown
 
+        // Enable gamepad plugin
+        if (!this.input.gamepad) {
+            this.input.gamepad = this.plugins.get('GamepadPlugin');
+        }
+        if (this.input.gamepad && !this.input.gamepad.enabled) {
+            this.input.gamepad.start();
+        }
+
         // Player join state
         this.joinedPlayers = [];
         this.maxPlayers = 4;
@@ -159,8 +167,12 @@ export class StartScene extends Phaser.Scene {
 
     checkForPlayerJoins() {
         // Check gamepads 0-3
-        for (let i = 0; i < 4; i++) {
-            const pad = this.input.gamepad.getPad(i);
+        if (!this.input.gamepad || !this.input.gamepad.enabled) {
+            // Gamepad not available, skip gamepad checking
+            // Player 1 can still join with keyboard below
+        } else {
+            for (let i = 0; i < 4; i++) {
+                const pad = this.input.gamepad.getPad(i);
 
             if (!pad) continue;
 
@@ -185,6 +197,7 @@ export class StartScene extends Phaser.Scene {
 
             if (anyButtonPressed) {
                 this.addPlayer(i);
+            }
             }
         }
 
