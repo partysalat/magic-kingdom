@@ -358,22 +358,9 @@ export class Enemy {
         if (this.role === 'shooter' && this.formationLeader) {
             this.updateShooterPosition();
             formationHandled = true;
-            // Disable physics body to prevent conflicts with direct position manipulation
-            if (this.sprite.body) {
-                this.sprite.body.enable = false;
-            }
         } else if (this.role === 'tank' && this.formationMembers.length > 0) {
             this.updateTankPosition();
             formationHandled = true;
-            // Disable physics body to prevent conflicts with direct position manipulation
-            if (this.sprite.body) {
-                this.sprite.body.enable = false;
-            }
-        } else {
-            // Re-enable physics body for non-formation enemies
-            if (this.sprite.body && this.sprite.body.enable === false) {
-                this.sprite.body.enable = true;
-            }
         }
 
         // Route to behavior-specific update for attack logic
@@ -653,15 +640,19 @@ export class Enemy {
         const targetX = leaderPos.x + Math.cos(angleToTank) * distance;
         const targetY = leaderPos.y + Math.sin(angleToTank) * distance;
 
-        // Move toward target position
+        // Move toward target position using velocity
         const dx = targetX - this.getSprite().x;
         const dy = targetY - this.getSprite().y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist > 10) {
             const moveSpeed = this.config.speed;
-            this.getSprite().x += (dx / dist) * moveSpeed;
-            this.getSprite().y += (dy / dist) * moveSpeed;
+            this.sprite.body.setVelocity(
+                (dx / dist) * moveSpeed,
+                (dy / dist) * moveSpeed
+            );
+        } else {
+            this.sprite.body.setVelocity(0, 0);
         }
     }
 
@@ -679,7 +670,7 @@ export class Enemy {
             return;
         }
 
-        // Tanks simply move toward player at reduced speed
+        // Tanks simply move toward player at reduced speed using velocity
         // Shooters will position themselves behind the tank
         const playerPos = { x: this.scene.player.getX(), y: this.scene.player.getY() };
 
@@ -689,8 +680,12 @@ export class Enemy {
 
         if (dist > 10) {
             const moveSpeed = this.config.speed * 0.6; // 40% slower when protecting
-            this.getSprite().x += (dx / dist) * moveSpeed;
-            this.getSprite().y += (dy / dist) * moveSpeed;
+            this.sprite.body.setVelocity(
+                (dx / dist) * moveSpeed,
+                (dy / dist) * moveSpeed
+            );
+        } else {
+            this.sprite.body.setVelocity(0, 0);
         }
     }
 
