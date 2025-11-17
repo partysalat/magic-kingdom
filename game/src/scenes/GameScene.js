@@ -954,9 +954,10 @@ export class GameScene extends Phaser.Scene {
 
             // Check cover collision
             if (this.coverManager) {
+                const bulletSprite = bullet.getSprite();
                 const hitCover = this.coverManager.checkBulletCollision(
-                    bullet.getX(),
-                    bullet.getY(),
+                    bulletSprite.x,
+                    bulletSprite.y,
                     bullet.getDamage()
                 );
 
