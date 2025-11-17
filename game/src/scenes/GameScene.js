@@ -340,19 +340,30 @@ export class GameScene extends Phaser.Scene {
 
                 return true;
             } else if (!enemy.isAlive()) {
+                // Determine which player gets credit for the kill
+                const killerPlayerIndex = enemy.lastHitByPlayerIndex !== undefined
+                    ? enemy.lastHitByPlayerIndex
+                    : this.player.playerIndex; // Default to first player for legacy support
+
                 // Check if this was a boss
                 if (enemy.config && enemy.config.isBoss) {
                     const result = this.scoreManager.addBossVictory(enemy.type);
                     this.bossAnnouncer.announceBossVictory(enemy.config.name, result.bonus);
+                    // Also credit the player
+                    this.scoreManager.addKillToPlayer(killerPlayerIndex, result.bonus);
                 } else if (enemy.isBountyEnemy()) {
                     // Check if this was a bounty enemy
                     const bountyValue = enemy.getBountyValue();
                     const bountyName = enemy.getBountyName();
                     this.scoreManager.addBountyKill(bountyValue);
                     this.showBountyKillFeedback(bountyName, bountyValue);
+                    // Credit the player with bounty
+                    this.scoreManager.addBountyToPlayer(killerPlayerIndex, bountyValue);
                 } else {
                     // Regular enemy
                     this.scoreManager.addEnemyKill();
+                    // Credit the player
+                    this.scoreManager.addKillToPlayer(killerPlayerIndex, this.scoreManager.ENEMY_KILL_POINTS);
                 }
 
                 enemy.destroy();
@@ -602,6 +613,8 @@ export class GameScene extends Phaser.Scene {
                 // Collision if distance less than combined radii
                 if (distance < 19) { // 4 (bullet) + 15 (enemy)
                     enemy.takeDamage(bullet.getDamage());
+                    // Track which player hit this enemy (for scoring)
+                    enemy.lastHitByPlayerIndex = player.playerIndex;
                     hitEnemy = true;
 
                     // Screen shake on hit
@@ -634,6 +647,8 @@ export class GameScene extends Phaser.Scene {
 
                         if (tdist < 24) { // bullet radius (4) + tentacle radius (20)
                             enemy.takeTentacleDamage(k, bullet.getDamage());
+                            // Track which player hit this enemy (for scoring)
+                            enemy.lastHitByPlayerIndex = player.playerIndex;
                             hitEnemy = true;
 
                             // Visual feedback

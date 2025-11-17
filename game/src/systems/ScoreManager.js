@@ -2,6 +2,21 @@ export class ScoreManager {
     constructor(scene) {
         this.scene = scene;
         this.score = 0;
+        this.playerScores = {}; // Object keyed by playerIndex
+
+        // Initialize scores for all players
+        if (scene.playerManager) {
+            scene.playerManager.players.forEach(player => {
+                this.playerScores[player.playerIndex] = {
+                    name: player.playerName,
+                    color: player.color,
+                    score: 0,
+                    kills: 0,
+                    bountiesClaimed: 0,
+                    playerIndex: player.playerIndex
+                };
+            });
+        }
 
         // Point values
         this.ENEMY_KILL_POINTS = 10;
@@ -15,12 +30,33 @@ export class ScoreManager {
         };
 
         console.log('ScoreManager initialized');
+        this.createScoreboardUI();
     }
 
     addEnemyKill() {
         this.score += this.ENEMY_KILL_POINTS;
         console.log('Enemy killed! Score:', this.score);
         return this.score;
+    }
+
+    addKillToPlayer(playerIndex, points) {
+        if (!this.playerScores[playerIndex]) return;
+
+        this.playerScores[playerIndex].score += points;
+        this.playerScores[playerIndex].kills += 1;
+        this.score += points; // Also update total score for legacy compatibility
+
+        this.updateScoreboardUI();
+    }
+
+    addBountyToPlayer(playerIndex, points) {
+        if (!this.playerScores[playerIndex]) return;
+
+        this.playerScores[playerIndex].score += points;
+        this.playerScores[playerIndex].bountiesClaimed += 1;
+        this.score += points; // Also update total score for legacy compatibility
+
+        this.updateScoreboardUI();
     }
 
     addWaveSurvivalBonus() {
@@ -40,6 +76,52 @@ export class ScoreManager {
         this.score += bonus;
         console.log('Boss defeated! Bonus:', bonus, 'Score:', this.score);
         return { score: this.score, bonus: bonus };
+    }
+
+    createScoreboardUI() {
+        const x = 960;
+        const y = 20;
+
+        // Title
+        this.scoreTitle = this.scene.add.text(x, y, 'SCORES', {
+            fontSize: '24px',
+            color: '#ffcc00',
+            fontFamily: 'Arial',
+            fontStyle: 'bold'
+        }).setOrigin(0.5, 0);
+
+        // Player score texts
+        this.scoreTexts = {};
+        Object.keys(this.playerScores).forEach((playerIndex, index) => {
+            const playerData = this.playerScores[playerIndex];
+            const scoreText = this.scene.add.text(x, y + 30 + (index * 25), '', {
+                fontSize: '18px',
+                color: '#ffffff',
+                fontFamily: 'Arial'
+            }).setOrigin(0.5, 0);
+
+            this.scoreTexts[playerIndex] = scoreText;
+        });
+
+        this.updateScoreboardUI();
+    }
+
+    updateScoreboardUI() {
+        if (!this.scoreTexts) return;
+
+        // Sort players by score
+        const sorted = Object.entries(this.playerScores)
+            .sort(([,a], [,b]) => b.score - a.score);
+
+        sorted.forEach(([playerIndex, data], index) => {
+            const scoreText = this.scoreTexts[playerIndex];
+            if (scoreText) {
+                const colorName = data.color.charAt(0).toUpperCase() + data.color.slice(1);
+                scoreText.setText(`${data.name} (${colorName}): ${data.score}`);
+                // Reposition based on sorted order
+                scoreText.setPosition(960, 50 + (index * 25));
+            }
+        });
     }
 
     getScore() {
