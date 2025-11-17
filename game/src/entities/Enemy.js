@@ -409,6 +409,18 @@ export class Enemy {
             const dy = playerY - this.sprite.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
+            // Shooters maintain optimal distance
+            if (this.role === 'shooter') {
+                const optimalDistance = 300;
+
+                if (distance < optimalDistance - 50) {
+                    // Too close - back away
+                    this.sprite.x -= (dx / distance) * this.config.speed * 0.5;
+                    this.sprite.y -= (dy / distance) * this.config.speed * 0.5;
+                    return;
+                }
+            }
+
             // Move toward player at medium speed
             if (distance > 50) {
                 const angle = Math.atan2(dy, dx);
@@ -705,6 +717,14 @@ export class Enemy {
             return this.health;
         }
 
+        // Tanks take reduced damage when protecting shooters
+        if (this.role === 'tank' && this.formationMembers.length > 0) {
+            amount *= 0.8; // 20% damage reduction
+
+            // Visual feedback for damage reduction
+            this.flashProtectionShield();
+        }
+
         this.health -= amount;
         if (this.health <= 0) {
             this.health = 0;
@@ -712,6 +732,24 @@ export class Enemy {
         }
         console.log('Enemy took', amount, 'damage. Health:', this.health);
         return this.health;
+    }
+
+    flashProtectionShield() {
+        // Create brief shield flash
+        const shield = this.scene.add.circle(
+            this.getSprite().x,
+            this.getSprite().y,
+            this.config.radius + 10,
+            0x00ffff,
+            0.3
+        );
+
+        this.scene.tweens.add({
+            targets: shield,
+            alpha: 0,
+            duration: 200,
+            onComplete: () => shield.destroy()
+        });
     }
 
     kill() {
@@ -793,6 +831,18 @@ export class Enemy {
         const distance = Math.sqrt(dx * dx + dy * dy);
         const currentTime = Date.now();
 
+        // Shooters maintain optimal distance
+        if (!skipMovement && this.role === 'shooter') {
+            const optimalDistance = 300;
+
+            if (distance < optimalDistance - 50) {
+                // Too close - back away
+                this.sprite.x -= (dx / distance) * this.config.speed * 0.5;
+                this.sprite.y -= (dy / distance) * this.config.speed * 0.5;
+                return;
+            }
+        }
+
         // Wind-up animation in progress
         if (this.isWindingUp) {
             const windUpElapsed = currentTime - this.windUpStartTime;
@@ -857,6 +907,14 @@ export class Enemy {
 
         // Only handle movement if not in formation
         if (!skipMovement) {
+            // Shooters maintain optimal distance (enhanced kiting for formation shooters)
+            if (this.role === 'shooter' && distance < 250) {
+                // Too close - back away
+                this.sprite.x -= (dx / distance) * this.config.speed * 0.5;
+                this.sprite.y -= (dy / distance) * this.config.speed * 0.5;
+                return;
+            }
+
             // Kiting behavior: maintain optimal distance
             if (distance < this.config.kiteDistance) {
                 // Too close - back away
