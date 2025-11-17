@@ -1,5 +1,6 @@
 import { SpawnPointManager } from './SpawnPointManager.js';
 import { BossAnnouncer } from './BossAnnouncer.js';
+import { BossHealthBar } from '../ui/BossHealthBar.js';
 
 const BOUNTY_NAMES = [
     { name: 'Big Claw McGraw', type: 'lobster' },
@@ -222,6 +223,12 @@ export class WaveManager {
 
                     // Announce bounty
                     this.announceBounty(bountyInfo.name, bountyValue);
+                }
+
+                // Create boss health bar if this is a boss
+                if (group.isBoss && enemy.config && enemy.config.isBoss && !this.scene.bossHealthBar) {
+                    this.scene.bossHealthBar = new BossHealthBar(this.scene, enemy.config.name);
+                    this.scene.bossHealthBar.show();
                 }
 
                 // Queue spawn animation

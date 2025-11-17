@@ -8,6 +8,7 @@ import { Cocktail, COCKTAIL_TYPES } from '../entities/Cocktail.js';
 import { InputManager } from '../systems/InputManager.js';
 import { TargetSelector } from '../systems/TargetSelector.js';
 import { BossAnnouncer } from '../systems/BossAnnouncer.js';
+import { BossHealthBar } from '../ui/BossHealthBar.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -84,6 +85,9 @@ export class GameScene extends Phaser.Scene {
 
         // Initialize boss announcer
         this.bossAnnouncer = new BossAnnouncer(this);
+
+        // Boss health bar (created when boss spawns)
+        this.bossHealthBar = null;
 
         // Control instructions (updates based on input mode)
         this.controlsText = this.add.text(20, 20, '', {
@@ -283,6 +287,18 @@ export class GameScene extends Phaser.Scene {
             if (this.inputManager.isFiringPressed()) {
                 const target = this.targetSelector.getCurrentTarget();
                 this.player.shoot(target, time);
+            }
+        }
+
+        // Update boss health bar if active
+        if (this.bossHealthBar) {
+            const boss = this.enemies.find(e => e.config && e.config.isBoss);
+            if (boss) {
+                this.bossHealthBar.update(boss.health, boss.maxHealth, boss.bossPhase);
+            } else {
+                // Boss defeated, remove health bar
+                this.bossHealthBar.destroy();
+                this.bossHealthBar = null;
             }
         }
 
