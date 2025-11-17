@@ -82,14 +82,49 @@ export class Cover {
 
         this.alive = false;
 
+        // Create destruction particles
+        this.createDestructionEffect();
+
         if (this.explosive) {
             this.explode();
         }
 
-        // Destroy sprite
+        // Destroy sprite after particles
         if (this.sprite) {
-            this.sprite.destroy();
-            this.sprite = null;
+            this.scene.time.delayedCall(100, () => {
+                if (this.sprite) {
+                    this.sprite.destroy();
+                    this.sprite = null;
+                }
+            });
+        }
+    }
+
+    createDestructionEffect() {
+        // Create 5-8 debris particles
+        const numParticles = 5 + Math.floor(Math.random() * 4);
+
+        for (let i = 0; i < numParticles; i++) {
+            const angle = (Math.PI * 2 * i) / numParticles + Math.random() * 0.5;
+            const speed = 100 + Math.random() * 100;
+            const size = 4 + Math.random() * 6;
+
+            const particle = this.scene.add.circle(
+                this.x,
+                this.y,
+                size,
+                this.color,
+                0.8
+            );
+
+            this.scene.tweens.add({
+                targets: particle,
+                x: this.x + Math.cos(angle) * speed,
+                y: this.y + Math.sin(angle) * speed,
+                alpha: 0,
+                duration: 400 + Math.random() * 200,
+                onComplete: () => particle.destroy()
+            });
         }
     }
 
