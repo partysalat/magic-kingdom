@@ -145,6 +145,9 @@ export class GameScene extends Phaser.Scene {
         // Create leaderboard panel
         this.createLeaderboard();
 
+        // Create health bars for all players
+        this.createPlayerHealthBars();
+
         // Target lock visuals
         this.targetReticle = this.add.circle(0, 0, 35);
         this.targetReticle.setStrokeStyle(3, 0x00ff00);
@@ -425,6 +428,25 @@ export class GameScene extends Phaser.Scene {
         // Update buff UI
         this.updateBuffUI();
 
+        // Update health bars
+        if (this.playerHealthBars) {
+            this.playerHealthBars.forEach(bar => {
+                const player = bar.player;
+                const healthPercent = player.health / player.maxHealth;
+
+                // Update health bar width
+                bar.healthFg.width = 180 * Math.max(0, healthPercent);
+
+                // Grey out if dead
+                if (player.isDead) {
+                    bar.bg.setAlpha(0.4);
+                    bar.nameText.setAlpha(0.4);
+                    bar.healthBg.setAlpha(0.4);
+                    bar.healthFg.setAlpha(0.4);
+                }
+            });
+        }
+
         // Update target visuals
         const currentTarget = this.targetSelector.getCurrentTarget();
         const lockedTarget = this.targetSelector.getLockedTarget();
@@ -689,6 +711,57 @@ export class GameScene extends Phaser.Scene {
     updateScoreUI() {
         this.scoreText.setText(`Score: ${this.scoreManager.getScore()}`);
         this.updateLeaderboard();
+    }
+
+    createPlayerHealthBars() {
+        this.playerHealthBars = [];
+
+        const players = this.playerManager.players;
+
+        // Position health bars in corners
+        const positions = [
+            { x: 20, y: 100 },   // P1: Top-left
+            { x: 1700, y: 100 }, // P2: Top-right
+            { x: 20, y: 980 },   // P3: Bottom-left
+            { x: 1700, y: 980 }  // P4: Bottom-right
+        ];
+
+        players.forEach((player, index) => {
+            const pos = positions[index];
+            const healthBar = this.createHealthBar(pos.x, pos.y, player);
+            this.playerHealthBars.push(healthBar);
+        });
+    }
+
+    createHealthBar(x, y, player) {
+        // Background
+        const bg = this.add.rectangle(x, y, 200, 40, 0x000000, 0.7);
+        bg.setOrigin(0, 0);
+
+        // Player name with color
+        const colorTints = { red: 0xff6b6b, blue: 0x4dabf7, green: 0x51cf66, yellow: 0xffd43b };
+        const nameText = this.add.text(x + 10, y + 5, player.playerName, {
+            fontSize: '16px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        });
+        nameText.setTint(colorTints[player.color]);
+
+        // Health bar (red background)
+        const healthBg = this.add.rectangle(x + 10, y + 25, 180, 10, 0x8b0000);
+        healthBg.setOrigin(0, 0);
+
+        // Health bar (green foreground)
+        const healthFg = this.add.rectangle(x + 10, y + 25, 180, 10, 0x00ff00);
+        healthFg.setOrigin(0, 0);
+
+        return {
+            player,
+            bg,
+            nameText,
+            healthBg,
+            healthFg
+        };
     }
 
     createLeaderboard() {
