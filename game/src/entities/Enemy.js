@@ -317,21 +317,6 @@ export class Enemy {
     updateFormationVisuals() {
         if (!this.sprite || !this.config) return;
 
-        // Update tank indicator
-        if (this.role === 'tank' && this.tankGlow && this.tankLabel) {
-            this.tankGlow.setPosition(this.sprite.x, this.sprite.y);
-            this.tankLabel.setPosition(this.sprite.x, this.sprite.y - this.config.radius - 20);
-
-            // Pulsing animation
-            const pulse = Math.sin(Date.now() / 500) * 0.1 + 0.4;
-            this.tankGlow.setAlpha(pulse);
-        }
-
-        // Update shooter indicator
-        if (this.role === 'shooter' && this.shooterGlow && this.shooterLabel) {
-            this.shooterGlow.setPosition(this.sprite.x, this.sprite.y);
-            this.shooterLabel.setPosition(this.sprite.x, this.sprite.y - this.config.radius - 20);
-        }
     }
 
     getBountyValue() {
@@ -804,12 +789,6 @@ export class Enemy {
         // Clean up bounty visuals
         if (this.bountyIcon) this.bountyIcon.destroy();
         if (this.spotLight) this.spotLight.destroy();
-
-        // Clean up formation visuals
-        if (this.tankGlow) this.tankGlow.destroy();
-        if (this.tankLabel) this.tankLabel.destroy();
-        if (this.shooterGlow) this.shooterGlow.destroy();
-        if (this.shooterLabel) this.shooterLabel.destroy();
     }
 
     /**
@@ -1834,11 +1813,6 @@ export class Enemy {
         if (this.wing2) this.wing2.setAlpha(this.alphaValue);
         if (this.bountyIcon) this.bountyIcon.setAlpha(this.alphaValue);
         if (this.spotLight) this.spotLight.setAlpha(this.alphaValue * 0.5);
-        // Formation visuals
-        if (this.tankGlow) this.tankGlow.setAlpha(this.alphaValue * 0.3);
-        if (this.tankLabel) this.tankLabel.setAlpha(this.alphaValue);
-        if (this.shooterGlow) this.shooterGlow.setAlpha(this.alphaValue * 0.25);
-        if (this.shooterLabel) this.shooterLabel.setAlpha(this.alphaValue);
     }
 
     /**
@@ -1856,13 +1830,6 @@ export class Enemy {
     assignRole(role, formationGroup) {
         this.role = role;
         this.formationGroup = formationGroup;
-
-        // Add visual indicator based on role
-        if (role === 'tank') {
-            this.addTankIndicator();
-        } else if (role === 'shooter') {
-            this.addShooterIndicator();
-        }
     }
 
     /**
@@ -1879,65 +1846,4 @@ export class Enemy {
         }
     }
 
-    /**
-     * Add visual indicator for tank role
-     * Creates pulsing blue/cyan glow and "TANK" label
-     */
-    addTankIndicator() {
-        // Pulsing glow effect
-        this.tankGlow = this.scene.add.circle(
-            this.sprite.x,
-            this.sprite.y,
-            this.config.radius + 10,
-            0x00ffff,
-            0.3
-        );
-        this.tankGlow.setDepth(this.sprite.depth - 1);
-
-        // "TANK" label
-        this.tankLabel = this.scene.add.text(
-            this.sprite.x,
-            this.sprite.y - this.config.radius - 20,
-            'TANK',
-            {
-                fontSize: '12px',
-                color: '#00ffff',
-                fontFamily: 'Arial',
-                fontStyle: 'bold',
-                backgroundColor: '#000000',
-                padding: { x: 4, y: 2 }
-            }
-        ).setOrigin(0.5);
-    }
-
-    /**
-     * Add visual indicator for shooter role
-     * Creates orange/red glow and "SHOOTER" label
-     */
-    addShooterIndicator() {
-        // Glow effect (similar to tank indicator)
-        this.shooterGlow = this.scene.add.circle(
-            this.sprite.x,
-            this.sprite.y,
-            this.config.radius + 8,
-            0xff6600,
-            0.25
-        );
-        this.shooterGlow.setDepth(this.sprite.depth - 1);
-
-        // "SHOOTER" label
-        this.shooterLabel = this.scene.add.text(
-            this.sprite.x,
-            this.sprite.y - this.config.radius - 20,
-            'SHOOTER',
-            {
-                fontSize: '12px',
-                color: '#ff6600',
-                fontFamily: 'Arial',
-                fontStyle: 'bold',
-                backgroundColor: '#000000',
-                padding: { x: 4, y: 2 }
-            }
-        ).setOrigin(0.5);
-    }
 }
