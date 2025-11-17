@@ -202,6 +202,9 @@ export class Enemy {
         this.phaseTransitioning = false;
         this.lastAttackType = null;
         this.attackRotation = 0;
+        this.chargingAttack = false;
+        this.chargeHitPlayer = false;
+        this.lastChargeTime = 0;
 
         // Visual indicators based on type
         this.createVisualIndicators();
@@ -750,9 +753,20 @@ export class Enemy {
                     Math.cos(chargeAngle) * this.config.chargeSpeed,
                     Math.sin(chargeAngle) * this.config.chargeSpeed
                 );
+
+                // Check collision with player during charge
+                const playerDist = Math.sqrt(
+                    Math.pow(this.scene.player.getX() - this.sprite.x, 2) +
+                    Math.pow(this.scene.player.getY() - this.sprite.y, 2)
+                );
+                if (playerDist < this.config.radius + 30 && !this.chargeHitPlayer) {
+                    this.scene.player.takeDamage(this.config.chargeDamage);
+                    this.chargeHitPlayer = true; // Prevent multiple hits
+                }
             } else {
                 // End charge
                 this.chargingAttack = false;
+                this.chargeHitPlayer = false;  // Reset for next charge
                 this.sprite.setScale(1);
                 this.sprite.body.setVelocity(0, 0);
                 this.lastChargeTime = currentTime;
