@@ -206,6 +206,15 @@ export class Enemy {
         this.chargeHitPlayer = false;
         this.lastChargeTime = 0;
 
+        // Kraken tentacle system
+        this.tentacles = [];
+        this.tentacleSprites = [];
+        this.bodyInvulnerable = false;
+        this.inkClouds = [];
+        this.inkTriggered1 = false;
+        this.inkTriggered2 = false;
+        this.lastSweepTime = 0;
+
         // Visual indicators based on type
         this.createVisualIndicators();
 
@@ -260,6 +269,10 @@ export class Enemy {
                 // Wings
                 this.wing1 = this.scene.add.circle(this.sprite.x - 10, this.sprite.y, 6, 0x0099cc);
                 this.wing2 = this.scene.add.circle(this.sprite.x + 10, this.sprite.y, 6, 0x0099cc);
+                break;
+            case 'boss_kraken_arm':
+                // Create tentacle system
+                this.initializeKrakenTentacles();
                 break;
         }
     }
@@ -339,6 +352,9 @@ export class Enemy {
                 break;
             case 'boss_iron_shell':
                 this.updateBossIronShell(time, playerX, playerY);
+                break;
+            case 'boss_kraken_arm':
+                this.updateBossKrakenArm(time, playerX, playerY);
                 break;
         }
 
@@ -528,6 +544,12 @@ export class Enemy {
     }
 
     takeDamage(amount) {
+        // Kraken-specific invulnerability
+        if (this.type === 'boss_kraken_arm' && this.bodyInvulnerable) {
+            console.log('Kraken body is invulnerable! Damage tentacles first!');
+            return this.health;
+        }
+
         this.health -= amount;
         if (this.health <= 0) {
             this.health = 0;
@@ -857,6 +879,251 @@ export class Enemy {
             }
             this.scene.enemyBullets.push(bullet);
         });
+    }
+
+    initializeKrakenTentacles() {
+        const tentacleCount = this.config.tentacleCount || 4;
+
+        for (let i = 0; i < tentacleCount; i++) {
+            const angle = (i / tentacleCount) * Math.PI * 2;
+            const tentacleX = this.sprite.x + Math.cos(angle) * this.config.tentacleLength;
+            const tentacleY = this.sprite.y + Math.sin(angle) * this.config.tentacleLength;
+
+            // Create tentacle visual
+            const tentacleSprite = this.scene.add.circle(
+                tentacleX,
+                tentacleY,
+                20,
+                0x9966cc
+            );
+            tentacleSprite.setStrokeStyle(2, 0x663399);
+
+            this.tentacleSprites.push(tentacleSprite);
+
+            // Create tentacle data
+            this.tentacles.push({
+                health: this.config.tentacleHealth,
+                maxHealth: this.config.tentacleHealth,
+                angle: angle,
+                lastRegenTime: Date.now(),
+                alive: true
+            });
+        }
+
+        // Body starts invulnerable
+        this.bodyInvulnerable = true;
+    }
+
+    /**
+     * Kraken's Arm Boss Behavior (Wave 6)
+     * Must damage all tentacles to expose body
+     * Ink clouds at 60% and 30% HP
+     * Tentacle sweep attack every 10 seconds
+     */
+    updateBossKrakenArm(time, playerX, playerY) {
+        const currentTime = Date.now();
+        const healthPercent = this.health / this.maxHealth;
+
+        // Update tentacle positions (writhing animation)
+        this.tentacles.forEach((tentacle, i) => {
+            if (tentacle.alive && this.tentacleSprites[i]) {
+                const baseAngle = tentacle.angle;
+                const wobble = Math.sin(currentTime / 500 + i) * 0.3;
+                const angle = baseAngle + wobble;
+
+                this.tentacleSprites[i].setPosition(
+                    this.sprite.x + Math.cos(angle) * this.config.tentacleLength,
+                    this.sprite.y + Math.sin(angle) * this.config.tentacleLength
+                );
+
+                // Regeneration
+                if (tentacle.health < tentacle.maxHealth) {
+                    const regenElapsed = (currentTime - tentacle.lastRegenTime) / 1000;
+                    tentacle.health = Math.min(
+                        tentacle.maxHealth,
+                        tentacle.health + (this.config.tentacleRegenRate * regenElapsed)
+                    );
+                    tentacle.lastRegenTime = currentTime;
+                }
+            }
+        });
+
+        // Check if body should be vulnerable
+        const damagedTentacles = this.tentacles.filter(t => t.alive && t.health < t.maxHealth * 0.5).length;
+        this.bodyInvulnerable = damagedTentacles < this.config.tentacleCount;
+
+        // Visual indicator for invulnerability
+        if (this.bodyInvulnerable) {
+            this.sprite.setStrokeStyle(4, 0x00ffff, 0.7);
+        } else {
+            this.sprite.setStrokeStyle(2, 0x9966cc, 1.0);
+        }
+
+        // Ink cloud triggers
+        if (healthPercent <= 0.6 && !this.inkTriggered1) {
+            this.createInkClouds(3);
+            this.inkTriggered1 = true;
+        }
+        if (healthPercent <= 0.3 && !this.inkTriggered2) {
+            this.createInkClouds(3);
+            this.inkTriggered2 = true;
+        }
+
+        // Tentacle slam attacks (individual)
+        this.tentacles.forEach((tentacle, i) => {
+            if (tentacle.alive && !tentacle.slamming) {
+                const timeSinceLastSlam = currentTime - (tentacle.lastSlamTime || 0);
+                if (timeSinceLastSlam >= 4000) {
+                    this.tentacleSlam(i, playerX, playerY);
+                }
+            }
+        });
+
+        // Tentacle sweep attack (all at once)
+        const sweepReady = (currentTime - this.lastSweepTime) >= this.config.sweepCooldown;
+        if (sweepReady) {
+            this.tentacleSweep();
+            this.lastSweepTime = currentTime;
+        }
+
+        // Slow movement toward player
+        const dx = playerX - this.sprite.x;
+        const dy = playerY - this.sprite.y;
+        const angle = Math.atan2(dy, dx);
+        this.sprite.body.setVelocity(
+            Math.cos(angle) * this.config.speed,
+            Math.sin(angle) * this.config.speed
+        );
+    }
+
+    createInkClouds(count) {
+        for (let i = 0; i < count; i++) {
+            // Random position in arena
+            const x = 300 + Math.random() * 1320;
+            const y = 200 + Math.random() * 680;
+
+            const cloud = this.scene.add.circle(x, y, this.config.inkCloudRadius, 0x000000, 0.6);
+            cloud.createdAt = Date.now();
+
+            this.inkClouds.push(cloud);
+
+            // Auto-remove after duration
+            this.scene.time.delayedCall(this.config.inkCloudDuration, () => {
+                const index = this.inkClouds.indexOf(cloud);
+                if (index > -1) {
+                    this.inkClouds.splice(index, 1);
+                    cloud.destroy();
+                }
+            });
+        }
+
+        console.log('Kraken created ink clouds!');
+    }
+
+    tentacleSlam(tentacleIndex, targetX, targetY) {
+        const tentacle = this.tentacles[tentacleIndex];
+        tentacle.slamming = true;
+        tentacle.slamTargetX = targetX;
+        tentacle.slamTargetY = targetY;
+
+        // Telegraph
+        const telegraph = this.scene.add.circle(targetX, targetY, 30, 0xff0000, 0.3);
+        telegraph.setStrokeStyle(2, 0xff0000);
+
+        this.scene.time.delayedCall(800, () => {
+            // Execute slam
+            telegraph.destroy();
+
+            // Check if player is in slam area
+            const dx = this.scene.player.getX() - targetX;
+            const dy = this.scene.player.getY() - targetY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 30) {
+                this.scene.player.takeDamage(this.config.damage);
+            }
+
+            // Impact visual
+            const impact = this.scene.add.circle(targetX, targetY, 40, 0x9966cc, 0.6);
+            this.scene.tweens.add({
+                targets: impact,
+                scale: 2,
+                alpha: 0,
+                duration: 300,
+                onComplete: () => impact.destroy()
+            });
+
+            tentacle.slamming = false;
+            tentacle.lastSlamTime = Date.now();
+        });
+    }
+
+    tentacleSweep() {
+        // Make all tentacles glow
+        this.tentacleSprites.forEach(sprite => {
+            sprite.setFillStyle(0xffff00, 0.8);
+        });
+
+        // Rotate tentacles 360 degrees
+        const sweepDuration = 2000;
+        const startTime = Date.now();
+
+        const sweepInterval = this.scene.time.addEvent({
+            delay: 50,
+            repeat: sweepDuration / 50,
+            callback: () => {
+                const progress = (Date.now() - startTime) / sweepDuration;
+                const rotationOffset = progress * Math.PI * 2;
+
+                this.tentacles.forEach((tentacle, i) => {
+                    tentacle.angle = (i / this.tentacles.length) * Math.PI * 2 + rotationOffset;
+
+                    // Check collision with player
+                    if (this.tentacleSprites[i]) {
+                        const tx = this.tentacleSprites[i].x;
+                        const ty = this.tentacleSprites[i].y;
+                        const px = this.scene.player.getX();
+                        const py = this.scene.player.getY();
+                        const dist = Math.sqrt(Math.pow(tx - px, 2) + Math.pow(ty - py, 2));
+
+                        if (dist < 25) {
+                            this.scene.player.takeDamage(this.config.sweepDamage);
+                        }
+                    }
+                });
+
+                if (progress >= 1) {
+                    // Reset tentacle colors
+                    this.tentacleSprites.forEach(sprite => {
+                        sprite.setFillStyle(0x9966cc, 1.0);
+                    });
+                }
+            }
+        });
+
+        console.log('Kraken performing tentacle sweep!');
+    }
+
+    takeTentacleDamage(tentacleIndex, amount) {
+        if (tentacleIndex >= 0 && tentacleIndex < this.tentacles.length) {
+            const tentacle = this.tentacles[tentacleIndex];
+            if (tentacle.alive) {
+                tentacle.health -= amount;
+
+                if (tentacle.health <= 0) {
+                    tentacle.health = 0;
+                    tentacle.alive = false;
+
+                    // Destroy tentacle visual
+                    if (this.tentacleSprites[tentacleIndex]) {
+                        this.tentacleSprites[tentacleIndex].destroy();
+                    }
+                }
+
+                return tentacle.health;
+            }
+        }
+        return -1;
     }
 
     /**
