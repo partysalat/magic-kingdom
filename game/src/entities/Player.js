@@ -341,6 +341,29 @@ export class Player {
         console.log(`Player ${this.playerName} stored cocktail:`, config.name);
     }
 
+    activateStoredCocktail() {
+        if (!this.storedCocktail) {
+            console.log(`Player ${this.playerName} has no stored cocktail`);
+            return false;
+        }
+
+        // Apply the buff using existing system
+        this.applyBuff(this.storedCocktail.config);
+
+        console.log(`Player ${this.playerName} activated:`, this.storedCocktail.config.name);
+
+        // Remove indicator
+        if (this.storedCocktailIndicator) {
+            this.storedCocktailIndicator.destroy();
+            this.storedCocktailIndicator = null;
+        }
+
+        // Clear stored cocktail
+        this.storedCocktail = null;
+
+        return true;
+    }
+
     setSpeedMultiplier(multiplier) {
         this.speedMultiplier = multiplier;
     }
