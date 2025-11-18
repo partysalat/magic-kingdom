@@ -311,6 +311,31 @@ export class Player {
         }
     }
 
+    storeCocktail(cocktailType, config) {
+        // Remove old indicator if exists
+        if (this.storedCocktailIndicator) {
+            this.storedCocktailIndicator.destroy();
+        }
+
+        // Store the cocktail
+        this.storedCocktail = {
+            type: cocktailType,
+            config: config
+        };
+
+        // Create visual indicator (small bubble above player)
+        this.storedCocktailIndicator = this.scene.add.circle(
+            this.sprite.x,
+            this.sprite.y - 40,
+            8,
+            config.color
+        );
+        this.storedCocktailIndicator.setStrokeStyle(2, 0xffffff);
+        this.storedCocktailIndicator.setDepth(15);
+
+        console.log(`Player ${this.playerName} stored cocktail:`, config.name);
+    }
+
     setSpeedMultiplier(multiplier) {
         this.speedMultiplier = multiplier;
     }
