@@ -46,6 +46,10 @@ export class Player {
         this.damageRampMultiplier = 1.0;
         this.rampShotsFired = 0;
 
+        // Cocktail inventory system
+        this.storedCocktail = null;  // { type: 'mojito', config: {...} }
+        this.storedCocktailIndicator = null;  // Visual sprite above player
+
         // Shooting properties for buff calculations
         this.shootCooldown = this.fireRate;
         this.bulletDamage = 10;
