@@ -99,6 +99,11 @@ export class Player {
             this.buffAura.setPosition(this.sprite.x, this.sprite.y);
         }
 
+        // Update stored cocktail indicator position
+        if (this.storedCocktailIndicator) {
+            this.storedCocktailIndicator.setPosition(this.sprite.x, this.sprite.y - 40);
+        }
+
         // Check buff expiration
         this.getActiveBuff();
     }
