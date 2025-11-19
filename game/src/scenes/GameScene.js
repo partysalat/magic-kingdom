@@ -1159,9 +1159,6 @@ export class GameScene extends Phaser.Scene {
     handleGameOver() {
         this.isGameOver = true;
 
-        // Stop all game activity
-        this.waveManager.stopWaves();
-
         // Save high scores
         this.saveHighScores();
 
