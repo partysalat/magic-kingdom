@@ -49,6 +49,7 @@ export class Player {
         // Cocktail inventory system
         this.storedCocktail = null;  // { type: 'mojito', config: {...} }
         this.storedCocktailIndicator = null;  // Visual sprite above player
+        this.storedCocktailGlow = null;
 
         // Shooting properties for buff calculations
         this.shootCooldown = this.fireRate;
@@ -102,6 +103,9 @@ export class Player {
         // Update stored cocktail indicator position
         if (this.storedCocktailIndicator) {
             this.storedCocktailIndicator.setPosition(this.sprite.x, this.sprite.y - 40);
+        }
+        if (this.storedCocktailGlow) {
+            this.storedCocktailGlow.setPosition(this.sprite.x, this.sprite.y);
         }
 
         // Check buff expiration
@@ -321,12 +325,25 @@ export class Player {
         if (this.storedCocktailIndicator) {
             this.storedCocktailIndicator.destroy();
         }
+        if (this.storedCocktailGlow) {
+            this.storedCocktailGlow.destroy();
+        }
 
         // Store the cocktail
         this.storedCocktail = {
             type: cocktailType,
             config: config
         };
+
+        // Create subtle glow around player
+        this.storedCocktailGlow = this.scene.add.circle(
+            this.sprite.x,
+            this.sprite.y,
+            35,
+            config.color,
+            0.15  // Very subtle
+        );
+        this.storedCocktailGlow.setDepth(-1);
 
         // Create visual indicator (small bubble above player)
         this.storedCocktailIndicator = this.scene.add.circle(
@@ -358,10 +375,14 @@ export class Player {
 
         console.log(`Player ${this.playerName} activated:`, this.storedCocktail.config.name);
 
-        // Remove indicator
+        // Remove indicator and glow
         if (this.storedCocktailIndicator) {
             this.storedCocktailIndicator.destroy();
             this.storedCocktailIndicator = null;
+        }
+        if (this.storedCocktailGlow) {
+            this.storedCocktailGlow.destroy();
+            this.storedCocktailGlow = null;
         }
 
         // Clear stored cocktail
@@ -377,6 +398,9 @@ export class Player {
     destroy() {
         if (this.storedCocktailIndicator) {
             this.storedCocktailIndicator.destroy();
+        }
+        if (this.storedCocktailGlow) {
+            this.storedCocktailGlow.destroy();
         }
         this.sprite.destroy();
     }
