@@ -335,6 +335,37 @@ export class Enemy {
         return this.bountyName;
     }
 
+    /**
+     * Get the closest living player to this enemy
+     */
+    getClosestPlayer() {
+        if (!this.scene.playerManager) {
+            // Fallback to legacy single player
+            return this.scene.player;
+        }
+
+        const livingPlayers = this.scene.playerManager.getLivingPlayers();
+        if (livingPlayers.length === 0) {
+            return this.scene.player; // Fallback
+        }
+
+        let closestPlayer = livingPlayers[0];
+        let closestDistance = Infinity;
+
+        livingPlayers.forEach(player => {
+            const dx = player.getX() - this.sprite.x;
+            const dy = player.getY() - this.sprite.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestPlayer = player;
+            }
+        });
+
+        return closestPlayer;
+    }
+
     update(time, playerX, playerY) {
         if (!this.alive) return;
 
@@ -612,7 +643,8 @@ export class Enemy {
 
         const leader = this.formationLeader;
         const leaderPos = { x: leader.getSprite().x, y: leader.getSprite().y };
-        const playerPos = { x: this.scene.player.getX(), y: this.scene.player.getY() };
+        const closestPlayer = this.getClosestPlayer();
+        const playerPos = { x: closestPlayer.getX(), y: closestPlayer.getY() };
 
         // Calculate angle from player to tank
         const angleToTank = Math.atan2(
@@ -657,7 +689,8 @@ export class Enemy {
 
         // Tanks simply move toward player at reduced speed using velocity
         // Shooters will position themselves behind the tank
-        const playerPos = { x: this.scene.player.getX(), y: this.scene.player.getY() };
+        const closestPlayer = this.getClosestPlayer();
+        const playerPos = { x: closestPlayer.getX(), y: closestPlayer.getY() };
 
         const dx = playerPos.x - this.getSprite().x;
         const dy = playerPos.y - this.getSprite().y;
@@ -988,12 +1021,13 @@ export class Enemy {
                 );
 
                 // Check collision with player during charge
+                const closestPlayer = this.getClosestPlayer();
                 const playerDist = Math.sqrt(
-                    Math.pow(this.scene.player.getX() - this.sprite.x, 2) +
-                    Math.pow(this.scene.player.getY() - this.sprite.y, 2)
+                    Math.pow(closestPlayer.getX() - this.sprite.x, 2) +
+                    Math.pow(closestPlayer.getY() - this.sprite.y, 2)
                 );
                 if (playerDist < this.config.radius + 30 && !this.chargeHitPlayer) {
-                    this.scene.player.takeDamage(this.config.chargeDamage);
+                    closestPlayer.takeDamage(this.config.chargeDamage);
                     this.chargeHitPlayer = true; // Prevent multiple hits
                 }
             } else {
@@ -1245,13 +1279,14 @@ export class Enemy {
             // Execute slam
             telegraph.destroy();
 
-            // Check if player is in slam area
-            const dx = this.scene.player.getX() - targetX;
-            const dy = this.scene.player.getY() - targetY;
+            // Check if any player is in slam area
+            const closestPlayer = this.getClosestPlayer();
+            const dx = closestPlayer.getX() - targetX;
+            const dy = closestPlayer.getY() - targetY;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance < 30) {
-                this.scene.player.takeDamage(this.config.damage);
+                closestPlayer.takeDamage(this.config.damage);
             }
 
             // Impact visual
@@ -1291,18 +1326,21 @@ export class Enemy {
                 this.tentacles.forEach((tentacle, i) => {
                     tentacle.angle = (i / this.tentacles.length) * Math.PI * 2 + rotationOffset;
 
-                    // Check collision with player
-                    if (this.tentacleSprites[i]) {
+                    // Check collision with all players
+                    if (this.tentacleSprites[i] && this.scene.playerManager) {
                         const tx = this.tentacleSprites[i].x;
                         const ty = this.tentacleSprites[i].y;
-                        const px = this.scene.player.getX();
-                        const py = this.scene.player.getY();
-                        const dist = Math.sqrt(Math.pow(tx - px, 2) + Math.pow(ty - py, 2));
 
-                        if (dist < 25 && !this.sweepDamageDealt) {
-                            this.scene.player.takeDamage(this.config.sweepDamage);
-                            this.sweepDamageDealt = true;
-                        }
+                        this.scene.playerManager.getLivingPlayers().forEach(player => {
+                            const px = player.getX();
+                            const py = player.getY();
+                            const dist = Math.sqrt(Math.pow(tx - px, 2) + Math.pow(ty - py, 2));
+
+                            if (dist < 25 && !this.sweepDamageDealt) {
+                                player.takeDamage(this.config.sweepDamage);
+                                this.sweepDamageDealt = true;
+                            }
+                        });
                     }
                 });
 
@@ -1501,13 +1539,17 @@ export class Enemy {
                     );
                 }
 
-                // Check if player is in radius - USE CURRENT POSITION
-                const dx = this.scene.player.getX() - this.sprite.x;
-                const dy = this.scene.player.getY() - this.sprite.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+                // Check if any player is in radius - USE CURRENT POSITION
+                if (this.scene.playerManager) {
+                    this.scene.playerManager.getLivingPlayers().forEach(player => {
+                        const dx = player.getX() - this.sprite.x;
+                        const dy = player.getY() - this.sprite.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance <= this.config.groundPoundRadius) {
-                    this.scene.player.takeDamage(this.config.groundPoundDamage);
+                        if (distance <= this.config.groundPoundRadius) {
+                            player.takeDamage(this.config.groundPoundDamage);
+                        }
+                    });
                 }
 
                 this.scene.tweens.add({
@@ -1554,14 +1596,18 @@ export class Enemy {
                 duration: 600,
                 ease: 'Power2',
                 onUpdate: () => {
-                    // Check collision with player during charge
-                    const dx = this.scene.player.getX() - this.sprite.x;
-                    const dy = this.scene.player.getY() - this.sprite.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    // Check collision with all players during charge
+                    if (this.scene.playerManager) {
+                        this.scene.playerManager.getLivingPlayers().forEach(player => {
+                            const dx = player.getX() - this.sprite.x;
+                            const dy = player.getY() - this.sprite.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
 
-                    if (dist < this.config.radius + 20 && !this.chargeHitPlayer) {
-                        this.scene.player.takeDamage(this.config.chargeDamage);
-                        this.chargeHitPlayer = true;
+                            if (dist < this.config.radius + 20 && !this.chargeHitPlayer) {
+                                player.takeDamage(this.config.chargeDamage);
+                                this.chargeHitPlayer = true;
+                            }
+                        });
                     }
                 },
                 onComplete: () => {
@@ -1607,14 +1653,18 @@ export class Enemy {
                     );
                 }
 
-                // Check if player is hit - ONLY DAMAGE ONCE PER ATTACK
-                const dx = this.scene.player.getX() - targetX;
-                const dy = this.scene.player.getY() - targetY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+                // Check if any player is hit - ONLY DAMAGE ONCE PER ATTACK
+                if (this.scene.playerManager) {
+                    this.scene.playerManager.getLivingPlayers().forEach(player => {
+                        const dx = player.getX() - targetX;
+                        const dy = player.getY() - targetY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance <= this.config.lightningRadius && !this.lightningDamageDealt) {
-                    this.scene.player.takeDamage(this.config.lightningDamage);
-                    this.lightningDamageDealt = true;  // Prevent multi-hit
+                        if (distance <= this.config.lightningRadius && !this.lightningDamageDealt) {
+                            player.takeDamage(this.config.lightningDamage);
+                            this.lightningDamageDealt = true;  // Prevent multi-hit
+                        }
+                    });
                 }
 
                 telegraph.destroy();
@@ -1667,15 +1717,19 @@ export class Enemy {
                     x: waveEndX,
                     duration: 2000,
                     onUpdate: () => {
-                        // Check collision with player
-                        const px = this.scene.player.getX();
-                        const py = this.scene.player.getY();
+                        // Check collision with all players
+                        if (this.scene.playerManager) {
+                            this.scene.playerManager.getLivingPlayers().forEach(player => {
+                                const px = player.getX();
+                                const py = player.getY();
 
-                        if (Math.abs(wave.x - px) < 100 && Math.abs(540 - py) < waveHeight / 2) {
-                            if (!this.waveHitPlayer) {
-                                this.scene.player.takeDamage(this.config.tidalWaveDamage);
-                                this.waveHitPlayer = true;
-                            }
+                                if (Math.abs(wave.x - px) < 100 && Math.abs(540 - py) < waveHeight / 2) {
+                                    if (!this.waveHitPlayer) {
+                                        player.takeDamage(this.config.tidalWaveDamage);
+                                        this.waveHitPlayer = true;
+                                    }
+                                }
+                            });
                         }
                     },
                     onComplete: () => {

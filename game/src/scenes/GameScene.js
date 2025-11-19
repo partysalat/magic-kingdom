@@ -355,8 +355,30 @@ export class GameScene extends Phaser.Scene {
 
         // Update enemies
         this.enemies = this.enemies.filter(enemy => {
-            if (enemy.isAlive() && this.player) {
-                enemy.update(time, this.player.getX(), this.player.getY());
+            if (enemy.isAlive() && this.playerManager) {
+                // Get all living players
+                const livingPlayers = this.playerManager.getLivingPlayers();
+                if (livingPlayers.length > 0) {
+                    // Find closest player to this enemy
+                    let closestPlayer = livingPlayers[0];
+                    let closestDistance = Infinity;
+
+                    livingPlayers.forEach(player => {
+                        const dx = player.getX() - enemy.getSprite().x;
+                        const dy = player.getY() - enemy.getSprite().y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestPlayer = player;
+                        }
+                    });
+
+                    enemy.update(time, closestPlayer.getX(), closestPlayer.getY());
+                } else if (this.player) {
+                    // Fallback to legacy single player
+                    enemy.update(time, this.player.getX(), this.player.getY());
+                }
 
                 // Check cover collisions for enemies
                 if (this.coverManager) {
