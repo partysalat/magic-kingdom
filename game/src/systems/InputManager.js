@@ -175,6 +175,10 @@ export class InputManager {
         return this.cycleTargetPrev;
     }
 
+    shouldActivateCocktail() {
+        return this.activateCocktail;
+    }
+
     getInputState() {
         return {
             movement: {
