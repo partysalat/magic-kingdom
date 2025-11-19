@@ -17,6 +17,7 @@ export class InputManager {
         // Button edge detection
         this.lastL1 = false;
         this.lastR1 = false;
+        this.lastLB = false;  // For cocktail activation (typically button 4)
 
         this.setupKeyboard();
         this.setupGamepad();
@@ -139,8 +140,15 @@ export class InputManager {
             this.cycleTargetNext = true;
         }
 
+        // LB (button 4) for cocktail activation
+        const LB = this.gamepad.buttons[4] ? this.gamepad.buttons[4].pressed : false;
+        if (LB && !this.lastLB) {
+            this.activateCocktail = true;
+        }
+
         this.lastL1 = this.gamepad.L1;
         this.lastR1 = this.gamepad.R1;
+        this.lastLB = LB;
     }
 
     getMovement() {
