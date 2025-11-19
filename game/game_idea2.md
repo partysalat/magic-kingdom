@@ -108,12 +108,18 @@ Special "Wanted" enemies with unique names that spawn randomly during waves:
 
 ## Cocktail Powerup System
 
-### Spawn Mechanics
-- **Timing:** Between waves (after wave clear, before next wave)
-- **Spawn Count:** 3 cocktails appear at different saloon locations
-- **Competition:** Each cocktail can only be grabbed by one player
-- **Window:** 10-15 second scramble period
-- **Strategy:** Do you grab the closest or run for the best buff?
+**Note:** The cocktail system has been updated to use manual activation with inventory. See `game_idea_2_adaptions4.md` for current implementation details.
+
+### Core Mechanics
+- Players collect cocktails into a single-slot inventory
+- Press R (keyboard) or LB (gamepad) to activate stored cocktail
+- Cocktails persist across rounds until activated
+- Strategic timing creates risk/reward decisions
+
+### Visual Feedback
+- Stored: Small bubble icon above player + subtle glow
+- Active: Full colored aura + bullet effect trails
+- HUD displays stored cocktail in bottom left
 
 ### Cocktail Types
 
@@ -126,15 +132,7 @@ Special "Wanted" enemies with unique names that spawn randomly during waves:
 | **Whiskey Sour** | Piercing Shots - bullets pass through enemies | 15 seconds | Golden trails + yellow player aura |
 | **Manhattan** | Critical Hits - 50% chance for 3x damage | 15 seconds | Sparkle effects on shots + red sparkle aura |
 
-### Player Visual Feedback
-- **Aura/Glow:** Player glows with cocktail's color while buffed
-- **UI Indicator:** Icon next to health bar showing active cocktail
-- **Spectator Clarity:** Easy to see who has what buff from a distance
-
-### Design Philosophy
-- **Pure buffs:** No penalties or negative effects
-- **Temporary:** Keeps game dynamic, prevents snowballing
-- **Competitive edge:** Creates mini-competitions between waves
+For complete details, see: `game_idea_2_adaptions4.md`
 
 ---
 
