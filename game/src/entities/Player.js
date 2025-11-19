@@ -369,6 +369,9 @@ export class Player {
     }
 
     destroy() {
+        if (this.storedCocktailIndicator) {
+            this.storedCocktailIndicator.destroy();
+        }
         this.sprite.destroy();
     }
 }
