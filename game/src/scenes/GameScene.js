@@ -487,6 +487,9 @@ export class GameScene extends Phaser.Scene {
         // Update buff UI
         this.updateBuffUI();
 
+        // Update stored cocktail HUD
+        this.updateStoredCocktailHUD();
+
         // Update health bars
         if (this.playerHealthBars) {
             this.playerHealthBars.forEach(bar => {
@@ -1034,6 +1037,21 @@ export class GameScene extends Phaser.Scene {
             this.buffText.setText(`BUFF: ${buff.toUpperCase().replace('_', ' ')} (${timeLeft}s)`);
         } else {
             this.buffText.setText('');
+        }
+    }
+
+    updateStoredCocktailHUD() {
+        // Check first player's stored cocktail (for single player)
+        // For multiplayer, could show each player's stored cocktail
+        const player = this.playerManager.players[0];
+
+        if (player.storedCocktail) {
+            const config = player.storedCocktail.config;
+            this.storedCocktailHUDIcon.setFillStyle(config.color);
+            this.storedCocktailHUDName.setText(config.name);
+            this.storedCocktailHUD.setVisible(true);
+        } else {
+            this.storedCocktailHUD.setVisible(false);
         }
     }
 
