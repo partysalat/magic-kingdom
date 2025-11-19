@@ -956,6 +956,47 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
+    showCocktailActivationFeedback(player) {
+        if (!player.activeBuff) return;
+
+        // Get config from COCKTAIL_TYPES based on active buff
+        let config = null;
+        for (const [type, cocktailConfig] of Object.entries(this.COCKTAIL_TYPES)) {
+            if (cocktailConfig.effect === player.activeBuff) {
+                config = cocktailConfig;
+                break;
+            }
+        }
+
+        if (!config) return;
+
+        // Show "ACTIVATED" text
+        const text = this.add.text(
+            player.getX(),
+            player.getY() - 60,
+            `ACTIVATED!\n${config.name}`,
+            {
+                fontSize: '24px',
+                color: '#ffff00',
+                fontFamily: 'Arial',
+                stroke: '#000000',
+                strokeThickness: 4,
+                align: 'center'
+            }
+        ).setOrigin(0.5);
+
+        // Pulse and fade
+        this.tweens.add({
+            targets: text,
+            scale: 1.5,
+            alpha: 0,
+            y: text.y - 40,
+            duration: 1200,
+            ease: 'Power2',
+            onComplete: () => text.destroy()
+        });
+    }
+
     updateBuffUI() {
         if (!this.player) {
             this.buffText.setText('');
