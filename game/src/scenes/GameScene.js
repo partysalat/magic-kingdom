@@ -298,6 +298,16 @@ export class GameScene extends Phaser.Scene {
             // Apply to player
             player.setSpeedMultiplier(speedMultiplier);
 
+            // Check for cocktail activation input
+            if (inputManager && inputManager.shouldActivateCocktail()) {
+                const activated = player.activateStoredCocktail();
+                if (activated) {
+                    // Show activation feedback
+                    this.showCocktailActivationFeedback(player);
+                    this.updateBuffUI();
+                }
+            }
+
             // Handle shooting with auto-aim
             if (inputManager.isFiringPressed()) {
                 const target = targetSelector.getCurrentTarget();
