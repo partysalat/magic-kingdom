@@ -920,6 +920,32 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
+    showCocktailPickupFeedback(player, config) {
+        // Show brief text above player
+        const text = this.add.text(
+            player.getX(),
+            player.getY() - 60,
+            `Stored: ${config.name}`,
+            {
+                fontSize: '20px',
+                color: '#ffffff',
+                fontFamily: 'Arial',
+                stroke: '#000000',
+                strokeThickness: 3
+            }
+        ).setOrigin(0.5);
+
+        // Fade out and destroy
+        this.tweens.add({
+            targets: text,
+            alpha: 0,
+            y: text.y - 30,
+            duration: 1000,
+            ease: 'Power2',
+            onComplete: () => text.destroy()
+        });
+    }
+
     updateBuffUI() {
         if (!this.player) {
             this.buffText.setText('');
