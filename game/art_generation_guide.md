@@ -175,6 +175,64 @@ Isometric 3/4 top-down view of a flying fish with wings spread, wearing aviator 
 
 ---
 
+### Boss Enemies (3 bosses - Multi-Directional)
+
+#### 1. Iron Shell (Wave 3 Boss - Multi-Directional)
+
+**Base Prompt (add direction at the end):**
+```
+Isometric 3/4 top-down view of a massive dark gray hermit crab with heavy iron-plated shell, imposing boss appearance, much larger than normal enemies, wearing reinforced cowboy armor plating, intimidating and powerful, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game boss sprite on transparent background
+```
+
+**Add these direction modifiers:**
+- `, facing toward camera` (down)
+- `, facing away from camera showing armored shell` (up)
+- `, facing left in profile view` (left)
+- `, facing right in profile view` (right)
+
+**Behavior notes:** Phase 1 fires bubble spread attacks. Phase 2 (below 50% HP) adds charge attacks with cracks visible on shell.
+
+---
+
+#### 2. The Kraken's Arm (Wave 6 Boss - Multi-Directional with Tentacles)
+
+**Base Prompt (add direction at the end):**
+```
+Isometric 3/4 top-down view of a massive purple kraken body with four large writhing tentacles extending outward, mystical deep-sea creature wearing tattered pirate hat, boss appearance with glowing eyes, enormous and menacing, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game boss sprite on transparent background
+```
+
+**Add these direction modifiers:**
+- `, facing toward camera with tentacles visible` (down)
+- `, facing away from camera` (up)
+- `, facing left showing tentacles` (left)
+- `, facing right showing tentacles` (right)
+
+**Behavior notes:** Body is invulnerable until all 4 tentacles are destroyed. Tentacles regenerate over time. Creates ink clouds that slow players.
+
+---
+
+#### 3. The Leviathan (Wave 9 Final Boss - Multi-Directional, Two-Phase)
+
+**Phase 1 Prompt (add direction at the end):**
+```
+Isometric 3/4 top-down view of a colossal orange-red sea serpent boss with scales and fins, legendary final boss appearance, wearing golden cowboy accessories, massive and terrifying, ancient sea monster, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game boss sprite on transparent background
+```
+
+**Phase 2 Prompt (add direction at the end):**
+```
+Isometric 3/4 top-down view of a colossal electric blue sea serpent boss with crackling lightning effects, transformed legendary final boss appearance, wearing golden cowboy accessories, massive and terrifying with electrical aura, ancient sea monster evolved form, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game boss sprite on transparent background
+```
+
+**Add these direction modifiers to both phases:**
+- `, facing toward camera` (down)
+- `, facing away from camera` (up)
+- `, facing left in profile view` (left)
+- `, facing right in profile view` (right)
+
+**Behavior notes:** Phase 1 (orange-red) uses bullet storms, ground pounds, and charges. At 0 HP, transitions to Phase 2 (electric blue) with full health restore, lightning strikes, tidal waves, and spawns minions.
+
+---
+
 ### Bounty Enemy Variants (4 special versions)
 
 **Template:** Take base enemy prompt, add:
@@ -294,6 +352,13 @@ Isometric 3/4 top-down view of a [OBJECT] in western saloon style with beach the
 **Basic Enemies:**
 - 5 enemy types × 4 directions = **20 sprites**
 
+**Boss Enemies:**
+- Iron Shell × 4 directions = **4 sprites**
+- Kraken's Arm × 4 directions = **4 sprites**
+- Leviathan Phase 1 × 4 directions = **4 sprites**
+- Leviathan Phase 2 × 4 directions = **4 sprites**
+- **Boss Total: 16 sprites**
+
 **Bounty Enemies:**
 - 4 bounty variants × 4 directions = **16 sprites**
 
@@ -303,9 +368,9 @@ Isometric 3/4 top-down view of a [OBJECT] in western saloon style with beach the
 **Environment:**
 - Floor tile (done) + 4-5 obstacle props = **5 sprites**
 
-**TOTAL MINIMUM:** **~63 sprite generations**
+**TOTAL MINIMUM:** **~79 sprite generations**
 
-**If using 8 directions:** ~120 sprite generations
+**If using 8 directions:** ~152 sprite generations
 
 ---
 
