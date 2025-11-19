@@ -468,13 +468,12 @@ export class GameScene extends Phaser.Scene {
                 if (distance < 35) { // 20 (player) + 15 (cocktail)
                     const config = cocktail.getConfig();
 
-                    // Store cocktail instead of activating
+                    // Player can store even if they have an active buff
+                    // (active buff is separate from stored cocktail)
                     player.storeCocktail(cocktail.getType(), config);
 
                     cocktail.collect();
-                    cocktail.destroy();  // Remove visual from scene
-
-                    // Optional: Show brief pickup feedback (but not activation feedback)
+                    cocktail.destroy();
                     this.showCocktailPickupFeedback(player, config);
 
                     return false;
