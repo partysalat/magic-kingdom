@@ -9,6 +9,7 @@ export class InputManager {
         this.isFiring = false;
         this.cycleTargetNext = false;
         this.cycleTargetPrev = false;
+        this.activateCocktail = false;  // New flag
 
         // Input mode (auto-detected)
         this.inputMode = 'keyboard'; // 'keyboard' or 'gamepad'
@@ -29,7 +30,8 @@ export class InputManager {
             S: Phaser.Input.Keyboard.KeyCodes.S,
             D: Phaser.Input.Keyboard.KeyCodes.D,
             Q: Phaser.Input.Keyboard.KeyCodes.Q,
-            E: Phaser.Input.Keyboard.KeyCodes.E
+            E: Phaser.Input.Keyboard.KeyCodes.E,
+            R: Phaser.Input.Keyboard.KeyCodes.R  // Cocktail activation
         });
 
         // Mouse firing
