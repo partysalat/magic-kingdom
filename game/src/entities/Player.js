@@ -347,6 +347,12 @@ export class Player {
             return false;
         }
 
+        // If already have active buff, warn and don't activate
+        if (this.activeBuff && Date.now() < this.buffEndTime) {
+            console.log(`Player ${this.playerName} already has active buff`);
+            return false;
+        }
+
         // Apply the buff using existing system
         this.applyBuff(this.storedCocktail.config);
 
