@@ -432,11 +432,16 @@ export class GameScene extends Phaser.Scene {
                 // Collision if distance less than combined radii
                 if (distance < 35) { // 20 (player) + 15 (cocktail)
                     const config = cocktail.getConfig();
-                    player.applyBuff(config);
+
+                    // Store cocktail instead of activating
+                    player.storeCocktail(cocktail.getType(), config);
+
                     cocktail.collect();
                     cocktail.destroy();  // Remove visual from scene
-                    this.showCocktailFeedback(config);
-                    this.updateBuffUI();
+
+                    // Optional: Show brief pickup feedback (but not activation feedback)
+                    this.showCocktailPickupFeedback(player, config);
+
                     return false;
                 }
             }
