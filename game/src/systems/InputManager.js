@@ -62,6 +62,7 @@ export class InputManager {
         // Reset cycle flags each frame
         this.cycleTargetNext = false;
         this.cycleTargetPrev = false;
+        this.activateCocktail = false;  // Reset activation flag
 
         if (this.gamepad && this.gamepad.connected) {
             this.updateGamepad();
@@ -104,6 +105,12 @@ export class InputManager {
         }
         if (Phaser.Input.Keyboard.JustDown(this.keys.E)) {
             this.cycleTargetNext = true;
+            this.inputMode = 'keyboard';
+        }
+
+        // Cocktail activation with R
+        if (Phaser.Input.Keyboard.JustDown(this.keys.R)) {
+            this.activateCocktail = true;
             this.inputMode = 'keyboard';
         }
     }
