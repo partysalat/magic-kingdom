@@ -14,5 +14,8 @@ export const gameConfig = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    backgroundColor: '#2d2d2d'
+    backgroundColor: '#2d2d2d',
+    input: {
+        gamepad: true
+    }
 };

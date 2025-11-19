@@ -6,14 +6,6 @@ export class StartScene extends Phaser.Scene {
     create() {
         this.cameras.main.setBackgroundColor('#2d1810'); // Dark western brown
 
-        // Enable gamepad plugin
-        if (!this.input.gamepad) {
-            this.input.gamepad = this.plugins.get('GamepadPlugin');
-        }
-        if (this.input.gamepad && !this.input.gamepad.enabled) {
-            this.input.gamepad.start();
-        }
-
         // Player join state
         this.joinedPlayers = [];
         this.maxPlayers = 4;
@@ -167,37 +159,51 @@ export class StartScene extends Phaser.Scene {
 
     checkForPlayerJoins() {
         // Check gamepads 0-3
-        if (!this.input.gamepad || !this.input.gamepad.enabled) {
-            // Gamepad not available, skip gamepad checking
-            // Player 1 can still join with keyboard below
-        } else {
+        if (this.input.gamepad && this.input.gamepad.total > 0) {
+            const gamepads = this.input.gamepad.gamepads;
+
             for (let i = 0; i < 4; i++) {
-                const pad = this.input.gamepad.getPad(i);
+                const pad = gamepads[i];
 
-            if (!pad) continue;
+                if (!pad || !pad.connected) continue;
 
-            // Check if this player already joined
-            const alreadyJoined = this.joinedPlayers.some(p => p.index === i);
-            if (alreadyJoined) continue;
+                // Check if this player already joined
+                const alreadyJoined = this.joinedPlayers.some(p => p.index === i);
+                if (alreadyJoined) {
+                    // Still need to update button states to prevent false triggers
+                    if (pad.buttons) {
+                        pad.buttons.forEach((button, btnIndex) => {
+                            this.lastGamepadStates[i][btnIndex] = button.pressed;
+                        });
+                    }
+                    continue;
+                }
 
-            // Check if max players reached
-            if (this.joinedPlayers.length >= this.maxPlayers) continue;
+                // Check if max players reached
+                if (this.joinedPlayers.length >= this.maxPlayers) continue;
 
-            // Detect "any button" press (check all buttons)
-            const anyButtonPressed = pad.buttons.some((button, btnIndex) => {
-                const wasPressed = this.lastGamepadStates[i][btnIndex] || false;
-                const isPressed = button.pressed;
+                // Detect "any button" press (check all buttons EXCEPT button 9 which is START)
+                const anyButtonPressed = pad.buttons.some((button, btnIndex) => {
+                    // Skip START button (button 9) for joining
+                    if (btnIndex === 9) {
+                        // Still update state for START button
+                        this.lastGamepadStates[i][btnIndex] = button.pressed;
+                        return false;
+                    }
 
-                // Update state
-                this.lastGamepadStates[i][btnIndex] = isPressed;
+                    const wasPressed = this.lastGamepadStates[i][btnIndex] || false;
+                    const isPressed = button.pressed;
 
-                // Return true if button was just pressed (edge detection)
-                return isPressed && !wasPressed;
-            });
+                    // Update state
+                    this.lastGamepadStates[i][btnIndex] = isPressed;
 
-            if (anyButtonPressed) {
-                this.addPlayer(i);
-            }
+                    // Return true if button was just pressed (edge detection)
+                    return isPressed && !wasPressed;
+                });
+
+                if (anyButtonPressed) {
+                    this.addPlayer(i);
+                }
             }
         }
 
@@ -241,16 +247,30 @@ export class StartScene extends Phaser.Scene {
     }
 
     checkForGameStart() {
-        // Check if any joined player presses START button
-        if (!this.input.gamepad || !this.input.gamepad.enabled) {
-            // Gamepad not available, only check keyboard
-        } else {
-            for (const playerConfig of this.joinedPlayers) {
-                const pad = this.input.gamepad.getPad(playerConfig.index);
+        // Initialize last START button states if not exists
+        if (!this.lastStartStates) {
+            this.lastStartStates = [false, false, false, false];
+        }
 
-                if (pad && pad.buttons[9] && pad.buttons[9].pressed) {
-                    this.startGame();
-                    return;
+        // Check if any joined player presses START button
+        if (this.input.gamepad && this.input.gamepad.total > 0) {
+            const gamepads = this.input.gamepad.gamepads;
+
+            for (const playerConfig of this.joinedPlayers) {
+                const pad = gamepads[playerConfig.index];
+
+                if (pad && pad.connected && pad.buttons[9]) {
+                    const wasPressed = this.lastStartStates[playerConfig.index];
+                    const isPressed = pad.buttons[9].pressed;
+
+                    // Update state
+                    this.lastStartStates[playerConfig.index] = isPressed;
+
+                    // Only start if button was just pressed (edge detection)
+                    if (isPressed && !wasPressed) {
+                        this.startGame();
+                        return;
+                    }
                 }
             }
         }
