@@ -1023,11 +1023,12 @@ export class GameScene extends Phaser.Scene {
         if (mode === 'gamepad') {
             this.controlsText.setText(
                 'Left Stick: Move | Right Trigger: Fire\n' +
-                'Right Stick: Aim Influence | L1/R1: Lock Bounty'
+                'Right Stick: Aim Influence | L1/R1: Lock Bounty | LB: Activate Cocktail'
             );
         } else {
             this.controlsText.setText(
-                'WASD: Move | Mouse: Fire & Aim Influence | Q/E: Lock Bounty'
+                'WASD: Move | Mouse: Fire & Aim Influence\n' +
+                'Q/E: Lock Bounty | R: Activate Cocktail'
             );
         }
     }
