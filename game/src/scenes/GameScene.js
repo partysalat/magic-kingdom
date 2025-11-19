@@ -139,6 +139,31 @@ export class GameScene extends Phaser.Scene {
             strokeThickness: 3
         }).setOrigin(0.5, 0);
 
+        // Add stored cocktail indicator (bottom left of screen)
+        this.storedCocktailHUD = this.add.container(30, 980);
+
+        const hudBg = this.add.rectangle(0, 0, 160, 50, 0x000000, 0.7);
+        const hudText = this.add.text(-70, 0, 'READY:', {
+            fontSize: '18px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        }).setOrigin(0, 0.5);
+        const hudIcon = this.add.circle(50, 0, 15, 0x888888);
+        hudIcon.setStrokeStyle(2, 0xffffff);
+        const hudName = this.add.text(0, 20, '', {
+            fontSize: '16px',
+            color: '#ffff00',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5, 0);
+
+        this.storedCocktailHUD.add([hudBg, hudText, hudIcon, hudName]);
+        this.storedCocktailHUD.setVisible(false);  // Hidden until cocktail stored
+        this.storedCocktailHUD.setDepth(100);
+
+        // Store references for updates
+        this.storedCocktailHUDIcon = hudIcon;
+        this.storedCocktailHUDName = hudName;
+
         // Create leaderboard panel
         this.createLeaderboard();
 
