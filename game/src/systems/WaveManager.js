@@ -749,23 +749,44 @@ export class WaveManager {
         // Already triggered this sub-wave
         if (this.subWaveTriggered[this.currentSubWaveIndex]) return;
 
-        // Track enemies alive at start of this sub-wave segment
-        if (!this.subWaveStartCount || this.subWaveStartCount === 0) {
-            this.subWaveStartCount = this.currentSubWaveEnemyCount;
-        }
+        // Check if this is a boss wave (1 enemy + isBossWave check)
+        const isBossWave = this.enemiesInWave === 1 && this.isBossWave(this.currentWave);
 
-        // Calculate kill percentage of current sub-wave segment
-        const killed = this.subWaveStartCount - this.currentSubWaveEnemyCount;
-        const killPercentage = this.subWaveStartCount > 0
-            ? killed / this.subWaveStartCount
-            : 1.0;
+        if (isBossWave) {
+            // Boss HP-based trigger
+            const boss = this.scene.enemies.find(e => e.config && e.config.isBoss);
+            if (!boss || !boss.health) return;
 
-        // Check if trigger threshold reached
-        if (killPercentage >= nextSubWave.trigger) {
-            console.log(`Sub-wave ${this.currentSubWaveIndex + 1} triggered at ${Math.floor(killPercentage * 100)}%`);
-            this.spawnSubWave(nextSubWave);
-            this.subWaveTriggered[this.currentSubWaveIndex] = true;
-            this.currentSubWaveIndex++;
+            const hpPercentage = boss.health / boss.maxHealth;
+            const hpLost = 1.0 - hpPercentage;
+
+            // Check if trigger threshold reached (trigger is based on HP lost)
+            if (hpLost >= nextSubWave.trigger) {
+                console.log(`Boss sub-wave ${this.currentSubWaveIndex + 1} triggered at ${Math.floor(hpPercentage * 100)}% HP`);
+                this.spawnSubWave(nextSubWave);
+                this.subWaveTriggered[this.currentSubWaveIndex] = true;
+                this.currentSubWaveIndex++;
+            }
+        } else {
+            // Multi-enemy wave - use kill-count percentage
+            // Track enemies alive at start of this sub-wave segment
+            if (!this.subWaveStartCount || this.subWaveStartCount === 0) {
+                this.subWaveStartCount = this.currentSubWaveEnemyCount;
+            }
+
+            // Calculate kill percentage of current sub-wave segment
+            const killed = this.subWaveStartCount - this.currentSubWaveEnemyCount;
+            const killPercentage = this.subWaveStartCount > 0
+                ? killed / this.subWaveStartCount
+                : 1.0;
+
+            // Check if trigger threshold reached
+            if (killPercentage >= nextSubWave.trigger) {
+                console.log(`Sub-wave ${this.currentSubWaveIndex + 1} triggered at ${Math.floor(killPercentage * 100)}% killed`);
+                this.spawnSubWave(nextSubWave);
+                this.subWaveTriggered[this.currentSubWaveIndex] = true;
+                this.currentSubWaveIndex++;
+            }
         }
     }
 
