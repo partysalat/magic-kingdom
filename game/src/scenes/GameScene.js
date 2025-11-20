@@ -118,7 +118,7 @@ export class GameScene extends Phaser.Scene {
         });
 
         // Add wave display (moved left to avoid overlap with scores)
-        this.waveText = this.add.text(700, 20, 'Wave: 0/3', {
+        this.waveText = this.add.text(700, 20, 'Wave: 0/12', {
             fontSize: '36px',
             color: '#ffffff',
             fontFamily: 'Arial'
@@ -130,6 +130,22 @@ export class GameScene extends Phaser.Scene {
             color: '#ffaa00',
             fontFamily: 'Arial'
         }).setOrigin(0.5, 0);
+
+        // Difficulty indicator
+        this.difficultyText = this.add.text(700, 105, '', {
+            fontSize: '24px',
+            color: '#ffffff',
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5, 0);
+
+        // Update difficulty text with color
+        if (this.difficulty) {
+            const colorHex = '#' + this.difficulty.color.toString(16).padStart(6, '0');
+            this.difficultyText.setText(`Difficulty: ${this.difficulty.name}`);
+            this.difficultyText.setColor(colorHex);
+        }
 
         // Add score display
         this.scoreText = this.add.text(1900, 20, 'Score: 0', {
@@ -1219,7 +1235,7 @@ export class GameScene extends Phaser.Scene {
 
         // Wave survived
         const waveText = this.add.text(centerX, centerY + 100,
-            `Survived to Wave ${this.waveManager.currentWave}/10`, {
+            `Survived to Wave ${this.waveManager.currentWave}/12`, {
             fontSize: '32px',
             color: '#ffffff',
             fontFamily: 'Arial'
