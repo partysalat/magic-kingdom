@@ -27,6 +27,13 @@ export class WaveManager {
             count: 1.0
         };
 
+        // Sub-wave tracking
+        this.currentSubWaveIndex = 0;
+        this.subWavesData = [];
+        this.currentSubWaveEnemyCount = 0;
+        this.subWaveTriggered = {};
+        this.subWaveStartCount = 0;
+
         // Initialize spawn point manager
         this.spawnPointManager = new SpawnPointManager(scene);
 
@@ -74,77 +81,267 @@ export class WaveManager {
     }
 
     getWaveComposition(waveNumber) {
+        // Get sub-wave config based on difficulty
+        const subWaveConfig = this.difficulty
+            ? this.difficulty.subWaveConfig
+            : { startWave: 4, minSubWaves: 2, maxSubWaves: 3 };
+
         const compositions = {
-            1: [{ type: 'lobster', count: 5 }],
+            1: {
+                mainWave: [{ type: 'lobster', count: 5 }],
+                subWaves: []
+            },
 
-            2: [
-                { type: 'lobster', count: 6 },
-                { type: 'hermit', count: 1 }
-            ],
+            2: {
+                mainWave: [
+                    { type: 'lobster', count: 6 },
+                    { type: 'hermit', count: 1 }
+                ],
+                subWaves: []
+            },
 
-            3: [
-                { type: 'hermit', count: 2, role: 'tank' },
-                { type: 'shrimp', count: 4, role: 'shooter' },
-                { type: 'lobster', count: 2 }
-            ],
+            3: {
+                mainWave: [
+                    { type: 'hermit', count: 2, role: 'tank' },
+                    { type: 'shrimp', count: 4, role: 'shooter' },
+                    { type: 'lobster', count: 2 }
+                ],
+                subWaves: waveNumber >= subWaveConfig.startWave && subWaveConfig.maxSubWaves >= 3 ? [
+                    {
+                        trigger: 0.70,
+                        enemies: [
+                            { type: 'shrimp', count: 2 },
+                            { type: 'jellyfish', count: 1 }
+                        ]
+                    }
+                ] : []
+            },
 
             // BOSS WAVE 4: Iron Shell
-            4: [{ type: 'boss_iron_shell', count: 1, isBoss: true }],
+            4: {
+                mainWave: [{ type: 'boss_iron_shell', count: 1, isBoss: true }],
+                subWaves: this.getBossSubWaves(4)
+            },
 
-            5: [
-                { type: 'hermit', count: 3, role: 'tank' },
-                { type: 'shrimp', count: 5, role: 'shooter' },
-                { type: 'lobster', count: 3 },
-                { type: 'jellyfish', count: 1 }
-            ],
+            5: {
+                mainWave: [
+                    { type: 'hermit', count: 3, role: 'tank' },
+                    { type: 'shrimp', count: 5, role: 'shooter' },
+                    { type: 'lobster', count: 3 },
+                    { type: 'jellyfish', count: 1 }
+                ],
+                subWaves: waveNumber >= subWaveConfig.startWave ? [
+                    {
+                        trigger: 0.70,
+                        enemies: [{ type: 'shrimp', count: 3 }]
+                    },
+                    {
+                        trigger: 0.40,
+                        enemies: [{ type: 'flyingfish', count: 2 }]
+                    }
+                ].slice(0, subWaveConfig.maxSubWaves) : []
+            },
 
-            6: [
-                { type: 'hermit', count: 4, role: 'tank' },
-                { type: 'shrimp', count: 5, role: 'shooter' },
-                { type: 'lobster', count: 2 },
-                { type: 'flyingfish', count: 3 }
-            ],
+            6: {
+                mainWave: [
+                    { type: 'hermit', count: 4, role: 'tank' },
+                    { type: 'shrimp', count: 5, role: 'shooter' },
+                    { type: 'lobster', count: 2 },
+                    { type: 'flyingfish', count: 3 }
+                ],
+                subWaves: waveNumber >= subWaveConfig.startWave ? [
+                    {
+                        trigger: 0.65,
+                        enemies: [
+                            { type: 'jellyfish', count: 2 },
+                            { type: 'shrimp', count: 1 }
+                        ]
+                    },
+                    {
+                        trigger: 0.35,
+                        enemies: [{ type: 'flyingfish', count: 3 }]
+                    }
+                ].slice(0, subWaveConfig.maxSubWaves) : []
+            },
 
-            7: [
-                { type: 'hermit', count: 4, role: 'tank' },
-                { type: 'shrimp', count: 5, role: 'shooter' },
-                { type: 'jellyfish', count: 3, role: 'shooter' },
-                { type: 'lobster', count: 2 },
-                { type: 'flyingfish', count: 3 }
-            ],
+            7: {
+                mainWave: [
+                    { type: 'hermit', count: 4, role: 'tank' },
+                    { type: 'shrimp', count: 5, role: 'shooter' },
+                    { type: 'jellyfish', count: 3, role: 'shooter' },
+                    { type: 'lobster', count: 2 },
+                    { type: 'flyingfish', count: 3 }
+                ],
+                subWaves: waveNumber >= subWaveConfig.startWave ? [
+                    {
+                        trigger: 0.70,
+                        enemies: [{ type: 'shrimp', count: 3 }]
+                    },
+                    {
+                        trigger: 0.45,
+                        enemies: [
+                            { type: 'jellyfish', count: 2 },
+                            { type: 'flyingfish', count: 2 }
+                        ]
+                    },
+                    {
+                        trigger: 0.20,
+                        enemies: [{ type: 'hermit', count: 2 }]
+                    }
+                ].slice(0, subWaveConfig.maxSubWaves) : []
+            },
 
             // BOSS WAVE 8: Kraken's Arm
-            8: [{ type: 'boss_kraken_arm', count: 1, isBoss: true }],
+            8: {
+                mainWave: [{ type: 'boss_kraken_arm', count: 1, isBoss: true }],
+                subWaves: this.getBossSubWaves(8)
+            },
 
-            9: [
-                { type: 'hermit', count: 5, role: 'tank' },
-                { type: 'shrimp', count: 6, role: 'shooter' },
-                { type: 'jellyfish', count: 4, role: 'shooter' },
-                { type: 'lobster', count: 2 },
-                { type: 'flyingfish', count: 4 }
-            ],
+            9: {
+                mainWave: [
+                    { type: 'hermit', count: 5, role: 'tank' },
+                    { type: 'shrimp', count: 6, role: 'shooter' },
+                    { type: 'jellyfish', count: 4, role: 'shooter' },
+                    { type: 'lobster', count: 2 },
+                    { type: 'flyingfish', count: 4 }
+                ],
+                subWaves: waveNumber >= subWaveConfig.startWave ? [
+                    {
+                        trigger: 0.70,
+                        enemies: [
+                            { type: 'shrimp', count: 3 },
+                            { type: 'jellyfish', count: 2 }
+                        ]
+                    },
+                    {
+                        trigger: 0.45,
+                        enemies: [{ type: 'flyingfish', count: 3 }]
+                    },
+                    {
+                        trigger: 0.20,
+                        enemies: [
+                            { type: 'hermit', count: 2 },
+                            { type: 'shrimp', count: 2 }
+                        ]
+                    }
+                ].slice(0, subWaveConfig.maxSubWaves) : []
+            },
 
-            10: [
-                { type: 'hermit', count: 6, role: 'tank' },
-                { type: 'shrimp', count: 7, role: 'shooter' },
-                { type: 'jellyfish', count: 4, role: 'shooter' },
-                { type: 'lobster', count: 3 },
-                { type: 'flyingfish', count: 5 }
-            ],
+            10: {
+                mainWave: [
+                    { type: 'hermit', count: 6, role: 'tank' },
+                    { type: 'shrimp', count: 7, role: 'shooter' },
+                    { type: 'jellyfish', count: 4, role: 'shooter' },
+                    { type: 'lobster', count: 3 },
+                    { type: 'flyingfish', count: 5 }
+                ],
+                subWaves: waveNumber >= subWaveConfig.startWave ? [
+                    {
+                        trigger: 0.70,
+                        enemies: [{ type: 'shrimp', count: 4 }]
+                    },
+                    {
+                        trigger: 0.45,
+                        enemies: [
+                            { type: 'jellyfish', count: 3 },
+                            { type: 'flyingfish', count: 3 }
+                        ]
+                    },
+                    {
+                        trigger: 0.20,
+                        enemies: [
+                            { type: 'hermit', count: 3 },
+                            { type: 'lobster', count: 2 }
+                        ]
+                    }
+                ].slice(0, subWaveConfig.maxSubWaves) : []
+            },
 
-            11: [
-                { type: 'hermit', count: 6, role: 'tank' },
-                { type: 'shrimp', count: 8, role: 'shooter' },
-                { type: 'jellyfish', count: 5, role: 'shooter' },
-                { type: 'lobster', count: 3 },
-                { type: 'flyingfish', count: 5 }
-            ],
+            11: {
+                mainWave: [
+                    { type: 'hermit', count: 6, role: 'tank' },
+                    { type: 'shrimp', count: 8, role: 'shooter' },
+                    { type: 'jellyfish', count: 5, role: 'shooter' },
+                    { type: 'lobster', count: 3 },
+                    { type: 'flyingfish', count: 5 }
+                ],
+                subWaves: waveNumber >= subWaveConfig.startWave ? [
+                    {
+                        trigger: 0.65,
+                        enemies: [{ type: 'shrimp', count: 5 }]
+                    },
+                    {
+                        trigger: 0.40,
+                        enemies: [
+                            { type: 'jellyfish', count: 4 },
+                            { type: 'flyingfish', count: 3 }
+                        ]
+                    },
+                    {
+                        trigger: 0.15,
+                        enemies: [
+                            { type: 'hermit', count: 4 },
+                            { type: 'lobster', count: 2 }
+                        ]
+                    }
+                ].slice(0, subWaveConfig.maxSubWaves) : []
+            },
 
             // BOSS WAVE 12: The Leviathan (FINAL BOSS)
-            12: [{ type: 'boss_leviathan', count: 1, isBoss: true }]
+            12: {
+                mainWave: [{ type: 'boss_leviathan', count: 1, isBoss: true }],
+                subWaves: this.getBossSubWaves(12)
+            }
         };
 
         return compositions[waveNumber] || compositions[12];
+    }
+
+    /**
+     * Get boss-specific sub-waves based on difficulty
+     */
+    getBossSubWaves(waveNumber) {
+        if (!this.difficulty) return [];
+
+        const difficultyId = this.difficulty.id;
+
+        // Boss wave 4: Iron Shell
+        if (waveNumber === 4) {
+            if (difficultyId === 'easy') return [];
+            if (difficultyId === 'medium') return [
+                { trigger: 0.50, enemies: [{ type: 'lobster', count: 3 }] }
+            ];
+            if (difficultyId === 'hard') return [
+                { trigger: 0.50, enemies: [{ type: 'shrimp', count: 4 }] },
+                { trigger: 0.25, enemies: [{ type: 'hermit', count: 3 }] }
+            ];
+        }
+
+        // Boss wave 8: Kraken's Arm
+        if (waveNumber === 8) {
+            if (difficultyId === 'easy') return [];
+            if (difficultyId === 'medium') return [
+                { trigger: 0.50, enemies: [{ type: 'jellyfish', count: 4 }] }
+            ];
+            if (difficultyId === 'hard') return [
+                { trigger: 0.60, enemies: [{ type: 'shrimp', count: 5 }] },
+                { trigger: 0.30, enemies: [{ type: 'flyingfish', count: 3 }] }
+            ];
+        }
+
+        // Boss wave 12: Leviathan
+        if (waveNumber === 12) {
+            if (difficultyId === 'easy') return [];
+            if (difficultyId === 'medium') return [
+                { trigger: 0.50, enemies: [{ type: 'hermit', count: 4 }] }
+            ];
+            if (difficultyId === 'hard') return [
+                { trigger: 0.50, enemies: [{ type: 'hermit', count: 5 }] },
+                { trigger: 0.30, enemies: [{ type: 'flyingfish', count: 6 }] }
+            ];
+        }
+
+        return [];
     }
 
     /**
@@ -193,7 +390,13 @@ export class WaveManager {
         console.log('Starting wave', this.currentWave);
 
         // Get composition for this wave
-        const composition = this.getWaveComposition(this.currentWave);
+        const compositionData = this.getWaveComposition(this.currentWave);
+        const composition = compositionData.mainWave || compositionData;  // Support both formats
+        this.subWavesData = compositionData.subWaves || [];
+        this.currentSubWaveIndex = 0;
+        this.subWaveTriggered = {};
+
+        console.log('Wave', this.currentWave, 'has', this.subWavesData.length, 'sub-waves configured');
 
         // Spawn cover for this wave
         if (this.scene.coverManager) {
@@ -221,11 +424,15 @@ export class WaveManager {
             this.spawnEnemiesByComposition(composition);
         }
 
-        // Calculate total enemies
+        // Calculate total enemies in main wave only
         const totalEnemies = composition.reduce((sum, group) => sum + group.count, 0);
 
         this.enemiesInWave = totalEnemies;
         this.enemiesRemaining = totalEnemies;
+        this.currentSubWaveEnemyCount = totalEnemies;  // Track current sub-wave enemies
+        this.subWaveStartCount = totalEnemies;  // Initialize for first sub-wave check
+
+        console.log('Main wave enemies:', totalEnemies);
 
         this.isSpawning = false;
     }
