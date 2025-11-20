@@ -172,7 +172,12 @@ export class Enemy {
         this.config = config;
 
         // Store difficulty multipliers for later use (bullet damage scaling)
-        this.difficultyMultipliers = difficultyMultipliers;
+        // Use default multipliers if none provided to prevent null issues
+        this.difficultyMultipliers = difficultyMultipliers || {
+            health: 1.0,
+            damage: 1.0,
+            count: 1.0
+        };
 
         // Create placeholder graphics
         this.sprite = scene.add.circle(x, y, config.radius, config.color);
@@ -182,13 +187,8 @@ export class Enemy {
         this.sprite.body.setCollideWorldBounds(true);
 
         // Apply difficulty multipliers to stats
-        const scaledHealth = difficultyMultipliers
-            ? Math.ceil(config.health * difficultyMultipliers.health)
-            : config.health;
-
-        const scaledDamage = difficultyMultipliers
-            ? Math.ceil(config.damage * difficultyMultipliers.damage)
-            : config.damage;
+        const scaledHealth = Math.ceil(config.health * this.difficultyMultipliers.health);
+        const scaledDamage = Math.ceil(config.damage * this.difficultyMultipliers.damage);
 
         // Enemy properties from config
         this.health = scaledHealth;
@@ -972,9 +972,7 @@ export class Enemy {
 
         // Scale bullet damage with difficulty multiplier
         const baseBulletDamage = this.config.bulletDamage || this.config.damage;
-        const scaledBulletDamage = this.difficultyMultipliers
-            ? Math.ceil(baseBulletDamage * this.difficultyMultipliers.damage)
-            : baseBulletDamage;
+        const scaledBulletDamage = Math.ceil(baseBulletDamage * this.difficultyMultipliers.damage);
 
         const bullet = new EnemyBullet(
             this.scene,
@@ -1123,9 +1121,7 @@ export class Enemy {
         const baseAngle = Math.atan2(targetY - this.sprite.y, targetX - this.sprite.x);
 
         // Scale bubble damage with difficulty multiplier
-        const scaledBubbleDamage = this.difficultyMultipliers
-            ? Math.ceil(this.config.bubbleDamage * this.difficultyMultipliers.damage)
-            : this.config.bubbleDamage;
+        const scaledBubbleDamage = Math.ceil(this.config.bubbleDamage * this.difficultyMultipliers.damage);
 
         // Fire 3 bubbles in spread pattern
         const spreadAngles = [-0.3, 0, 0.3];  // Radians
@@ -1504,9 +1500,7 @@ export class Enemy {
         console.log('Leviathan: Bullet Storm!');
 
         // Scale bullet storm damage with difficulty multiplier
-        const scaledBulletStormDamage = this.difficultyMultipliers
-            ? Math.ceil(this.config.bulletStormDamage * this.difficultyMultipliers.damage)
-            : this.config.bulletStormDamage;
+        const scaledBulletStormDamage = Math.ceil(this.config.bulletStormDamage * this.difficultyMultipliers.damage);
 
         const angleStep = (Math.PI * 2) / this.config.bulletStormCount;
 

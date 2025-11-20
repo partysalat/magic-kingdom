@@ -41,6 +41,20 @@ export class WaveManager {
      * @param {Object} difficulty - Difficulty settings from DIFFICULTY_SETTINGS
      */
     setDifficulty(difficulty) {
+        // Validate difficulty object
+        if (!difficulty || typeof difficulty !== 'object') {
+            console.error('Invalid difficulty object provided');
+            return;
+        }
+
+        // Validate multipliers are numbers
+        if (typeof difficulty.enemyHealthMultiplier !== 'number' ||
+            typeof difficulty.enemyDamageMultiplier !== 'number' ||
+            typeof difficulty.enemyCountMultiplier !== 'number') {
+            console.error('Invalid difficulty multipliers - must be numbers');
+            return;
+        }
+
         this.difficulty = difficulty;
         this.difficultyMultipliers = {
             health: difficulty.enemyHealthMultiplier,
@@ -243,9 +257,14 @@ export class WaveManager {
 
     spawnEnemiesByComposition(composition) {
         // Apply difficulty count multiplier to composition
+        // Cap at 50 enemies per group to prevent performance issues
+        const MAX_ENEMIES_PER_GROUP = 50;
         const scaledComposition = composition.map(group => ({
             ...group,
-            count: Math.ceil(group.count * this.difficultyMultipliers.count)
+            count: Math.min(
+                MAX_ENEMIES_PER_GROUP,
+                Math.ceil(group.count * this.difficultyMultipliers.count)
+            )
         }));
 
         const totalCount = scaledComposition.reduce((sum, group) => sum + group.count, 0);
