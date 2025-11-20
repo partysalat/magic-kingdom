@@ -320,6 +320,26 @@ Isometric 3/4 top-down view of a [OBJECT] in western saloon style with beach the
 
 ---
 
+### Start Screen / Title Screen
+
+```
+Dramatic title screen illustration: Red cartoon crab gunslinger Gisela in heroic foreground pose, wearing brown cowboy hat and red bandana with revolvers drawn, determined expression facing camera. Behind her, a weathered beach saloon with wooden walls and swinging doors under attack by shadowy silhouettes of enemy sea creatures - menacing lobster bandits, shrimp gunslingers, and hermit crab tanks emerging from darkness. Saloon has "Gisela's Last Stand" sign visible. Sunset/dusk lighting with orange and purple sky, dramatic shadows, comic book art style with thick black outlines and cel-shading, wild west beach theme, cinematic composition, game title screen illustration with space at top for game logo
+```
+
+**Alternative with more action:**
+```
+Epic title screen illustration: Red cartoon crab Gisela in dynamic action pose in foreground, brown cowboy hat and red bandana, dual revolvers blazing with muzzle flashes. Background shows beach saloon under siege with dark shadowy enemy silhouettes approaching from all sides - lobsters, shrimp, hermit crabs, flying fish shapes visible in menacing poses. Weathered wooden saloon with "Gisela's Last Stand" carved above doors, warm saloon light spilling from windows contrasting with dark threatening enemies. Dramatic sunset lighting, action-packed composition, comic book art style with thick black outlines and cel-shading, wild west beach theme, cinematic game title screen with room for logo placement
+```
+
+**Key elements:**
+- Gisela prominent and heroic in foreground (detailed, colored)
+- Enemies as dark silhouettes or shaded figures in background (threatening but not stealing focus)
+- Saloon visible with "Gisela's Last Stand" signage
+- Dramatic lighting (sunset/dusk) creating atmosphere
+- Composition leaves space at top or center for game title logo overlay
+
+---
+
 ## Generation Tips
 
 ### Consistency Rules
