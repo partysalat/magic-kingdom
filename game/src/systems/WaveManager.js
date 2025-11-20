@@ -720,11 +720,129 @@ export class WaveManager {
 
     enemyKilled() {
         this.enemiesRemaining--;
-        console.log('Enemies remaining:', this.enemiesRemaining);
+        this.currentSubWaveEnemyCount--;
 
+        console.log('Enemies remaining:', this.enemiesRemaining,
+                    '| Current sub-wave:', this.currentSubWaveEnemyCount);
+
+        // Check if we should trigger next sub-wave
+        this.checkSubWaveTrigger();
+
+        // Check wave completion
         if (this.enemiesRemaining <= 0 && this.waveActive) {
             this.waveComplete();
         }
+    }
+
+    /**
+     * Check if conditions met to spawn next sub-wave
+     */
+    checkSubWaveTrigger() {
+        // No sub-waves configured
+        if (!this.subWavesData || this.subWavesData.length === 0) return;
+
+        // All sub-waves already spawned
+        if (this.currentSubWaveIndex >= this.subWavesData.length) return;
+
+        const nextSubWave = this.subWavesData[this.currentSubWaveIndex];
+
+        // Already triggered this sub-wave
+        if (this.subWaveTriggered[this.currentSubWaveIndex]) return;
+
+        // Track enemies alive at start of this sub-wave segment
+        if (!this.subWaveStartCount || this.subWaveStartCount === 0) {
+            this.subWaveStartCount = this.currentSubWaveEnemyCount;
+        }
+
+        // Calculate kill percentage of current sub-wave segment
+        const killed = this.subWaveStartCount - this.currentSubWaveEnemyCount;
+        const killPercentage = this.subWaveStartCount > 0
+            ? killed / this.subWaveStartCount
+            : 1.0;
+
+        // Check if trigger threshold reached
+        if (killPercentage >= nextSubWave.trigger) {
+            console.log(`Sub-wave ${this.currentSubWaveIndex + 1} triggered at ${Math.floor(killPercentage * 100)}%`);
+            this.spawnSubWave(nextSubWave);
+            this.subWaveTriggered[this.currentSubWaveIndex] = true;
+            this.currentSubWaveIndex++;
+        }
+    }
+
+    /**
+     * Spawn a sub-wave immediately (no delays)
+     */
+    spawnSubWave(subWaveData) {
+        console.log('REINFORCEMENTS INCOMING!');
+
+        // Show notification to player
+        this.showReinforcementNotification();
+
+        // Spawn sub-wave enemies
+        const subWaveComposition = subWaveData.enemies;
+
+        // Apply difficulty multipliers to sub-wave
+        const scaledComposition = subWaveComposition.map(group => ({
+            ...group,
+            count: Math.ceil(group.count * this.difficultyMultipliers.count)
+        }));
+
+        // Calculate sub-wave enemy count
+        const subWaveCount = scaledComposition.reduce((sum, group) => sum + group.count, 0);
+
+        // Update tracking
+        this.enemiesInWave += subWaveCount;
+        this.enemiesRemaining += subWaveCount;
+        this.currentSubWaveEnemyCount = subWaveCount;
+
+        // Reset sub-wave start count for next trigger
+        this.subWaveStartCount = this.currentSubWaveEnemyCount;
+
+        console.log('Spawning', subWaveCount, 'reinforcement enemies');
+
+        // Spawn enemies
+        this.spawnEnemiesByComposition(scaledComposition);
+    }
+
+    /**
+     * Show "Reinforcements Incoming!" notification
+     */
+    showReinforcementNotification() {
+        // Flash screen
+        this.scene.cameras.main.flash(200, 255, 100, 0);
+
+        // Create notification banner
+        const banner = this.scene.add.rectangle(960, 200, 800, 100, 0xff0000, 0.9);
+        banner.setStrokeStyle(4, 0xffff00);
+        banner.setDepth(1000);
+
+        const text = this.scene.add.text(960, 200, 'REINFORCEMENTS INCOMING!', {
+            fontSize: '42px',
+            color: '#ffff00',
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 4
+        }).setOrigin(0.5);
+        text.setDepth(1001);
+
+        // Play audio cue if available
+        if (this.scene.sound && this.scene.cache.audio.exists('reinforcement_alarm')) {
+            this.scene.sound.play('reinforcement_alarm', { volume: 0.7 });
+        }
+
+        // Fade out after 2 seconds
+        this.scene.time.delayedCall(2000, () => {
+            this.scene.tweens.add({
+                targets: [banner, text],
+                alpha: 0,
+                duration: 500,
+                onComplete: () => {
+                    banner.destroy();
+                    text.destroy();
+                }
+            });
+        });
     }
 
     waveComplete() {
@@ -818,6 +936,13 @@ export class WaveManager {
         this.isSpawning = false;
         this.enemiesInWave = 0;
         this.enemiesRemaining = 0;
+
+        // Reset sub-wave tracking
+        this.currentSubWaveIndex = 0;
+        this.subWavesData = [];
+        this.currentSubWaveEnemyCount = 0;
+        this.subWaveTriggered = {};
+        this.subWaveStartCount = 0;
 
         // Reset spawn point manager
         this.spawnPointManager.reset();
