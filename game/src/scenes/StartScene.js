@@ -132,9 +132,16 @@ export class StartScene extends Phaser.Scene {
             const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 5);
 
             topScores.forEach((entry, index) => {
-                const dots = '.'.repeat(20 - entry.playerName.length);
+                // Add difficulty badge if available
+                const diffBadge = entry.difficulty
+                    ? ` [${entry.difficulty.toUpperCase()}]`
+                    : '';
+
+                const nameWithBadge = entry.playerName + diffBadge;
+                const dots = '.'.repeat(Math.max(1, 25 - nameWithBadge.length));
+
                 this.highScoreTexts[index].setText(
-                    `${index + 1}. ${entry.playerName} ${dots} ${entry.score.toLocaleString()} pts`
+                    `${index + 1}. ${nameWithBadge} ${dots} ${entry.score.toLocaleString()} pts`
                 );
             });
 

@@ -1309,7 +1309,9 @@ export class GameScene extends Phaser.Scene {
                 scores.push({
                     playerName: playerData.name,
                     score: playerData.score,
-                    wave: this.waveManager.currentWave
+                    wave: this.waveManager.currentWave,
+                    difficulty: this.difficulty.id,  // Add difficulty ID
+                    date: new Date().toISOString()
                 });
             });
 
