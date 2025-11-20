@@ -1158,8 +1158,18 @@ export class GameScene extends Phaser.Scene {
             fontFamily: 'Georgia, serif'
         }).setOrigin(0.5).setDepth(1001);
 
+        // Difficulty completed text
+        const difficultyColorHex = '#' + this.difficulty.color.toString(16).padStart(6, '0');
+        this.add.text(centerX, centerY + 150, `Completed on ${this.difficulty.name} difficulty`, {
+            fontSize: '28px',
+            color: difficultyColorHex,
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5).setDepth(1001);
+
         // Final scoreboard
-        let yOffset = centerY + 180;
+        let yOffset = centerY + 220;
         this.add.text(centerX, yOffset, 'FINAL SCORES', {
             fontSize: '36px',
             color: '#ffcc00',
@@ -1242,8 +1252,18 @@ export class GameScene extends Phaser.Scene {
         }).setOrigin(0.5);
         waveText.setDepth(1001);
 
+        // Difficulty attempted text
+        const difficultyColorHex = '#' + this.difficulty.color.toString(16).padStart(6, '0');
+        this.add.text(centerX, centerY + 145, `Attempted on ${this.difficulty.name} difficulty`, {
+            fontSize: '24px',
+            color: difficultyColorHex,
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5).setDepth(1001);
+
         // Final scoreboard
-        let yOffset = centerY + 180;
+        let yOffset = centerY + 200;
         this.add.text(centerX, yOffset, 'FINAL SCORES', {
             fontSize: '36px',
             color: '#ffcc00',
