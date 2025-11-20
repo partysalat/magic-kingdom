@@ -116,24 +116,66 @@ export class DifficultySelectScene extends Phaser.Scene {
     }
 
     handleInput() {
+        // Initialize button state tracking if needed
+        if (!this.lastButtonStates) {
+            this.lastButtonStates = {};
+        }
+
         // Gamepad navigation
         if (this.input.gamepad && this.input.gamepad.total > 0) {
             const pad = this.input.gamepad.gamepads[0];
 
-            if (pad && pad.connected) {
-                // Up/Down navigation
-                if (Phaser.Input.Gamepad.JustDown(pad, 12)) { // D-pad up
-                    this.selectedIndex = Math.max(0, this.selectedIndex - 1);
-                    this.selectDifficulty(this.selectedIndex);
-                }
-                if (Phaser.Input.Gamepad.JustDown(pad, 13)) { // D-pad down
-                    this.selectedIndex = Math.min(2, this.selectedIndex + 1);
-                    this.selectDifficulty(this.selectedIndex);
+            if (pad && pad.connected && pad.buttons) {
+                // Up/Down navigation (D-pad)
+                const upButton = pad.buttons[12];
+                const downButton = pad.buttons[13];
+                const aButton = pad.buttons[0];
+                const startButton = pad.buttons[9];
+
+                // Check D-pad up
+                if (upButton) {
+                    const wasPressed = this.lastButtonStates[12] || false;
+                    const isPressed = upButton.pressed;
+                    this.lastButtonStates[12] = isPressed;
+
+                    if (isPressed && !wasPressed) {
+                        this.selectedIndex = Math.max(0, this.selectedIndex - 1);
+                        this.selectDifficulty(this.selectedIndex);
+                    }
                 }
 
-                // Confirm with A button (0) or START (9)
-                if (Phaser.Input.Gamepad.JustDown(pad, 0) || Phaser.Input.Gamepad.JustDown(pad, 9)) {
-                    this.confirmSelection();
+                // Check D-pad down
+                if (downButton) {
+                    const wasPressed = this.lastButtonStates[13] || false;
+                    const isPressed = downButton.pressed;
+                    this.lastButtonStates[13] = isPressed;
+
+                    if (isPressed && !wasPressed) {
+                        this.selectedIndex = Math.min(2, this.selectedIndex + 1);
+                        this.selectDifficulty(this.selectedIndex);
+                    }
+                }
+
+                // Check A button
+                if (aButton) {
+                    const wasPressed = this.lastButtonStates[0] || false;
+                    const isPressed = aButton.pressed;
+                    this.lastButtonStates[0] = isPressed;
+
+                    if (isPressed && !wasPressed) {
+                        this.confirmSelection();
+                    }
+                }
+
+                // Check START button
+                if (startButton) {
+                    const wasPressed = this.lastButtonStates[9] || false;
+                    const isPressed = startButton.pressed;
+                    this.lastButtonStates[9] = isPressed;
+
+                    if (isPressed && !wasPressed) {
+                        this.confirmSelection();
+                    }
                 }
             }
         }
