@@ -11,6 +11,7 @@ import { TargetSelector } from '../systems/TargetSelector.js';
 import { BossAnnouncer } from '../systems/BossAnnouncer.js';
 import { BossHealthBar } from '../ui/BossHealthBar.js';
 import { CoverManager } from '../systems/CoverManager.js';
+import { DEFAULT_DIFFICULTY } from '../config.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -25,6 +26,10 @@ export class GameScene extends Phaser.Scene {
         // Scene setup
         this.cameras.main.setBackgroundColor('#4a3428'); // Wooden saloon floor
         this.isGameOver = false;
+
+        // Get difficulty from scene data or registry
+        this.difficulty = data.difficulty || this.registry.get('difficulty') || DEFAULT_DIFFICULTY;
+        console.log('Starting game with difficulty:', this.difficulty.name);
 
         // Get player configs from StartScene
         const playerConfigs = data.players || [
@@ -75,6 +80,9 @@ export class GameScene extends Phaser.Scene {
 
         // Initialize wave manager
         this.waveManager = new WaveManager(this);
+
+        // Set difficulty
+        this.waveManager.setDifficulty(this.difficulty);
 
         // Initialize score manager
         this.scoreManager = new ScoreManager(this);

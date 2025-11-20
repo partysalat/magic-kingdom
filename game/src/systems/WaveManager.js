@@ -19,6 +19,14 @@ export class WaveManager {
         this.enemiesInWave = 0;
         this.enemiesRemaining = 0;
 
+        // Difficulty settings
+        this.difficulty = null;
+        this.difficultyMultipliers = {
+            health: 1.0,
+            damage: 1.0,
+            count: 1.0
+        };
+
         // Initialize spawn point manager
         this.spawnPointManager = new SpawnPointManager(scene);
 
@@ -26,6 +34,29 @@ export class WaveManager {
         this.bossAnnouncer = new BossAnnouncer(scene);
 
         console.log('WaveManager initialized');
+    }
+
+    /**
+     * Set difficulty level for wave scaling
+     * @param {Object} difficulty - Difficulty settings from DIFFICULTY_SETTINGS
+     */
+    setDifficulty(difficulty) {
+        this.difficulty = difficulty;
+        this.difficultyMultipliers = {
+            health: difficulty.enemyHealthMultiplier,
+            damage: difficulty.enemyDamageMultiplier,
+            count: difficulty.enemyCountMultiplier
+        };
+
+        console.log('Difficulty set to:', difficulty.name);
+        console.log('Multipliers:', this.difficultyMultipliers);
+    }
+
+    /**
+     * Get current difficulty settings
+     */
+    getDifficulty() {
+        return this.difficulty;
     }
 
     getWaveComposition(waveNumber) {
