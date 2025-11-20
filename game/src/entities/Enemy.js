@@ -155,7 +155,7 @@ const ENEMY_TYPES = {
 export { ENEMY_TYPES };
 
 export class Enemy {
-    constructor(scene, x, y, type = 'lobster', isBounty = false, bountyValue = 0) {
+    constructor(scene, x, y, type = 'lobster', isBounty = false, bountyValue = 0, difficultyMultipliers = null) {
         this.scene = scene;
         this.type = type;
         this.isBounty = isBounty;
@@ -171,6 +171,9 @@ export class Enemy {
 
         this.config = config;
 
+        // Store difficulty multipliers for later use (bullet damage scaling)
+        this.difficultyMultipliers = difficultyMultipliers;
+
         // Create placeholder graphics
         this.sprite = scene.add.circle(x, y, config.radius, config.color);
         scene.physics.add.existing(this.sprite);
@@ -178,11 +181,20 @@ export class Enemy {
         // Physics configuration
         this.sprite.body.setCollideWorldBounds(true);
 
+        // Apply difficulty multipliers to stats
+        const scaledHealth = difficultyMultipliers
+            ? Math.ceil(config.health * difficultyMultipliers.health)
+            : config.health;
+
+        const scaledDamage = difficultyMultipliers
+            ? Math.ceil(config.damage * difficultyMultipliers.damage)
+            : config.damage;
+
         // Enemy properties from config
-        this.health = config.health;
-        this.maxHealth = config.health;
+        this.health = scaledHealth;
+        this.maxHealth = scaledHealth;
         this.speed = config.speed;
-        this.damage = config.damage;
+        this.damage = scaledDamage;
         this.attackRange = config.attackRange;
         this.attackCooldown = config.attackCooldown;
         this.nextAttack = 0;
@@ -958,13 +970,19 @@ export class Enemy {
             bulletType = 'explosive';  // Big Iron shoots explosive rounds
         }
 
+        // Scale bullet damage with difficulty multiplier
+        const baseBulletDamage = this.config.bulletDamage || this.config.damage;
+        const scaledBulletDamage = this.difficultyMultipliers
+            ? Math.ceil(baseBulletDamage * this.difficultyMultipliers.damage)
+            : baseBulletDamage;
+
         const bullet = new EnemyBullet(
             this.scene,
             this.sprite.x,
             this.sprite.y,
             targetX,
             targetY,
-            this.config.bulletDamage || this.config.damage,
+            scaledBulletDamage,
             bulletType
         );
 
@@ -1104,6 +1122,11 @@ export class Enemy {
         // Calculate base angle to player
         const baseAngle = Math.atan2(targetY - this.sprite.y, targetX - this.sprite.x);
 
+        // Scale bubble damage with difficulty multiplier
+        const scaledBubbleDamage = this.difficultyMultipliers
+            ? Math.ceil(this.config.bubbleDamage * this.difficultyMultipliers.damage)
+            : this.config.bubbleDamage;
+
         // Fire 3 bubbles in spread pattern
         const spreadAngles = [-0.3, 0, 0.3];  // Radians
 
@@ -1115,7 +1138,7 @@ export class Enemy {
                 this.sprite.y,
                 this.sprite.x + Math.cos(angle) * 100,
                 this.sprite.y + Math.sin(angle) * 100,
-                this.config.bubbleDamage,
+                scaledBubbleDamage,
                 'bubble'
             );
 
@@ -1480,6 +1503,11 @@ export class Enemy {
     bulletStormAttack() {
         console.log('Leviathan: Bullet Storm!');
 
+        // Scale bullet storm damage with difficulty multiplier
+        const scaledBulletStormDamage = this.difficultyMultipliers
+            ? Math.ceil(this.config.bulletStormDamage * this.difficultyMultipliers.damage)
+            : this.config.bulletStormDamage;
+
         const angleStep = (Math.PI * 2) / this.config.bulletStormCount;
 
         for (let i = 0; i < this.config.bulletStormCount; i++) {
@@ -1490,7 +1518,7 @@ export class Enemy {
                 this.sprite.y,
                 this.sprite.x + Math.cos(angle) * 200,
                 this.sprite.y + Math.sin(angle) * 200,
-                this.config.bulletStormDamage,
+                scaledBulletStormDamage,
                 'storm'
             );
 

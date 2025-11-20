@@ -242,7 +242,13 @@ export class WaveManager {
     }
 
     spawnEnemiesByComposition(composition) {
-        const totalCount = composition.reduce((sum, group) => sum + group.count, 0);
+        // Apply difficulty count multiplier to composition
+        const scaledComposition = composition.map(group => ({
+            ...group,
+            count: Math.ceil(group.count * this.difficultyMultipliers.count)
+        }));
+
+        const totalCount = scaledComposition.reduce((sum, group) => sum + group.count, 0);
 
         // Determine if we should spawn a bounty
         const spawnBounty = this.shouldSpawnBounty(this.currentWave);
@@ -262,7 +268,7 @@ export class WaveManager {
         const newlySpawnedEnemies = [];
 
         // Spawn each enemy group
-        composition.forEach(group => {
+        scaledComposition.forEach(group => {
             for (let i = 0; i < group.count; i++) {
                 const spawnData = spawnPoints[spawnIndex];
 
@@ -277,7 +283,8 @@ export class WaveManager {
                     spawnData.y,
                     group.type,
                     isBounty,
-                    isBounty ? bountyValue : 0
+                    isBounty ? bountyValue : 0,
+                    this.difficultyMultipliers  // Pass difficulty multipliers
                 );
 
                 if (isBounty) {
@@ -315,7 +322,7 @@ export class WaveManager {
         console.log('Spawned', totalCount, 'enemies', bountySpawned ? '(including bounty)' : '');
 
         // After all enemies are spawned, assign formations to newly spawned enemies only
-        this.assignFormations(composition, newlySpawnedEnemies);
+        this.assignFormations(scaledComposition, newlySpawnedEnemies);
     }
 
     assignFormations(composition, enemiesToAssign) {
