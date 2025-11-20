@@ -13,7 +13,7 @@ export class WaveManager {
     constructor(scene) {
         this.scene = scene;
         this.currentWave = 0;
-        this.maxWaves = 10;
+        this.maxWaves = 12;
         this.isSpawning = false;
         this.waveActive = false;
         this.enemiesInWave = 0;
@@ -31,60 +31,82 @@ export class WaveManager {
     getWaveComposition(waveNumber) {
         const compositions = {
             1: [{ type: 'lobster', count: 5 }],
-            2: [{ type: 'lobster', count: 7 }],
 
-            // BOSS WAVE 3: Iron Shell
-            3: [{ type: 'boss_iron_shell', count: 1, isBoss: true }],
+            2: [
+                { type: 'lobster', count: 6 },
+                { type: 'hermit', count: 1 }
+            ],
 
-            // Start formations from wave 4
-            4: [
+            3: [
                 { type: 'hermit', count: 2, role: 'tank' },
                 { type: 'shrimp', count: 4, role: 'shooter' },
                 { type: 'lobster', count: 2 }
             ],
+
+            // BOSS WAVE 4: Iron Shell
+            4: [{ type: 'boss_iron_shell', count: 1, isBoss: true }],
+
             5: [
-                { type: 'hermit', count: 2, role: 'tank' },
-                { type: 'shrimp', count: 4, role: 'shooter' },
-                { type: 'lobster', count: 3 }
+                { type: 'hermit', count: 3, role: 'tank' },
+                { type: 'shrimp', count: 5, role: 'shooter' },
+                { type: 'lobster', count: 3 },
+                { type: 'jellyfish', count: 1 }
             ],
 
-            // BOSS WAVE 6: Kraken's Arm
-            6: [{ type: 'boss_kraken_arm', count: 1, isBoss: true }],
-
-            7: [
+            6: [
                 { type: 'hermit', count: 4, role: 'tank' },
                 { type: 'shrimp', count: 5, role: 'shooter' },
-                { type: 'jellyfish', count: 2, role: 'shooter' },
-                { type: 'lobster', count: 2 }
-            ],
-            8: [
-                { type: 'hermit', count: 4, role: 'tank' },
-                { type: 'shrimp', count: 6, role: 'shooter' },
-                { type: 'jellyfish', count: 2, role: 'shooter' },
                 { type: 'lobster', count: 2 },
                 { type: 'flyingfish', count: 3 }
             ],
 
-            // BOSS WAVE 9: The Leviathan
-            9: [{ type: 'boss_leviathan', count: 1, isBoss: true }],
+            7: [
+                { type: 'hermit', count: 4, role: 'tank' },
+                { type: 'shrimp', count: 5, role: 'shooter' },
+                { type: 'jellyfish', count: 3, role: 'shooter' },
+                { type: 'lobster', count: 2 },
+                { type: 'flyingfish', count: 3 }
+            ],
+
+            // BOSS WAVE 8: Kraken's Arm
+            8: [{ type: 'boss_kraken_arm', count: 1, isBoss: true }],
+
+            9: [
+                { type: 'hermit', count: 5, role: 'tank' },
+                { type: 'shrimp', count: 6, role: 'shooter' },
+                { type: 'jellyfish', count: 4, role: 'shooter' },
+                { type: 'lobster', count: 2 },
+                { type: 'flyingfish', count: 4 }
+            ],
 
             10: [
                 { type: 'hermit', count: 6, role: 'tank' },
-                { type: 'shrimp', count: 8, role: 'shooter' },
+                { type: 'shrimp', count: 7, role: 'shooter' },
                 { type: 'jellyfish', count: 4, role: 'shooter' },
                 { type: 'lobster', count: 3 },
                 { type: 'flyingfish', count: 5 }
-            ]
+            ],
+
+            11: [
+                { type: 'hermit', count: 6, role: 'tank' },
+                { type: 'shrimp', count: 8, role: 'shooter' },
+                { type: 'jellyfish', count: 5, role: 'shooter' },
+                { type: 'lobster', count: 3 },
+                { type: 'flyingfish', count: 5 }
+            ],
+
+            // BOSS WAVE 12: The Leviathan (FINAL BOSS)
+            12: [{ type: 'boss_leviathan', count: 1, isBoss: true }]
         };
 
-        return compositions[waveNumber] || compositions[10];
+        return compositions[waveNumber] || compositions[12];
     }
 
     /**
      * Check if wave is a boss wave
      */
     isBossWave(waveNumber) {
-        return waveNumber === 3 || waveNumber === 6 || waveNumber === 9;
+        return waveNumber === 4 || waveNumber === 8 || waveNumber === 12;
     }
 
     /**
