@@ -284,8 +284,8 @@ export class StartScene extends Phaser.Scene {
     }
 
     startGame() {
-        // Transition to GameScene with player configs
-        this.scene.start('GameScene', {
+        // Transition to DifficultySelectScene with player configs
+        this.scene.start('DifficultySelectScene', {
             players: this.joinedPlayers
         });
     }
