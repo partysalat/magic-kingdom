@@ -378,8 +378,23 @@ export class GameScene extends Phaser.Scene {
         }
 
         // Update enemies
+        let reinforcementCount = 0;
+        let totalEnemies = 0;
+        let aliveEnemies = 0;
         this.enemies = this.enemies.filter(enemy => {
-            if (enemy.isAlive() && this.playerManager) {
+            totalEnemies++;
+            if (enemy.isAlive()) {
+                aliveEnemies++;
+                // Skip update if enemy is still spawning (collision disabled during spawn animation)
+                if (!enemy.isCollisionEnabled()) {
+                    reinforcementCount++;
+                    return true; // Keep enemy in array but don't update AI
+                }
+
+                if (!this.playerManager) {
+                    return true; // Keep enemy but skip update if no player manager
+                }
+
                 // Get all living players
                 const livingPlayers = this.playerManager.getLivingPlayers();
                 if (livingPlayers.length > 0) {

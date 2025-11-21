@@ -132,28 +132,49 @@ export class SpawnPointManager {
             spawn.startTime = time;
             this.activeAnimations.push(spawn);
             this.playSpawnAnimation(spawn);
-            console.log('[SpawnPointManager] Started animation for enemy, queue:', this.spawnQueue.length, 'active:', this.activeAnimations.length);
         }
 
         // Update active animations
         this.activeAnimations = this.activeAnimations.filter(spawn => {
             const elapsed = time - spawn.startTime;
 
+            if (elapsed < 0 || !isFinite(elapsed)) {
+                console.error('[SpawnPointManager] ERROR: Invalid elapsed time!', 'elapsed:', elapsed, 'time:', time, 'startTime:', spawn.startTime);
+                return true; // Keep trying
+            }
+
             if (elapsed >= spawn.duration) {
                 // Animation complete - enable enemy
-                spawn.enemy.setCollisionEnabled(true);
                 spawn.enemy.setPosition(spawn.spawnPoint.entryX, spawn.spawnPoint.entryY);
                 spawn.enemy.setAlpha(1);
-                console.log('[SpawnPointManager] Animation complete, enabled collision for enemy at', spawn.spawnPoint.entryX, spawn.spawnPoint.entryY);
+
+                // Zero out velocity before enabling collision
+                if (spawn.enemy.getSprite().body) {
+                    spawn.enemy.getSprite().body.setVelocity(0, 0);
+                }
+
+                spawn.enemy.setCollisionEnabled(true);
+                console.log('[SpawnPointManager] Spawn animation COMPLETE at', time, 'elapsed:', elapsed, 'duration:', spawn.duration);
                 return false; // Remove from active animations
             }
+
+            // Animation in progress (removed excessive logging)
 
             // Update enemy position during animation
             const progress = elapsed / spawn.duration;
             const easeProgress = this.easeOutCubic(progress);
 
-            spawn.enemy.x = spawn.spawnPoint.x + (spawn.spawnPoint.entryX - spawn.spawnPoint.x) * easeProgress;
-            spawn.enemy.y = spawn.spawnPoint.y + (spawn.spawnPoint.entryY - spawn.spawnPoint.y) * easeProgress;
+            const newX = spawn.spawnPoint.x + (spawn.spawnPoint.entryX - spawn.spawnPoint.x) * easeProgress;
+            const newY = spawn.spawnPoint.y + (spawn.spawnPoint.entryY - spawn.spawnPoint.y) * easeProgress;
+
+            // Use setPosition to update both sprite and physics body
+            spawn.enemy.setPosition(newX, newY);
+
+            // Zero out physics velocity during spawn animation to prevent drift
+            if (spawn.enemy.getSprite().body) {
+                spawn.enemy.getSprite().body.setVelocity(0, 0);
+            }
+
             spawn.enemy.setAlpha(easeProgress);
 
             return true; // Keep in active animations

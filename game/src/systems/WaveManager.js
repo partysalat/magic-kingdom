@@ -494,6 +494,7 @@ export class WaveManager {
 
         // Get spawn points (bountyIndex determines where bounty spawns)
         const spawnPoints = this.getSpawnPoints(totalCount, bountyIndex);
+        console.log('[WaveManager] Generated spawn points:', spawnPoints.map(sp => `(${sp.x}, ${sp.y})`))
 
         let spawnIndex = 0;
         let bountySpawned = false;
@@ -553,7 +554,7 @@ export class WaveManager {
             }
         });
 
-        console.log('Spawned', totalCount, 'enemies', bountySpawned ? '(including bounty)' : '');
+        console.log('[WaveManager] Spawned', totalCount, 'enemies. Total in scene:', this.scene.enemies.length);
 
         // After all enemies are spawned, assign formations to newly spawned enemies only
         this.assignFormations(scaledComposition, newlySpawnedEnemies);
@@ -802,13 +803,15 @@ export class WaveManager {
      * Spawn a sub-wave immediately (no delays)
      */
     spawnSubWave(subWaveData) {
-        console.log('REINFORCEMENTS INCOMING!');
+        console.log('=== REINFORCEMENTS INCOMING! ===');
+        console.log('Sub-wave data:', JSON.stringify(subWaveData, null, 2));
 
         // Show notification to player
         this.showReinforcementNotification();
 
         // Spawn sub-wave enemies
         const subWaveComposition = subWaveData.enemies;
+        console.log('Sub-wave composition:', subWaveComposition);
 
         // Apply difficulty multipliers to sub-wave
         const scaledComposition = subWaveComposition.map(group => ({
@@ -829,8 +832,12 @@ export class WaveManager {
 
         console.log('Spawning', subWaveCount, 'reinforcement enemies');
 
-        // Spawn enemies (pass true to indicate composition is already scaled)
-        this.spawnEnemiesByComposition(scaledComposition, true);
+        // CRITICAL FIX: Defer spawning to next frame to avoid modifying enemies array during filter
+        // This prevents reinforcements from disappearing when spawned mid-update
+        this.scene.time.delayedCall(1, () => {
+            // Spawn enemies (pass true to indicate composition is already scaled)
+            this.spawnEnemiesByComposition(scaledComposition, true);
+        });
     }
 
     /**

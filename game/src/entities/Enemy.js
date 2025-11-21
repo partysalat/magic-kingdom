@@ -1845,14 +1845,15 @@ export class Enemy {
      * Set position (x, y)
      */
     setPosition(x, y) {
-        this.sprite.x = x;
-        this.sprite.y = y;
+        // Use Phaser's setPosition to update both visual and physics body
+        this.sprite.setPosition(x, y);
     }
 
     /**
      * Enable/disable collision during spawn animation
      */
     setCollisionEnabled(enabled) {
+        console.log('[Enemy] setCollisionEnabled', enabled, 'for enemy at', this.sprite.x, this.sprite.y, 'type:', this.type);
         this.collisionEnabled = enabled;
 
         // When enabling collision, restore the alphaValue
