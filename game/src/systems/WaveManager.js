@@ -471,11 +471,10 @@ export class WaveManager {
         return BOUNTY_NAMES[0];
     }
 
-    spawnEnemiesByComposition(composition) {
-        // Apply difficulty count multiplier to composition
+    spawnEnemiesByComposition(composition, alreadyScaled = false) {
+        // Apply difficulty count multiplier to composition (unless already scaled)
         // Cap at 50 enemies per group to prevent performance issues
-        const MAX_ENEMIES_PER_GROUP = 50;
-        const scaledComposition = composition.map(group => ({
+        const scaledComposition = alreadyScaled ? composition : composition.map(group => ({
             ...group,
             count: Math.min(
                 MAX_ENEMIES_PER_GROUP,
@@ -830,8 +829,8 @@ export class WaveManager {
 
         console.log('Spawning', subWaveCount, 'reinforcement enemies');
 
-        // Spawn enemies
-        this.spawnEnemiesByComposition(scaledComposition);
+        // Spawn enemies (pass true to indicate composition is already scaled)
+        this.spawnEnemiesByComposition(scaledComposition, true);
     }
 
     /**
