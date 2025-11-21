@@ -424,15 +424,21 @@ export class WaveManager {
             this.spawnEnemiesByComposition(composition);
         }
 
-        // Calculate total enemies in main wave only
-        const totalEnemies = composition.reduce((sum, group) => sum + group.count, 0);
+        // Calculate total enemies in main wave only (AFTER difficulty scaling)
+        const totalEnemies = composition.reduce((sum, group) => {
+            const scaledCount = Math.min(
+                MAX_ENEMIES_PER_GROUP,
+                Math.ceil(group.count * this.difficultyMultipliers.count)
+            );
+            return sum + scaledCount;
+        }, 0);
 
         this.enemiesInWave = totalEnemies;
         this.enemiesRemaining = totalEnemies;
         this.currentSubWaveEnemyCount = totalEnemies;  // Track current sub-wave enemies
         this.subWaveStartCount = totalEnemies;  // Initialize for first sub-wave check
 
-        console.log('Main wave enemies:', totalEnemies);
+        console.log('Main wave enemies (after scaling):', totalEnemies);
 
         this.isSpawning = false;
     }
