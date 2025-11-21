@@ -126,8 +126,8 @@ export class SpawnPointManager {
      * Update spawn animations (called every frame)
      */
     update(time) {
-        // Start queued spawns
-        if (this.spawnQueue.length > 0 && this.activeAnimations.length < 3) {
+        // Start queued spawns (allow up to 10 concurrent to handle sub-waves)
+        while (this.spawnQueue.length > 0 && this.activeAnimations.length < 10) {
             const spawn = this.spawnQueue.shift();
             spawn.startTime = time;
             this.activeAnimations.push(spawn);
