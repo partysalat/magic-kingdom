@@ -132,6 +132,7 @@ export class SpawnPointManager {
             spawn.startTime = time;
             this.activeAnimations.push(spawn);
             this.playSpawnAnimation(spawn);
+            console.log('[SpawnPointManager] Started animation for enemy, queue:', this.spawnQueue.length, 'active:', this.activeAnimations.length);
         }
 
         // Update active animations
@@ -143,6 +144,7 @@ export class SpawnPointManager {
                 spawn.enemy.setCollisionEnabled(true);
                 spawn.enemy.setPosition(spawn.spawnPoint.entryX, spawn.spawnPoint.entryY);
                 spawn.enemy.setAlpha(1);
+                console.log('[SpawnPointManager] Animation complete, enabled collision for enemy at', spawn.spawnPoint.entryX, spawn.spawnPoint.entryY);
                 return false; // Remove from active animations
             }
 
