@@ -9,6 +9,9 @@ const BOUNTY_NAMES = [
     { name: 'Pistol Shrimp Pete', type: 'shrimp' }
 ];
 
+// Maximum enemies per group to prevent performance issues
+const MAX_ENEMIES_PER_GROUP = 50;
+
 export class WaveManager {
     constructor(scene) {
         this.scene = scene;
