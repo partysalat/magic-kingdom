@@ -1855,12 +1855,11 @@ export class Enemy {
     setCollisionEnabled(enabled) {
         this.collisionEnabled = enabled;
 
-        // Update visual to indicate disabled collision during spawn
-        if (!enabled) {
-            this.sprite.setAlpha(0.5);
-        } else {
+        // When enabling collision, restore the alphaValue
+        if (enabled) {
             this.sprite.setAlpha(this.alphaValue);
         }
+        // When disabling, leave alpha as-is (spawn animation controls it)
     }
 
     /**
@@ -1869,9 +1868,8 @@ export class Enemy {
     setAlpha(alpha) {
         this.alphaValue = Math.max(0, Math.min(1, alpha));
 
-        if (this.collisionEnabled) {
-            this.sprite.setAlpha(this.alphaValue);
-        }
+        // Always apply alpha to sprite (spawn animation needs this)
+        this.sprite.setAlpha(this.alphaValue);
 
         // Also update child elements
         if (this.claw1) this.claw1.setAlpha(this.alphaValue);

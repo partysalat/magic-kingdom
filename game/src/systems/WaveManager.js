@@ -537,8 +537,8 @@ export class WaveManager {
 
                 // Queue spawn animation
                 if (enemy.setCollisionEnabled && enemy.setAlpha) {
+                    enemy.setAlpha(0);                 // Start invisible (do this FIRST)
                     enemy.setCollisionEnabled(false);  // Disable collision during spawn animation
-                    enemy.setAlpha(0);                 // Start invisible
 
                     this.spawnPointManager.queueSpawn(
                         enemy,
