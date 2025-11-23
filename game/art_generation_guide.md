@@ -83,7 +83,19 @@ Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red 
 
 **ChatGPT Optimized:**
 ```
-Create a video game character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to RimWorld or Stardew Valley character sprites. The character is a bright red cartoon crab gunslinger named Gisela. She's wearing a brown cowboy hat (view from behind showing the back of the hat), red bandana visible on her back, holding two revolvers. She's facing away from the camera showing her back side - you should see the back of her crab shell, the rear view of her cowboy hat, and her walking away. The art style should be comic book inspired with thick black outlines and cel-shading. Natural crab features with anthropomorphic stance. Wild west beach theme, bold colors. Centered on transparent or white background. Single character sprite, game asset style.
+Create a single video game character sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A bright red cartoon crab gunslinger named Gisela, facing away from the camera showing her back. She stands upright on her legs in an anthropomorphic pose walking away.
+
+BACK VIEW DETAILS: Back of brown cowboy hat visible, red bandana trailing down her back between the shell. Back of her hard red shell prominently displayed with texture. Two revolvers visible in her claws at her sides. Multiple legs visible from behind.
+
+FEATURES: Natural crab anatomy from rear view - shell back with segments and texture, claws at sides holding revolvers, legs, eye stalks barely visible from behind. Cartoonish proportions.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - bright red for shell, brown for hat back. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Simple walking away pose. White or transparent background with no environmental elements.
+
+AESTHETIC: Wild west cowboy meets ocean creature. Bold and readable at small sizes.
 ```
 
 **Bing Condensed (480 chars):**
@@ -95,7 +107,19 @@ Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red 
 
 **ChatGPT Optimized:**
 ```
-Create a video game character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to RimWorld or Stardew Valley character sprites. The character is a bright red cartoon crab gunslinger named Gisela shown in left-facing profile view. She's wearing a brown cowboy hat, red bandana around her neck, holding two revolvers visible from the side. Her profile shows the side of her crab body, shell texture, claws holding guns, and legs in walking stance facing left. Comic book art style with thick black outlines and cel-shading for depth. Anthropomorphic crab with natural crustacean features. Wild west beach aesthetic, bold saturated colors. Centered on transparent or white background. Single character sprite, game-ready asset.
+Create a single video game character sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A bright red cartoon crab gunslinger named Gisela, shown in left-facing profile. She stands upright on her legs in an anthropomorphic walking stance facing left.
+
+SIDE VIEW DETAILS: Brown cowboy hat visible from side profile, red bandana around neck visible. Side view of her red shell showing depth and curvature. Both claws extended forward holding revolvers aimed left. Legs in walking stance, side profile of eye stalks.
+
+FEATURES: Natural crab anatomy from side - shell with texture visible from profile, prominent claws with guns, segmented legs in motion, side view of head with eye stalks. Cartoonish proportions.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - bright red for shell, brown for hat, silver for guns. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Simple side-walking pose moving left. White or transparent background with no environmental elements.
+
+AESTHETIC: Wild west cowboy meets ocean creature. Bold and readable at small sizes.
 ```
 
 **Bing Condensed (480 chars):**
@@ -107,7 +131,19 @@ Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red 
 
 **ChatGPT Optimized:**
 ```
-Create a video game character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to RimWorld or Stardew Valley character sprites. The character is a bright red cartoon crab gunslinger named Gisela shown in right-facing profile view. She's wearing a brown cowboy hat, red bandana around her neck, holding two revolvers visible from the side. Her profile shows the side of her crab body, shell texture, claws holding guns, and legs in walking stance facing right. Comic book art style with thick black outlines and cel-shading for depth. Anthropomorphic crab with natural crustacean features. Wild west beach aesthetic, bold saturated colors. Centered on transparent or white background. Single character sprite, game-ready asset.
+Create a single video game character sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A bright red cartoon crab gunslinger named Gisela, shown in right-facing profile. She stands upright on her legs in an anthropomorphic walking stance facing right.
+
+SIDE VIEW DETAILS: Brown cowboy hat visible from side profile, red bandana around neck visible. Side view of her red shell showing depth and curvature. Both claws extended forward holding revolvers aimed right. Legs in walking stance, side profile of eye stalks.
+
+FEATURES: Natural crab anatomy from side - shell with texture visible from profile, prominent claws with guns, segmented legs in motion, side view of head with eye stalks. Cartoonish proportions.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - bright red for shell, brown for hat, silver for guns. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Simple side-walking pose moving right. White or transparent background with no environmental elements.
+
+AESTHETIC: Wild west cowboy meets ocean creature. Bold and readable at small sizes.
 ```
 
 **Bing Condensed (480 chars):**
@@ -148,7 +184,19 @@ Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red 
 
 **ChatGPT Optimized:**
 ```
-Create a video game enemy character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to RimWorld or Stardew Valley enemy sprites. The character is an orange-red lobster styled as a western outlaw bandit. He's wearing a black cowboy hat, dark vest over his shell, and holding pistols in his large claws with a menacing, villainous expression. The lobster has natural crustacean features - large claws, segmented tail, antennae, textured shell - but stands in an anthropomorphic threatening pose. Comic book art style with thick black outlines and cel-shading for depth. The character should look clearly villainous and distinct from the hero characters. Wild west beach theme with bold colors. Centered on transparent or white background. Single enemy sprite, game-ready asset for a top-down shooter.
+Create a single video game enemy sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: An orange-red lobster bandit styled as a western outlaw. He stands upright in a menacing, threatening stance.
+
+OUTFIT: Black cowboy hat, dark brown/black leather vest over his shell. Holding pistols in both large claws. Menacing, villainous expression with narrowed eyes.
+
+FEATURES: Natural lobster anatomy - massive claws gripping pistols, long segmented tail curling behind, antennae, textured shell with ridges. Cartoonish proportions but clearly a villain.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - orange-red for shell, black for hat, dark vest. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Aggressive stance. White or transparent background with no environmental elements.
+
+AESTHETIC: Wild west outlaw meets ocean creature. Clearly villainous and distinct from hero. Bold and readable at small sizes.
 ```
 
 **Bing Condensed (480 chars):**
