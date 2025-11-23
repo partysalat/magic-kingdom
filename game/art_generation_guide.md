@@ -154,21 +154,97 @@ Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red 
 **Optional 8-Direction (Diagonals):**
 
 #### Direction 5: Facing Down-Left
+
+**ChatGPT Optimized:**
+```
+Create a single video game character sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A bright red cartoon crab gunslinger named Gisela, facing diagonally down-left (toward camera and left). She stands upright on her legs in an anthropomorphic pose.
+
+DIAGONAL VIEW DETAILS: Three-quarter view showing both front and left side. Brown cowboy hat visible from front-left angle, red bandana around neck. Both claws holding revolvers, angled down-left. Shell visible from diagonal angle showing both front and left side texture. Legs positioned for down-left movement.
+
+FEATURES: Natural crab anatomy - prominent claws holding guns, hard red shell with visible texture, multiple legs, eye stalks. Cartoonish proportions but recognizable crab features. Diagonal stance captures movement toward bottom-left.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - bright red for shell, brown for hat, silver for guns. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Diagonal down-left pose. White or transparent background with no environmental elements.
+
+AESTHETIC: Wild west cowboy meets ocean creature. Bold and readable at small sizes.
+```
+
+**Bing Condensed (480 chars):**
 ```
 Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red bandana, holding revolvers, facing down and to the left, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game character sprite on transparent background, slight overhead perspective
 ```
 
 #### Direction 6: Facing Down-Right
+
+**ChatGPT Optimized:**
+```
+Create a single video game character sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A bright red cartoon crab gunslinger named Gisela, facing diagonally down-right (toward camera and right). She stands upright on her legs in an anthropomorphic pose.
+
+DIAGONAL VIEW DETAILS: Three-quarter view showing both front and right side. Brown cowboy hat visible from front-right angle, red bandana around neck. Both claws holding revolvers, angled down-right. Shell visible from diagonal angle showing both front and right side texture. Legs positioned for down-right movement.
+
+FEATURES: Natural crab anatomy - prominent claws holding guns, hard red shell with visible texture, multiple legs, eye stalks. Cartoonish proportions but recognizable crab features. Diagonal stance captures movement toward bottom-right.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - bright red for shell, brown for hat, silver for guns. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Diagonal down-right pose. White or transparent background with no environmental elements.
+
+AESTHETIC: Wild west cowboy meets ocean creature. Bold and readable at small sizes.
+```
+
+**Bing Condensed (480 chars):**
 ```
 Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red bandana, holding revolvers, facing down and to the right, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game character sprite on transparent background, slight overhead perspective
 ```
 
 #### Direction 7: Facing Up-Left
+
+**ChatGPT Optimized:**
+```
+Create a single video game character sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A bright red cartoon crab gunslinger named Gisela, facing diagonally up-left (away from camera and to the left). She stands upright on her legs walking away at an angle.
+
+DIAGONAL BACK VIEW DETAILS: Three-quarter rear view showing back-left angle. Back of brown cowboy hat visible from rear-left, red bandana trailing down back. Back-left portion of red shell prominently displayed. Two revolvers visible in claws at her sides. Legs visible from behind at diagonal angle.
+
+FEATURES: Natural crab anatomy from rear diagonal - shell back with texture visible from back-left angle, claws at sides holding revolvers, legs, eye stalks barely visible. Cartoonish proportions. Walking away up-left stance.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - bright red for shell, brown for hat back. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Diagonal up-left walking away pose. White or transparent background with no environmental elements.
+
+AESTHETIC: Wild west cowboy meets ocean creature. Bold and readable at small sizes.
+```
+
+**Bing Condensed (480 chars):**
 ```
 Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red bandana, holding revolvers, facing up and to the left showing rear angle, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game character sprite on transparent background, slight overhead perspective
 ```
 
 #### Direction 8: Facing Up-Right
+
+**ChatGPT Optimized:**
+```
+Create a single video game character sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A bright red cartoon crab gunslinger named Gisela, facing diagonally up-right (away from camera and to the right). She stands upright on her legs walking away at an angle.
+
+DIAGONAL BACK VIEW DETAILS: Three-quarter rear view showing back-right angle. Back of brown cowboy hat visible from rear-right, red bandana trailing down back. Back-right portion of red shell prominently displayed. Two revolvers visible in claws at her sides. Legs visible from behind at diagonal angle.
+
+FEATURES: Natural crab anatomy from rear diagonal - shell back with texture visible from back-right angle, claws at sides holding revolvers, legs, eye stalks barely visible. Cartoonish proportions. Walking away up-right stance.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - bright red for shell, brown for hat back. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Diagonal up-right walking away pose. White or transparent background with no environmental elements.
+
+AESTHETIC: Wild west cowboy meets ocean creature. Bold and readable at small sizes.
+```
+
+**Bing Condensed (480 chars):**
 ```
 Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red bandana, holding revolvers, facing up and to the right showing rear angle, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game character sprite on transparent background, slight overhead perspective
 ```

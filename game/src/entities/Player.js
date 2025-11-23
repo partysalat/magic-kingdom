@@ -3,11 +3,18 @@ export class Player {
         this.scene = scene;
         this.color = color;
 
-        // Create sprite (Gisela the kawaii cowboy crab!)
-        this.sprite = scene.add.sprite(x, y, `gisela-${color}`);
-        this.sprite.play(`gisela-${color}-idle`);
+        // For red color, use directional sprites; others use old system
+        if (color === 'red') {
+            this.sprite = scene.add.sprite(x, y, `gisela-${color}-down`);
+            this.currentDirection = 'down'; // Track current facing direction
+            this.useDirectionalSprites = true;
+        } else {
+            this.sprite = scene.add.sprite(x, y, `gisela-${color}`);
+            this.sprite.play(`gisela-${color}-idle`);
+            this.useDirectionalSprites = false;
+        }
 
-        // Scale down to appropriate size (96x96 sprite -> 48x48 display)
+        // Scale down to appropriate size
         this.sprite.setScale(0.5);
 
         scene.physics.add.existing(this.sprite);
@@ -82,6 +89,11 @@ export class Player {
         // Apply speed multiplier (for ink cloud slow effect)
         velocityX *= this.speedMultiplier;
         velocityY *= this.speedMultiplier;
+
+        // Update sprite direction for red Gisela
+        if (this.useDirectionalSprites && (velocityX !== 0 || velocityY !== 0)) {
+            this.updateDirection(velocityX, velocityY);
+        }
 
         // Apply velocity
         this.sprite.body.setVelocity(velocityX, velocityY);
@@ -298,6 +310,41 @@ export class Player {
             0.4
         );
         this.buffAura.setDepth(-1);
+    }
+
+    updateDirection(velocityX, velocityY) {
+        // Determine direction based on velocity (supports 8 directions)
+        let newDirection = this.currentDirection;
+
+        // Define threshold for considering movement in a direction
+        const threshold = 0.3; // Lower means more sensitive to slight angles
+
+        const absX = Math.abs(velocityX);
+        const absY = Math.abs(velocityY);
+
+        // Check for diagonal movement (both X and Y significant)
+        if (absX > threshold && absY > threshold) {
+            // Diagonal movement
+            if (velocityY < 0) {
+                // Moving up
+                newDirection = velocityX < 0 ? 'up-left' : 'up-right';
+            } else {
+                // Moving down
+                newDirection = velocityX < 0 ? 'down-left' : 'down-right';
+            }
+        } else if (absY > absX && absY > threshold) {
+            // Primarily vertical movement
+            newDirection = velocityY < 0 ? 'up' : 'down';
+        } else if (absX > absY && absX > threshold) {
+            // Primarily horizontal movement
+            newDirection = velocityX < 0 ? 'left' : 'right';
+        }
+
+        // Only update texture if direction changed
+        if (newDirection !== this.currentDirection) {
+            this.currentDirection = newDirection;
+            this.sprite.setTexture(`gisela-${this.color}-${newDirection}`);
+        }
     }
 
     getActiveBuff() {

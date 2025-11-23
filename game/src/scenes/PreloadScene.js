@@ -9,11 +9,17 @@ export class PreloadScene extends Phaser.Scene {
 
         // === PLAYER SPRITES ===
 
-        this.load.spritesheet('gisela-red', 'assets/sprites/player/gisela-red-idle.png', {
-            frameWidth: 96,
-            frameHeight: 96
-        });
+        // Load directional sprites for Red Gisela (8 directions)
+        this.load.image('gisela-red-down', 'assets/sprites/player/gisela-red-down.png');
+        this.load.image('gisela-red-up', 'assets/sprites/player/gisela-red-up.png');
+        this.load.image('gisela-red-left', 'assets/sprites/player/gisela-red-left.png');
+        this.load.image('gisela-red-right', 'assets/sprites/player/gisela-red-right.png');
+        this.load.image('gisela-red-down-left', 'assets/sprites/player/gisela-red-down-left.png');
+        this.load.image('gisela-red-down-right', 'assets/sprites/player/gisela-red-down-right.png');
+        this.load.image('gisela-red-up-left', 'assets/sprites/player/gisela-red-up-left.png');
+        this.load.image('gisela-red-up-right', 'assets/sprites/player/gisela-red-up-right.png');
 
+        // Fallback: old idle sprites for other colors
         this.load.spritesheet('gisela-blue', 'assets/sprites/player/gisela-blue-idle.png', {
             frameWidth: 96,
             frameHeight: 96
@@ -71,6 +77,7 @@ export class PreloadScene extends Phaser.Scene {
 
         // === ENVIRONMENT ===
 
+        this.load.image('environment', 'assets/sprites/environment/environment.png');
         // this.load.image('barrel', 'assets/sprites/environment/barrel.png');
         // this.load.image('saloon-doors', 'assets/sprites/environment/saloon-doors.png');
 
@@ -84,8 +91,8 @@ export class PreloadScene extends Phaser.Scene {
 
         // === CREATE ANIMATIONS ===
 
-        // Player animations
-        this.createPlayerAnimation('gisela-red');
+        // Player animations (skip red as it uses directional sprites now)
+        // this.createPlayerAnimation('gisela-red'); // Red uses directional images
         this.createPlayerAnimation('gisela-blue');
         this.createPlayerAnimation('gisela-green');
         this.createPlayerAnimation('gisela-yellow');

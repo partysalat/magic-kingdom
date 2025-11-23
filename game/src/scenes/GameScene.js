@@ -24,7 +24,7 @@ export class GameScene extends Phaser.Scene {
 
     create(data) {
         // Scene setup
-        this.cameras.main.setBackgroundColor('#4a3428'); // Wooden saloon floor
+        this.cameras.main.setBackgroundColor('#4a3428'); // Wooden saloon floor (fallback)
         this.isGameOver = false;
 
         // Get difficulty from scene data or registry
@@ -36,8 +36,8 @@ export class GameScene extends Phaser.Scene {
             { index: 0, color: 'red', name: 'Player 1' } // Fallback for testing
         ];
 
-        // Create floor grid pattern
-        this.createFloorPattern();
+        // Create tiled floor background
+        this.createTiledBackground();
 
         // Create PlayerManager instead of single player
         this.playerManager = new PlayerManager(this, playerConfigs);
@@ -247,24 +247,24 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
-    createFloorPattern() {
-        const graphics = this.add.graphics();
+    createTiledBackground() {
+        // Create a tiled sprite that fills the entire game world
+        // The environment texture will automatically repeat/tile
+        const bg = this.add.tileSprite(
+            0,           // x position (top-left)
+            0,           // y position (top-left)
+            1920,        // width (game world width)
+            1080,        // height (game world height)
+            'environment' // texture key
+        );
 
-        // Draw wood plank lines
-        graphics.lineStyle(2, 0x3a2a1a, 0.3);
+        // Set origin to top-left so positioning is easier
+        bg.setOrigin(0, 0);
 
-        // Horizontal planks
-        for (let y = 0; y < 1080; y += 60) {
-            graphics.lineBetween(0, y, 1920, y);
-        }
+        // Send to back behind everything
+        bg.setDepth(-100);
 
-        // Vertical grain lines (sparse)
-        for (let x = 0; x < 1920; x += 200) {
-            graphics.lineBetween(x, 0, x, 1080);
-        }
-
-        // Send to back
-        graphics.setDepth(-100);
+        console.log('Tiled saloon floor background created');
     }
 
     update(time, delta) {
