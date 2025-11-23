@@ -212,7 +212,19 @@ Isometric 3/4 top-down view of an orange-red lobster dressed as western outlaw w
 
 **ChatGPT Optimized:**
 ```
-Create a seamless tileable texture for a video game environment floor in top-down view. The texture shows weathered wooden saloon floorboards with warm brown tones and visible wood grain texture. Scattered across the planks are subtle beach elements - small patches of sand, tiny seashells, and small pieces of driftwood wedged between boards. Comic book art style with clean black outlines and cel-shading for depth. The pattern should be detailed enough to be interesting but not so busy that it distracts from gameplay. Wild west saloon meets ocean beach aesthetic. The texture should tile seamlessly on all edges for use as a repeating game floor texture. Square composition, warm color palette with browns, tans, and sandy colors.
+Create a seamless tileable floor texture for a video game environment. Top-down view for a 2D game.
+
+TEXTURE: Weathered wooden saloon floorboards running horizontally. Each plank shows wear, scratches, and age. Visible wood grain texture throughout.
+
+BEACH ELEMENTS: Subtle sand scattered between boards, tiny seashells (3-4 visible), small pieces of driftwood wedged in cracks. Beach elements add flavor but don't dominate.
+
+STYLE: Comic book art with clean black ink outlines on board edges. Cel-shaded with 2-3 tone levels for depth. Warm brown wood tones, tan sand, white shells. No gradients, flat color zones with shadows in cracks.
+
+TILING: Pattern must tile seamlessly on all four edges. Test that left connects to right, top connects to bottom. Square composition, 512x512 or 1024x1024.
+
+BALANCE: Detailed enough to be interesting, not so busy it distracts from gameplay characters.
+
+AESTHETIC: Wild west saloon meets ocean beach. Warm, inviting floor texture.
 ```
 
 **Bing Condensed (480 chars):**
@@ -243,9 +255,21 @@ Already generated!
 
 #### 2. Quick-Draw Shrimp (Multi-Directional)
 
-**ChatGPT Base Prompt (add direction at the end):**
+**ChatGPT Base Prompt:**
 ```
-Create a video game enemy character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to RimWorld or Stardew Valley enemy sprites. The character is a pink shrimp styled as a quick-draw gunslinger. Small and nimble looking with a tiny bandana and small cowboy hat, holding dual pistols in his claws. The shrimp has a fast, agile posture that conveys speed and quickness. Natural shrimp features - curved body, long antennae, segmented tail - in an anthropomorphic quick-draw stance. Comic book art style with thick black outlines and cel-shading. Wild west beach theme, bold colors. Centered on transparent or white background. Single enemy sprite, game-ready asset
+Create a single video game enemy sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A pink shrimp styled as a quick-draw gunslinger. Small and nimble, standing upright in a fast, agile posture. [ADD DIRECTION]
+
+OUTFIT: Tiny red bandana around neck, small brown cowboy hat. Holding dual pistols in small claws in quick-draw stance. Fast gunslinger vibe.
+
+FEATURES: Natural shrimp anatomy - curved segmented body, long antennae, multiple small legs, tail fan. Small size compared to other enemies. Cartoonish but clearly a speedy threat.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - bright pink for body, brown for hat, red bandana. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 60% of frame (smaller than other enemies). Dynamic quick-draw pose. White or transparent background with no environmental elements.
+
+AESTHETIC: Fast gunslinger meets small ocean creature. Conveys speed and agility. Bold and readable at small sizes.
 ```
 
 **Bing Condensed Base (add direction):**
@@ -264,7 +288,19 @@ Isometric 3/4 top-down view of a pink shrimp dressed as quick-draw gunslinger, s
 
 **ChatGPT Base Prompt:**
 ```
-Create a video game enemy character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to RimWorld or Stardew Valley enemy sprites. The character is a large hermit crab styled as a heavy tank unit. He has a massive, heavy armored shell with reinforced plating, wearing cowboy accessories like a worn leather vest. Tough, tanky appearance - big and slow looking, carrying heavy weapons. The hermit crab should look intimidating and durable with thick shell armor, large claws, and a stocky build. Comic book art style with thick black outlines and cel-shading. Wild west beach theme, bold colors. Centered on transparent or white background. Single enemy sprite, game-ready tank character asset. [ADD DIRECTION]
+Create a single video game enemy sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A large hermit crab styled as a heavy tank unit. Big and slow looking with a stocky, intimidating build. [ADD DIRECTION]
+
+OUTFIT: Massive armored shell with reinforced metal plating and rivets. Worn brown leather vest over front. Carrying heavy weapons in thick claws. Battle-hardened appearance.
+
+FEATURES: Natural hermit crab anatomy - enormous spiral shell dominating the back, thick powerful claws, multiple sturdy legs, eye stalks. Large size - twice the size of regular enemies. Tough, durable tank unit.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean colors - brown/tan for shell, dark metal for armor plating, brown leather. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 80% of frame (large tank enemy). Solid, planted stance. White or transparent background with no environmental elements.
+
+AESTHETIC: Heavy tank meets armored ocean creature. Intimidating and durable. Bold and readable at small sizes.
 ```
 
 **Bing Base:** `Isometric 3/4 view large hermit crab, heavy armored shell, cowboy accessories, tough tanky appearance, carrying heavy weapons, 45° angle above, RimWorld style sprite, comic book art, thick outlines, cel-shading, wild west beach theme, transparent background`
@@ -275,7 +311,19 @@ Create a video game enemy character sprite in isometric 3/4 top-down view at a 4
 
 **ChatGPT Base Prompt:**
 ```
-Create a video game enemy character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to RimWorld or Stardew Valley enemy sprites. The character is a translucent ghostly jellyfish styled as a supernatural western outlaw. Wearing a tattered, weathered cowboy hat on top of its bell-shaped body. Eerie, spectral appearance with semi-transparent body floating above ground. Long flowing tentacles visible beneath the body that trail and wave. The jellyfish has an otherworldly, haunting presence with a faint glow. Comic book art style with thick black outlines and cel-shading. Wild west beach theme with supernatural elements. Centered on transparent or white background. Single enemy sprite, game-ready ghost character asset. [ADD DIRECTION]
+Create a single video game enemy sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A translucent ghostly jellyfish styled as a supernatural western outlaw. Floating above ground with an eerie, spectral presence. [ADD DIRECTION]
+
+OUTFIT: Tattered, weathered brown cowboy hat sitting on top of bell-shaped body. Hat has holes and worn edges showing age.
+
+FEATURES: Natural jellyfish anatomy - translucent bell-shaped dome body, long flowing tentacles trailing beneath that wave and drift. Semi-transparent with faint ethereal glow. Eye-like spots visible through body. Ghostly, supernatural appearance. Floating off ground.
+
+STYLE: Bold comic book art with thick black ink outlines around shapes. Cel-shaded for depth with 2-3 tone levels. Translucent purple/blue body with slight glow, weathered brown hat. Use lighter tones to show transparency. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Floating pose with tentacles flowing. White or transparent background with no environmental elements.
+
+AESTHETIC: Supernatural ghost meets ocean creature. Eerie and otherworldly. Bold and readable at small sizes.
 ```
 
 **Bing Base:** `Isometric 3/4 view translucent ghostly jellyfish, tattered cowboy hat, supernatural eerie appearance, floating with tentacles, spectral western outlaw, 45° angle, RimWorld sprite style, comic book art, thick outlines, cel-shading, wild west beach theme, transparent background`
@@ -286,7 +334,19 @@ Create a video game enemy character sprite in isometric 3/4 top-down view at a 4
 
 **ChatGPT Base Prompt:**
 ```
-Create a video game enemy character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to RimWorld or Stardew Valley enemy sprites. The character is a flying fish styled as an aerial bandit. Large wing-like fins spread out for gliding, wearing aviator goggles on its head and a bandana around its neck. Dynamic flying pose showing motion and agility in the air. Natural flying fish features - streamlined body, expanded pectoral fins as wings, forked tail. The character should convey speed and aerial maneuverability. Comic book art style with thick black outlines and cel-shading. Wild west beach theme, bold colors. Centered on transparent or white background. Single enemy sprite, game-ready flying enemy asset. [ADD DIRECTION]
+Create a single video game enemy sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
+
+CHARACTER: A flying fish styled as an aerial bandit. Dynamic flying pose showing motion and agility in the air. [ADD DIRECTION]
+
+OUTFIT: Brown aviator goggles on head, red bandana around neck. Flying ace bandit appearance.
+
+FEATURES: Natural flying fish anatomy - streamlined body, large wing-like pectoral fins spread wide for gliding, forked tail. Wings should look like natural fins but extended for flight. Fast, agile aerial enemy. Silver-blue scales with shine.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Clean, vibrant colors - silver-blue body, brown goggles, red bandana. Motion lines optional to show flight. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Character centered, taking up 70% of frame. Dynamic aerial pose with wings spread. White or transparent background with no environmental elements.
+
+AESTHETIC: Aerial bandit meets ocean creature. Conveys speed and flight. Bold and readable at small sizes.
 ```
 
 **Bing Base:** `Isometric 3/4 view flying fish, wings spread, aviator goggles, bandana, aerial bandit appearance, dynamic flying pose, 45° angle above, RimWorld sprite style, comic book art, thick outlines, cel-shading, wild west beach theme, transparent background`
@@ -301,7 +361,19 @@ Create a video game enemy character sprite in isometric 3/4 top-down view at a 4
 
 **ChatGPT Optimized:**
 ```
-Create a video game boss character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to boss sprites in RimWorld or Stardew Valley. This is Iron Shell, a Wave 3 boss - a massive dark gray hermit crab with a heavy iron-plated shell covered in reinforced armor plating. Much larger and more imposing than normal enemies (at least 3x the size of regular hermit crabs). Wearing additional reinforced cowboy armor plating over the shell with metal rivets and plates. Intimidating and powerful appearance with thick armored claws and a fortress-like shell. The boss should look like a tank - slow but incredibly durable. Comic book art style with thick black outlines and cel-shading for depth. Wild west beach theme, bold colors with dark grays and metallic tones. Centered on transparent or white background. Single boss sprite, game-ready boss asset. [ADD DIRECTION]
+Create a single video game BOSS sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like boss sprites in Stardew Valley or Enter the Gungeon.
+
+BOSS CHARACTER: Iron Shell - Wave 3 boss. A massive dark gray hermit crab. 3x the size of regular hermit crabs. Fortress-like tank boss. [ADD DIRECTION]
+
+ARMOR: Heavy iron-plated shell with reinforced metal plating covering the spiral shell. Metal rivets, bolts, and armor plates visible. Additional cowboy-style metal armor over shell. Thick armored claws like iron gauntlets. Battle-worn metal with scratches.
+
+FEATURES: Hermit crab anatomy at massive scale - enormous armored spiral shell dominates, thick powerful claws encased in metal, multiple sturdy legs, eye stalks. Fortress-like, slow but incredibly durable. Boss-level intimidation.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Dark gray metal, iron tones, brown shell underneath. Metallic sheen on armor. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Boss centered, taking up 85-90% of frame (massive boss enemy). Solid, planted tank stance. White or transparent background with no environmental elements.
+
+AESTHETIC: Iron fortress meets armored ocean creature. Most intimidating enemy yet. Bold and readable at small sizes despite large size.
 ```
 
 **Bing Base:** `Isometric 3/4 view massive dark gray hermit crab, heavy iron-plated shell, imposing boss appearance, much larger than normal, reinforced cowboy armor plating, intimidating, 45° angle, RimWorld boss sprite, comic art, thick outlines, cel-shading, wild west beach, transparent background`
@@ -316,7 +388,19 @@ Create a video game boss character sprite in isometric 3/4 top-down view at a 45
 
 **ChatGPT Optimized:**
 ```
-Create a video game boss character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to boss sprites in RimWorld or Stardew Valley. This is The Kraken's Arm, a Wave 6 boss - a massive purple kraken with a large bulbous body and four thick, writhing tentacles extending outward from the central body. Mystical deep-sea creature with a supernatural appearance, wearing a tattered and weathered pirate hat on top. Boss-level appearance with glowing eyes that convey intelligence and menace. The tentacles should look thick, powerful, and independently alive - each one a threat. Enormous size - should dwarf regular enemies. The body has sucker marks and oceanic textures with hints of bioluminescence. Comic book art style with thick black outlines and cel-shading. Wild west beach theme meets deep sea horror. Bold purple, dark blue, and mystical colors. Centered on transparent or white background. Single boss sprite with all tentacles visible, game-ready boss asset. [ADD DIRECTION]
+Create a single video game BOSS sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like boss sprites in Stardew Valley or Enter the Gungeon.
+
+BOSS CHARACTER: The Kraken's Arm - Wave 6 boss. A massive purple kraken with large bulbous central body. Deep-sea horror boss. [ADD DIRECTION]
+
+OUTFIT: Tattered, weathered pirate hat sitting on top of body. Hat is torn and aged, showing years at sea.
+
+FEATURES: Kraken anatomy - large purple bulbous head/body as center mass, four thick powerful tentacles extending outward (must show all 4). Tentacles writhing and independently alive. Sucker marks covering tentacles. Glowing intelligent eyes. Hints of bioluminescent spots. Oceanic texture on skin. Enormous - dwarfs all regular enemies. Deep sea creature.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Deep purple body, darker blue shadows, glowing spots. Mystical supernatural appearance. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Boss centered with tentacles spread, taking up 90% of frame (huge boss). All four tentacles must be visible. White or transparent background with no environmental elements.
+
+AESTHETIC: Deep sea horror meets pirate. Mystical and menacing. Bold and readable at small sizes.
 ```
 
 **Bing Base:** `Isometric 3/4 view massive purple kraken body, four large writhing tentacles extending, mystical deep-sea creature, tattered pirate hat, boss with glowing eyes, enormous menacing, 45° angle, RimWorld boss sprite, comic art, thick outlines, cel-shading, wild west beach, transparent background`
@@ -331,12 +415,38 @@ Create a video game boss character sprite in isometric 3/4 top-down view at a 45
 
 **Phase 1 ChatGPT Optimized:**
 ```
-Create a video game final boss character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to epic boss sprites in RimWorld or Stardew Valley. This is The Leviathan Phase 1, Wave 9 final boss - a colossal orange-red sea serpent with a long, powerful serpentine body. Massive scaled body with prominent fins along the spine, dragon-like head with fierce expression. Legendary final boss appearance - the biggest, most intimidating enemy in the game. Wearing golden cowboy accessories - a golden cowboy hat, golden sheriff's badge, maybe golden spurs on tail. Ancient sea monster with weathered, battle-scarred appearance showing age and power. The serpent should have a fierce, primal energy. Enormous size - fills much of the frame. Comic book art style with thick black outlines and cel-shading. Wild west beach theme with epic final boss energy. Bold orange-red colors with golden accents. Centered on transparent or white background. Single boss sprite, game-ready legendary boss asset. [ADD DIRECTION]
+Create a single video game FINAL BOSS sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like epic boss sprites in Stardew Valley or Enter the Gungeon.
+
+FINAL BOSS CHARACTER: The Leviathan Phase 1 - Wave 9 final boss. A colossal orange-red sea serpent. Legendary final boss - biggest enemy in entire game. Ancient sea monster. [ADD DIRECTION]
+
+OUTFIT: Golden cowboy accessories - golden cowboy hat on head, golden sheriff's badge on chest, golden spurs/bands on tail. All gold elements show legendary status.
+
+FEATURES: Sea serpent anatomy at legendary scale - long powerful serpentine body coiled, massive scaled body with prominent fins along spine, dragon-like fierce head, battle-scarred ancient appearance. Weathered scales showing age and countless battles. Fierce, primal energy. Enormous - fills 95% of frame. Most intimidating enemy in game.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Bold orange-red scales, golden accessories with shine, dark shadows. Epic final boss presence. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Legendary boss dominates entire frame at 95%. Coiled serpentine pose showing power. White or transparent background with no environmental elements.
+
+AESTHETIC: Ancient sea god meets wild west legend. Ultimate final challenge. Epic and readable even at large size.
 ```
 
 **Phase 2 ChatGPT Optimized:**
 ```
-Create a video game final boss character sprite in isometric 3/4 top-down view at a 45-degree angle from above, similar to epic boss sprites in RimWorld or Stardew Valley. This is The Leviathan Phase 2, Wave 9 final boss second form - a colossal electric blue sea serpent transformed with crackling lightning and electrical effects. Same serpentine body as Phase 1 but now with bright electric blue coloring and visible electricity arcing across scales. Transformed legendary final boss appearance showing evolved power - lightning bolts, electrical aura, glowing eyes, energy crackling from body. Still wearing golden cowboy accessories that now glow with energy. Massive and terrifying with supernatural electrical powers. The evolution should be dramatic - this is the "final form" moment. Ancient sea monster with godlike electrical powers. Comic book art style with thick black outlines and cel-shading, with special attention to lightning effects. Wild west beach theme meets storm god. Bright electric blue with yellow lightning and golden accents. Centered on transparent or white background. Single boss sprite, game-ready legendary evolved boss asset. [ADD DIRECTION]
+Create a single video game FINAL BOSS EVOLVED FORM sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like epic boss sprites in Stardew Valley or Enter the Gungeon.
+
+FINAL BOSS EVOLVED: The Leviathan Phase 2 - Wave 9 final boss SECOND FORM. Same colossal sea serpent but transformed with electrical powers. This is the "ultimate final form" moment. Storm god boss. [ADD DIRECTION]
+
+TRANSFORMATION: Electric blue coloring replaces orange-red. Crackling lightning and electricity arcing across entire body. Electrical aura surrounding boss. Glowing electric eyes. Energy visibly crackling from body. Yellow lightning bolts. Supernatural electrical power unleashed.
+
+OUTFIT: Same golden cowboy accessories but now glowing with electrical energy. Golden hat, badge, and spurs all energized.
+
+FEATURES: Same sea serpent anatomy - long powerful serpentine body coiled, massive scaled body with fins, dragon-like head. But now with godlike electrical powers. Ancient sea monster evolved to storm deity. Enormous - fills 95% of frame. Most powerful form.
+
+STYLE: Bold comic book art with thick black ink outlines. Cel-shaded with 2-3 tone levels. Bright electric blue scales, yellow lightning effects, glowing golden accessories. Dramatic transformation. Lightning effects integrated into cel-shading style. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Legendary evolved boss dominates entire frame at 95%. Coiled with electricity radiating. White or transparent background with no environmental elements.
+
+AESTHETIC: Storm god meets wild west legend. Ultimate power unleashed. Epic "final form" moment. Bold and readable even at large size.
 ```
 
 **Bing Phase 1:** `Isometric 3/4 view colossal orange-red sea serpent boss, scales and fins, legendary final boss, golden cowboy accessories, massive terrifying, ancient sea monster, 45° angle, RimWorld boss sprite, comic art, thick outlines, cel-shading, wild west beach, transparent background`
@@ -379,7 +489,19 @@ Create a video game powerup sprite in isometric 3/4 view at a 45-degree angle. T
 
 **ChatGPT:**
 ```
-Create a video game powerup sprite in isometric 3/4 view at a 45-degree angle. The sprite is a bright lime-green margarita in a wide margarita glass with a salted rim. The cocktail is glowing with magical power - bright green sparkles and light emanating from the liquid. Vibrant lime green color that pops. The salt rim is clearly visible. The drink should look refreshing and magical. Comic book art style with thick black outlines and cel-shading. Wild west saloon aesthetic. Bold green and white colors. Centered on transparent or white background. Single powerup sprite, game-ready collectible.
+Create a single video game powerup collectible sprite. Use an isometric 3/4 perspective viewed from 45 degrees above.
+
+POWERUP ITEM: A bright lime-green margarita cocktail in a wide margarita glass.
+
+GLASS DETAILS: Wide margarita glass shape, white salt crystals visible on rim. Lime-green liquid fills glass.
+
+MAGICAL EFFECT: Glowing with magical power - bright green sparkles floating around drink, light rays emanating from liquid. Supernatural glow indicates this is a powerup. Vibrant lime green that pops visually.
+
+STYLE: Bold comic book art with thick black ink outlines around every shape. Cel-shaded for depth with 2-3 tone levels. Vibrant lime green liquid, white glass with transparency, white salt rim. Magical glow effect. No gradients, flat color zones with clear shadows.
+
+COMPOSITION: Drink centered, taking up 60% of frame. Upright glass sitting on base. White or transparent background with no environmental elements.
+
+AESTHETIC: Magical western saloon drink. Refreshing and clearly a powerup collectible. Bold and readable at small sizes.
 ```
 
 **Bing:** `Isometric 3/4 view lime-green margarita, wide glass, salt rim, glowing magical power, bright green liquid, comic book art, thick outlines, cel-shading, wild west saloon, game powerup sprite, transparent background`
