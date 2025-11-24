@@ -256,13 +256,13 @@ Isometric 3/4 top-down view of a red cartoon crab wearing brown cowboy hat, red 
 
 ---
 
-### Enemy: Bandit Lobster
+### Enemy: Bandit Lobster (Multi-Directional)
 
-**ChatGPT Optimized:**
+**ChatGPT Base Prompt:**
 ```
 Create a single video game enemy sprite for a top-down shooter. Use an isometric 3/4 perspective viewed from 45 degrees above, like sprites in Stardew Valley or Enter the Gungeon.
 
-CHARACTER: An orange-red lobster bandit styled as a western outlaw. He stands upright in a menacing, threatening stance.
+CHARACTER: An orange-red lobster bandit styled as a western outlaw. He stands upright in a menacing, threatening stance. [ADD DIRECTION]
 
 OUTFIT: Black cowboy hat, dark brown/black leather vest over his shell. Holding pistols in both large claws. Menacing, villainous expression with narrowed eyes.
 
@@ -275,10 +275,17 @@ COMPOSITION: Character centered, taking up 70% of frame. Aggressive stance. Whit
 AESTHETIC: Wild west outlaw meets ocean creature. Clearly villainous and distinct from hero. Bold and readable at small sizes.
 ```
 
-**Bing Condensed (480 chars):**
+**Bing Condensed Base (add direction):**
 ```
-Isometric 3/4 top-down view of an orange-red lobster dressed as western outlaw wearing black cowboy hat and dark vest, menacing villainous expression, holding pistols in claws, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game character sprite on transparent background, slight overhead perspective
+Isometric 3/4 top-down view of an orange-red lobster dressed as western outlaw wearing black cowboy hat and dark vest, menacing villainous expression, holding pistols in claws, viewed at 45-degree angle from above like RimWorld or Stardew Valley character sprite, comic book art style with thick black outlines and cel-shading, wild west beach theme, game character sprite on transparent background
 ```
+
+**Add these direction modifiers:**
+- ChatGPT: `, shown facing toward the camera`
+- ChatGPT: `, shown facing away from camera with back visible`
+- ChatGPT: `, shown facing left in profile view`
+- ChatGPT: `, shown facing right in profile view`
+- Bing: `, facing toward camera` | `, facing away from camera showing back` | `, facing left in profile view` | `, facing right in profile view`
 
 **Result:** Menacing, clearly distinct from player, great villain vibe.
 
