@@ -765,13 +765,25 @@ export class GameScene extends Phaser.Scene {
                     // Screen shake on hit
                     this.cameras.main.shake(100, 0.002);
 
-                    // Flash enemy white
-                    enemy.getSprite().setFillStyle(0xffffff);
-                    this.time.delayedCall(100, () => {
-                        if (enemy.isAlive()) {
-                            enemy.getSprite().setFillStyle(enemy.config.color);
-                        }
-                    });
+                    // Flash enemy white (different methods for sprites vs circles)
+                    const sprite = enemy.getSprite();
+                    if (enemy.useDirectionalSprites) {
+                        // For sprites, use tint
+                        sprite.setTint(0xffffff);
+                        this.time.delayedCall(100, () => {
+                            if (enemy.isAlive()) {
+                                sprite.clearTint();
+                            }
+                        });
+                    } else {
+                        // For circles, use setFillStyle
+                        sprite.setFillStyle(0xffffff);
+                        this.time.delayedCall(100, () => {
+                            if (enemy.isAlive()) {
+                                sprite.setFillStyle(enemy.config.color);
+                            }
+                        });
+                    }
 
                     // Only destroy bullet if not piercing
                     if (!bullet.isPiercing()) {

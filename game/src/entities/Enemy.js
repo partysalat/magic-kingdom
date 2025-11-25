@@ -179,8 +179,17 @@ export class Enemy {
             count: 1.0
         };
 
-        // Create placeholder graphics
-        this.sprite = scene.add.circle(x, y, config.radius, config.color);
+        // Create sprite based on enemy type
+        if (type === 'lobster') {
+            // Use directional sprites for bandit lobster
+            this.sprite = scene.add.sprite(x, y, 'bandit-lobster-down');
+            this.currentDirection = 'down';
+            this.useDirectionalSprites = true;
+        } else {
+            // Create placeholder graphics for other enemies
+            this.sprite = scene.add.circle(x, y, config.radius, config.color);
+            this.useDirectionalSprites = false;
+        }
         scene.physics.add.existing(this.sprite);
 
         // Physics configuration
@@ -426,8 +435,48 @@ export class Enemy {
                 break;
         }
 
+        // Update directional sprites based on velocity
+        if (this.useDirectionalSprites && this.sprite.body) {
+            this.updateDirection(this.sprite.body.velocity.x, this.sprite.body.velocity.y);
+        }
+
         // Update visual indicators
         this.updateVisuals();
+    }
+
+    updateDirection(velocityX, velocityY) {
+        // Determine direction based on velocity (supports 8 directions)
+        let newDirection = this.currentDirection;
+
+        // Define threshold for considering movement in a direction
+        const threshold = 0.3;
+
+        const absX = Math.abs(velocityX);
+        const absY = Math.abs(velocityY);
+
+        // Check for diagonal movement (both X and Y significant)
+        if (absX > threshold && absY > threshold) {
+            // Diagonal movement
+            if (velocityY < 0) {
+                // Moving up
+                newDirection = velocityX < 0 ? 'up-left' : 'up-right';
+            } else {
+                // Moving down
+                newDirection = velocityX < 0 ? 'down-left' : 'down-right';
+            }
+        } else if (absY > absX && absY > threshold) {
+            // Primarily vertical movement
+            newDirection = velocityY < 0 ? 'up' : 'down';
+        } else if (absX > absY && absX > threshold) {
+            // Primarily horizontal movement
+            newDirection = velocityX < 0 ? 'left' : 'right';
+        }
+
+        // Only update texture if direction changed
+        if (newDirection !== this.currentDirection) {
+            this.currentDirection = newDirection;
+            this.sprite.setTexture(`bandit-lobster-${newDirection}`);
+        }
     }
 
     updateBasicShooter(time, playerX, playerY, skipMovement = false) {

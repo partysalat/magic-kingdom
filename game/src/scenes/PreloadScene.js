@@ -37,6 +37,16 @@ export class PreloadScene extends Phaser.Scene {
 
         // === ENEMY SPRITES ===
 
+        // Load 8-directional sprites for Bandit Lobster
+        this.load.image('bandit-lobster-down', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-down.png');
+        this.load.image('bandit-lobster-up', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-top.png');
+        this.load.image('bandit-lobster-left', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-left.png');
+        this.load.image('bandit-lobster-right', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-right.png');
+        this.load.image('bandit-lobster-down-left', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-down-left.png');
+        this.load.image('bandit-lobster-down-right', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-down-right.png');
+        this.load.image('bandit-lobster-up-left', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-top-left.png');
+        this.load.image('bandit-lobster-up-right', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-top-right.png');
+
         this.load.spritesheet('lobster-bandit', 'assets/sprites/enemies/lobster-bandit-idle.png', {
             frameWidth: 64,
             frameHeight: 48
