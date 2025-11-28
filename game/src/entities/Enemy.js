@@ -192,6 +192,12 @@ export class Enemy {
             this.currentDirection = 'down';
             this.useDirectionalSprites = true;
             this.spritePrefix = 'hermit-tank';
+        } else if (type === 'shrimp') {
+            // Use directional sprites for shrimp
+            this.sprite = scene.add.sprite(x, y, 'shrimp-down');
+            this.currentDirection = 'down';
+            this.useDirectionalSprites = true;
+            this.spritePrefix = 'shrimp';
         } else {
             // Create placeholder graphics for other enemies
             this.sprite = scene.add.circle(x, y, config.radius, config.color);
@@ -272,9 +278,7 @@ export class Enemy {
                 // Lobster now uses sprites, no visual indicators needed
                 break;
             case 'shrimp':
-                // Small antennae
-                this.antenna1 = this.scene.add.circle(this.sprite.x - 6, this.sprite.y - 8, 3, 0xff6666);
-                this.antenna2 = this.scene.add.circle(this.sprite.x + 6, this.sprite.y - 8, 3, 0xff6666);
+                // Shrimp now uses sprites, no visual indicators needed
                 break;
             case 'hermit':
                 // Hermit now uses sprites, no visual indicators needed
@@ -651,10 +655,7 @@ export class Enemy {
                 // Lobster now uses sprites, no visual indicators to update
                 break;
             case 'shrimp':
-                if (this.antenna1 && this.antenna2) {
-                    this.antenna1.setPosition(this.sprite.x - 6, this.sprite.y - 8);
-                    this.antenna2.setPosition(this.sprite.x + 6, this.sprite.y - 8);
-                }
+                // Shrimp now uses sprites, no visual indicators to update
                 break;
             case 'hermit':
                 // Hermit now uses sprites, no visual indicators to update

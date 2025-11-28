@@ -57,6 +57,16 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('hermit-tank-up-left', 'assets/sprites/enemies/hermit-tank/hermit-tank-top-left.png');
         this.load.image('hermit-tank-up-right', 'assets/sprites/enemies/hermit-tank/hermit-tank-top-right.png');
 
+        // Load 8-directional sprites for Shrimp
+        this.load.image('shrimp-down', 'assets/sprites/enemies/shrimp/shrimp-down.png');
+        this.load.image('shrimp-up', 'assets/sprites/enemies/shrimp/shrimp-top.png');
+        this.load.image('shrimp-left', 'assets/sprites/enemies/shrimp/shrimp-left.png');
+        this.load.image('shrimp-right', 'assets/sprites/enemies/shrimp/shrimp-right.png');
+        this.load.image('shrimp-down-left', 'assets/sprites/enemies/shrimp/shrimp-down-left.png');
+        this.load.image('shrimp-down-right', 'assets/sprites/enemies/shrimp/shrimp-down-right.png');
+        this.load.image('shrimp-up-left', 'assets/sprites/enemies/shrimp/shrimp-top-left.png');
+        this.load.image('shrimp-up-right', 'assets/sprites/enemies/shrimp/shrimp-top-right.png');
+
         this.load.spritesheet('lobster-bandit', 'assets/sprites/enemies/lobster-bandit-idle.png', {
             frameWidth: 64,
             frameHeight: 48
