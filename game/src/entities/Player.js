@@ -392,14 +392,13 @@ export class Player {
         );
         this.storedCocktailGlow.setDepth(-1);
 
-        // Create visual indicator (small bubble above player)
-        this.storedCocktailIndicator = this.scene.add.circle(
+        // Create visual indicator (small sprite above player)
+        this.storedCocktailIndicator = this.scene.add.image(
             this.sprite.x,
             this.sprite.y - 40,
-            8,
-            config.color
+            config.sprite
         );
-        this.storedCocktailIndicator.setStrokeStyle(2, 0xffffff);
+        this.storedCocktailIndicator.setScale(0.5); // Small scale for indicator
         this.storedCocktailIndicator.setDepth(15);
 
         console.log(`Player ${this.playerName} stored cocktail:`, config.name);

@@ -172,8 +172,9 @@ export class GameScene extends Phaser.Scene {
             color: '#ffffff',
             fontFamily: 'Arial'
         }).setOrigin(0, 0.5);
-        const hudIcon = this.add.circle(50, 0, 15, 0x888888);
-        hudIcon.setStrokeStyle(2, 0xffffff);
+        const hudIcon = this.add.image(50, 0, 'cocktail-margarita');
+        hudIcon.setScale(0.4); // Scale for HUD size
+        hudIcon.setVisible(false); // Hidden until set
         const hudName = this.add.text(0, 20, '', {
             fontSize: '16px',
             color: '#ffff00',
@@ -1119,7 +1120,8 @@ export class GameScene extends Phaser.Scene {
 
         if (player.storedCocktail) {
             const config = player.storedCocktail.config;
-            this.storedCocktailHUDIcon.setFillStyle(config.color);
+            this.storedCocktailHUDIcon.setTexture(config.sprite);
+            this.storedCocktailHUDIcon.setVisible(true);
             this.storedCocktailHUDName.setText(config.name);
             this.storedCocktailHUD.setVisible(true);
         } else {
