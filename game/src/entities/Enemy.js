@@ -185,6 +185,13 @@ export class Enemy {
             this.sprite = scene.add.sprite(x, y, 'bandit-lobster-down');
             this.currentDirection = 'down';
             this.useDirectionalSprites = true;
+            this.spritePrefix = 'bandit-lobster';
+        } else if (type === 'hermit') {
+            // Use directional sprites for hermit tank
+            this.sprite = scene.add.sprite(x, y, 'hermit-tank-down');
+            this.currentDirection = 'down';
+            this.useDirectionalSprites = true;
+            this.spritePrefix = 'hermit-tank';
         } else {
             // Create placeholder graphics for other enemies
             this.sprite = scene.add.circle(x, y, config.radius, config.color);
@@ -262,9 +269,7 @@ export class Enemy {
     createVisualIndicators() {
         switch(this.type) {
             case 'lobster':
-                // Two claws
-                this.claw1 = this.scene.add.circle(this.sprite.x - 12, this.sprite.y, 5, 0xff3300);
-                this.claw2 = this.scene.add.circle(this.sprite.x + 12, this.sprite.y, 5, 0xff3300);
+                // Lobster now uses sprites, no visual indicators needed
                 break;
             case 'shrimp':
                 // Small antennae
@@ -272,11 +277,7 @@ export class Enemy {
                 this.antenna2 = this.scene.add.circle(this.sprite.x + 6, this.sprite.y - 8, 3, 0xff6666);
                 break;
             case 'hermit':
-                // Shell outline
-                this.shell = this.scene.add.circle(this.sprite.x, this.sprite.y, this.config.radius + 5, 0x654321);
-                this.shell.setStrokeStyle(3, 0x4a3a2a);
-                this.shell.setFillStyle(0x654321, 0.5);
-                this.shell.setDepth(-1);
+                // Hermit now uses sprites, no visual indicators needed
                 break;
             case 'jellyfish':
                 // Tentacles
@@ -475,7 +476,7 @@ export class Enemy {
         // Only update texture if direction changed
         if (newDirection !== this.currentDirection) {
             this.currentDirection = newDirection;
-            this.sprite.setTexture(`bandit-lobster-${newDirection}`);
+            this.sprite.setTexture(`${this.spritePrefix}-${newDirection}`);
         }
     }
 
@@ -647,10 +648,7 @@ export class Enemy {
     updateVisuals() {
         switch(this.type) {
             case 'lobster':
-                if (this.claw1 && this.claw2) {
-                    this.claw1.setPosition(this.sprite.x - 12, this.sprite.y);
-                    this.claw2.setPosition(this.sprite.x + 12, this.sprite.y);
-                }
+                // Lobster now uses sprites, no visual indicators to update
                 break;
             case 'shrimp':
                 if (this.antenna1 && this.antenna2) {
@@ -659,9 +657,7 @@ export class Enemy {
                 }
                 break;
             case 'hermit':
-                if (this.shell) {
-                    this.shell.setPosition(this.sprite.x, this.sprite.y);
-                }
+                // Hermit now uses sprites, no visual indicators to update
                 break;
             case 'jellyfish':
                 if (this.tentacles) {

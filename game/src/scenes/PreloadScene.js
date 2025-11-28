@@ -47,6 +47,16 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('bandit-lobster-up-left', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-top-left.png');
         this.load.image('bandit-lobster-up-right', 'assets/sprites/enemies/bandit-lobster/bandit-lobster-top-right.png');
 
+        // Load 8-directional sprites for Hermit Tank
+        this.load.image('hermit-tank-down', 'assets/sprites/enemies/hermit-tank/hermit-tank-down.png');
+        this.load.image('hermit-tank-up', 'assets/sprites/enemies/hermit-tank/hermit-tank-up.png');
+        this.load.image('hermit-tank-left', 'assets/sprites/enemies/hermit-tank/hermit-tank-left.png');
+        this.load.image('hermit-tank-right', 'assets/sprites/enemies/hermit-tank/hermit-tank-right.png');
+        this.load.image('hermit-tank-down-left', 'assets/sprites/enemies/hermit-tank/hermit-tank-bottom-left.png');
+        this.load.image('hermit-tank-down-right', 'assets/sprites/enemies/hermit-tank/hermit-tank-bottom-right.png');
+        this.load.image('hermit-tank-up-left', 'assets/sprites/enemies/hermit-tank/hermit-tank-top-left.png');
+        this.load.image('hermit-tank-up-right', 'assets/sprites/enemies/hermit-tank/hermit-tank-top-right.png');
+
         this.load.spritesheet('lobster-bandit', 'assets/sprites/enemies/lobster-bandit-idle.png', {
             frameWidth: 64,
             frameHeight: 48
